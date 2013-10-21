@@ -393,8 +393,7 @@ EACH は、Tupleの集計や編集を実行します。
 BEGIN GROUP ... END GROUP で囲まれたクエリを、グループで実行します。
 
     BEGIN GROUP BY field, ...
-      [END GROUP &#124; TO STREAM]
-
+      [END GROUP | TO STREAM]
 
 * field には、グループ化するフィールドの名前を指定します。
 

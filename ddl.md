@@ -30,9 +30,9 @@ PARTITIONED BY clause を省略した場合は、Tupleをランダムに振り�
 > Example:
 
     CREATE TUPLE userAction1 (
-        &#x5f;tno,
-        &#x5f;tid,
-        &#x5f;time,
+        _tno,
+        _tid,
+        _time,
         field1 INT,
         field2 STRING,
         field3 STRING,
@@ -44,7 +44,7 @@ PARTITIONED BY clause を省略した場合は、Tupleをランダムに振り�
         field9 TIMESTAMP,
         field10 MAP<INT, STRING>
         )
-        PARTITIONED BY &#x5f;tno
+        PARTITIONED BY _tno
 
 #### Field Types
 
