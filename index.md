@@ -1,8 +1,12 @@
 ---
 layout: default
-title: LibMigration
+title: genn.ai
 ---
 
 ## A minimum content
 
-gennai is under construction!
+About grammer
+* [DDL](ddl.html)
+* [DML](dml.html)
+
+* [How to use cli](cli.html)
