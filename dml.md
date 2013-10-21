@@ -7,7 +7,7 @@ title: genn.ai
 
 ### FROM
 
-    FROM は、Tupleを入力先から読み込みます。
+FROM は、Tupleを入力先から読み込みます。
 
 #### 入力先が外部の場合
 
@@ -66,16 +66,16 @@ INTO は、ストリームを分岐・合流させます。
 
 INTO を使って出力したストリームは、FROM で読み込みます。
 
-> 分岐
+#### 分岐
 
-     FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout() INTO s1;
+    FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout() INTO s1;
     FROM s1(ua1) ...
     FROM s1(ua2) ...
     FROM s1(v1) ...
->
-> 合流
 
-     FROM s1(ua1) ... INTO s2;
+#### 合流
+
+    FROM s1(ua1) ... INTO s2;
     FROM s1(ua2) ... INTO s3;
     FROM s1(v1) ... INTO s4;
     FROM s2, s3, s4 ...
@@ -117,22 +117,22 @@ FILTER は、単一のTupleに対してTupleの通過を判定します。
 
 * condition には、フィルタの条件を指定します。
 
-> condition の符号には、以下のものを指定します。
->
-> * &#61; もしくは &#61;&#61;
-> * <> もしくは !&#61;
-> * >
-> * >&#61;
-> * <
-> * <=
-> * LIKE
-> * REGEXP
-> * IN
-> * ALL
-> * BETWEEN
-> * AND
-> * OR
-> * NOT
+ condition の符号には、以下のものを指定します。
+
+* &#61; もしくは &#61;&#61;
+* <> もしくは !&#61;
+* &gt;
+* &gt;=
+* &lt;
+* &lt;=
+* LIKE
+* REGEXP
+* IN
+* ALL
+* BETWEEN
+* AND
+* OR
+* NOT
 
 #### &#61;, &#61;&#61;, <>, !&#61;, >, >&#61;, <, <&#61;
 
@@ -287,18 +287,18 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
       (ua2.field1 <= 30 AND ua2.field2.member2 BETWEEN 2 AND 7) OR ua3.field5 LIKE 'A%'
 
 
-> ua1, ua2, ua3の３つのTupleに対してフィルタを実行します。条件１と条件２（※）の両方を満たせば、Tupleはフィルタを通過します。
-> （※）条件１はua1に対するフィルタで、条件２はua2とua3に対するフィルタです。
->
-> 条件２は、ua2とua3の条件を"OR"で指定しているので、ua1かつua2の条件を満たすか、ua1かつua3の条件を満たすことで
-> すべての条件は満たされます。
->
-> 条件１もしくは条件２のいずれかを満たした状態を７日間保持します。
-> 例えば、条件１を最後に満たした状態で、条件２の条件を満たすまでの期間が７日以内であれば、条件１と条件２は満たされますが、
-> ８日以上の日数が経過していた場合、条件１の状態は初期化されてしまう為、条件２のみ満たしている状態になります。
->
-> state_fieldに"fg_state"を指定しているので、フィルタの状態を"fg_state"フィールドとしてTupleに追加します。
-> fg_stateは、条件１と条件２のそれぞれを満たした日時が格納されます。条件の数と等しいTIMESTAMPのLISTになります。
+ ua1, ua2, ua3の３つのTupleに対してフィルタを実行します。条件１と条件２（※）の両方を満たせば、Tupleはフィルタを通過します。
+ （※）条件１はua1に対するフィルタで、条件２はua2とua3に対するフィルタです。
+
+ 条件２は、ua2とua3の条件を"OR"で指定しているので、ua1かつua2の条件を満たすか、ua1かつua3の条件を満たすことで
+ すべての条件は満たされます。
+
+ 条件１もしくは条件２のいずれかを満たした状態を７日間保持します。
+ 例えば、条件１を最後に満たした状態で、条件２の条件を満たすまでの期間が７日以内であれば、条件１と条件２は満たされますが、
+ ８日以上の日数が経過していた場合、条件１の状態は初期化されてしまう為、条件２のみ満たしている状態になります。
+
+ state_fieldに"fg_state"を指定しているので、フィルタの状態を"fg_state"フィールドとしてTupleに追加します。
+ fg_stateは、条件１と条件２のそれぞれを満たした日時が格納されます。条件の数と等しいTIMESTAMPのLISTになります。
 
 #### period
 
@@ -306,7 +306,7 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
     number(SECONDS|SEC)
 >
 > Example:
-        30SECONDS
+    30SECONDS
 
 
 * 分で指定
@@ -323,12 +323,10 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
 
 
 * 日で指定
-        number(DAYS|D)
+    number(DAYS|D)
 
->
 > Example:
-        15DAYS
-
+    15DAYS
 
 ---
 
@@ -383,8 +381,7 @@ EACH は、Tupleの集計や編集を実行します。
 > Example:
     EACH field1, field6.member1 AS field10, field7['visa'] AS visa
 
-
-> field1はそのまま、field6.member1をfield10フィールドへ、field7['visa']をvisaフィールドへ抽出します。
+field1はそのまま、field6.member1をfield10フィールドへ、field7['visa']をvisaフィールドへ抽出します。
 
 ---
 
@@ -406,7 +403,7 @@ BEGIN GROUP ... END GROUP で囲まれたクエリを、グループで実行し
     END GROUP
 
 
-> user_name ごとに（ユーザごとに）Tupleがカウントされます。
+user_name ごとに（ユーザごとに）Tupleがカウントされます。
 
 #### FILTER GROUP をグループで実行する
 
@@ -419,8 +416,8 @@ BEGIN GROUP ... END GROUP で囲まれたクエリを、グループで実行し
     END GROUP
 
 
-> user_nameごとに（ユーザごとに）フィルタが判定されます。
-> 特定のユーザが条件１と条件２を満たしているかを判定し、FILTER GROUP の状態はユーザごとに保持されます。
+user_nameごとに（ユーザごとに）フィルタが判定されます。
+特定のユーザが条件１と条件２を満たしているかを判定し、FILTER GROUP の状態はユーザごとに保持されます。
 
 #### GROUP のネスト
 
@@ -467,14 +464,15 @@ EMITは、Tupleを外部へ出力します。
 
 #### Emit Processor
 
-* Kafka Emit Processor
-> TupleをKafkaに出力します。
->
+* Kafka Emit Processor  
+
+TupleをKafkaに出力します。
+
     kafka_emit(topic_name)
 
->
-> * topic_name には、出力するTopic名を指定します。topic_name はプロセッサ変数に対応しています。
->
+
+ * topic_name には、出力するTopic名を指定します。topic_name はプロセッサ変数に対応しています。
+
 > Example:
 
     kafka_emit('topic1')
@@ -482,17 +480,17 @@ EMITは、Tupleを外部へ出力します。
 
 * Mongo Persist Processor
 
-> TupleをMongoDBに出力します。
->
+TupleをMongoDBに出力します。
+
     mongo_persist(db_name, collection_name [, key_names])
 
->
-> * db_name には、出力するDB名を指定します。db_name はプロセッサ変数に対応しています。
-> * collection_name には、出力するCollection名を指定します。collection_name はプロセッサ変数に対応しています。
-> * key_names には、出力するキーのフィールド名を指定します。複合キーの場合は配列で指定してください。
-> key_names を指定した場合、出力はキーに対してupdateされます。
-> key_names を指定しなかった場合は、出力はinsertになります。
->
+
+* db_name には、出力するDB名を指定します。db_name はプロセッサ変数に対応しています。
+* collection_name には、出力するCollection名を指定します。collection_name はプロセッサ変数に対応しています。
+* key_names には、出力するキーのフィールド名を指定します。複合キーの場合は配列で指定してください。
+ key_names を指定した場合、出力はキーに対してupdateされます。
+ key_names を指定しなかった場合は、出力はinsertになります。
+
 > Example:
     mongo_persist('db1', 'col1')  <- insert
     mongo_persist('db1', 'col1', 'field2') <- field2 をキーとしてupdate

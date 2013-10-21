@@ -51,26 +51,30 @@ PARTITIONED BY clause を省略した場合は、Tupleをランダムに振り�
 フィールドの型には、以下のものを指定します。
 
 * Numeric Types
-** TINYINT
-** SMALLINT
-** INT
-** BIGINT
-** FLOAT
-** DOUBLE
+
+TINYINT
+, SMALLINT
+, INT
+, BIGINT
+, FLOAT
+, DOUBLE
 
 * Date/Time Types
-** TIMESTAMP
+
+TIMESTAMP
 
 * String Types
-** STRING
+
+STRING
 
 * Misc Types
-** BOOLEAN
+
+BOOLEAN
 
 * Complex Types
-** LIST
-** MAP
-** STRUCT
+LIST
+, MAP
+, STRUCT
 
 #### TINYINT
 
@@ -118,9 +122,9 @@ JSONTupleのフィールド値に小数を記述し、かつ該当のフィー�
 
 * TIMESTAMP
 
-> GungnirTupleでは、Javaのjava.util.Dateとして扱われます。
->
-> JSONTupleでは、フィールドの値をepoch time（数字）で記述します。
+GungnirTupleでは、Javaのjava.util.Dateとして扱われます。
+
+JSONTupleでは、フィールドの値をepoch time（数字）で記述します。
 
 
 > Example:
@@ -128,19 +132,20 @@ JSONTupleのフィールド値に小数を記述し、かつ該当のフィー�
 
 * TIMESTAMP (date_format)
 
-> date_format には、日時のフォーマットを指定します。
-> Javaのjava.text.SimpleDateFormatと同じ書式を採用しています。
-> http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
->
-> GungnirTupleでは、Javaのjava.util.Dateとして扱われます。
->
+date_format には、日時のフォーマットを指定します。
+Javaの[java.text.SimpleDateFormatと同じ書式](
+http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
+)を採用しています。
+
+GungnirTupleでは、Javaのjava.util.Dateとして扱われます。
+
 > Example:
 
 
     field TIMESTAMP('yyyy-MM-dd HH:mm:ss')
 
-> JSONTupleでは、フィールドの値をdate_format で指定したフォーマットで記述します。
->
+JSONTupleでは、フィールドの値をdate_format で指定したフォーマットで記述します。
+
 > Example:
 
     field:"2013-10-18 18:07:25"
@@ -241,19 +246,19 @@ JSONTupleでは、フィールドの値をObjects構造で記述します。
 これらの名称はフィールドの予約名なので、通常のフィールド名には使用しないでください。
 
 * &#x5f;tid
->
-> Tracking ID を格納するフィールドです。
-> スキーマのフィールドに &#x5f;tid を記述すると、Tracking ID値がTupleに挿入されます。（STRING型になります）
+
+Tracking ID を格納するフィールドです。
+スキーマのフィールドに &#x5f;tid を記述すると、Tracking ID値がTupleに挿入されます。（STRING型になります）
 
 * &#x5f;tno
->
-> Tracking No を格納するフィールドです。
-> スキーマのフィールドに &#x5f;tno を記述すると、Tracking No値がTupleに挿入されます。（INT型になります）
+
+Tracking No を格納するフィールドです。
+スキーマのフィールドに &#x5f;tno を記述すると、Tracking No値がTupleに挿入されます。（INT型になります）
 
 * &#x5f;time
->
-> Tupleの受付時間を格納するフィールドです。
-> スキーマのフィールドに &#x5f;time を記述すると、受付時間（受付時の現在時間）がTupleに挿入されます。（TIMESTAMP型になります）
+
+Tupleの受付時間を格納するフィールドです。
+スキーマのフィールドに &#x5f;time を記述すると、受付時間（受付時の現在時間）がTupleに挿入されます。（TIMESTAMP型になります）
 
 #### Tracking ID と Tracking No
 
@@ -308,11 +313,11 @@ Tracking ID と Tracking Noは、いずれもTupleの同一性の判定に使用
 
 > Result:
 
-{
-"name":"userAction2","fields":{"field1":{"type":"BIGINT"},"field2":
+      {
+        "name":"userAction2","fields":{"field1":{"type":"BIGINT"},"field2":
         {"type":"STRING"},"field3":{"type":"STRING"}},"partitioned":       
-         ["field1"],"owner":"user@genn.ai","createTime":"2013-09-13T01:35:55.667Z"
-         }
+        ["field1"],"owner":"user@genn.ai","createTime":"2013-09-13T01:35:55.667Z"
+      }
 
 
 * name は、Tuple名です。
@@ -373,11 +378,11 @@ TupleのViewを定義します。Tupleスキーマを別名で定義できます
 
 > Result:
 > 
-        [
-        {"name":"viewAction1","owner":"user@genn.ai","createTime":"2013-10-19T03:19:22.241Z"},        
-        {"name":"viewAction2","owner":"user@genn.ai","createTime":"2013-10-19T03:19:56.898Z"},        
-        {"name":"viewAction3","owner":"user@genn.ai","createTime":"2013-10-19T03:19:34.898Z"}
-        ]
+    [
+      {"name":"viewAction1","owner":"user@genn.ai","createTime":"2013-10-19T03:19:22.241Z"},        
+      {"name":"viewAction2","owner":"user@genn.ai","createTime":"2013-10-19T03:19:56.898Z"},        
+      {"name":"viewAction3","owner":"user@genn.ai","createTime":"2013-10-19T03:19:34.898Z"}
+    ]
 
 
 * name は、View名です。
@@ -402,7 +407,9 @@ TupleのViewを定義します。Tupleスキーマを別名で定義できます
 
 > Result:
 > 
-        {"name":"viewAction1","from":"userAction1","filter":"field3 = CATEGORY-1","owner":"user@genn.ai","createTime":"2013-10-19T03:19:22.241Z"}
+    {
+        "name":"viewAction1","from":"userAction1","filter":"field3 = CATEGORY-1","owner":"user@genn.ai","createTime":"2013-10-19T03:19:22.241Z"
+    }
 
 * name は、View名です。
 * from は、Viewの元となるTuple名です。
