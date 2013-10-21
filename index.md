@@ -1,12 +1,16 @@
 ---
-layout: default
+layout: top
 title: genn.ai
 ---
 
-## A minimum content
+### genn.ai grammer
 
-About grammer
 * [DDL](ddl.html)
 * [DML](dml.html)
 
-* [How to use cli](cli.html)
+### genn.ai tool
+* [gungnir](cli.html) (A command line tool)
+
+### genn.ai environment
+* [dev.genn.ai](http://dev.genn.ai/) (Sometimes stopped for update!)
+

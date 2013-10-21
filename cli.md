@@ -52,12 +52,12 @@ Topologyの実行計画を表示します。
     FILTER_2(field1 >= 10)
     FILTER_3(field1 < 10)
 
-> 実行計画から、Tupleを投入した際にオペレータがどのように呼ばれるかを確認することができます。
-> それぞれのオペレータをVertex、それらをつなぐStreamをEdgeとするGraph構造になっています。
-> 上記の例では、SPOUT_0・PARTITION_1・FILTER_2・FILTER_3の４つのオペレータをStreamで連結しています。
-> それぞれのオペレータの下の行に、そのオペレータからのびているStreamが表示されています。
-> SPOUT_0からのびているStreamは１つで、PARTION_1に接続しています。
-> PARTITION_1からのびているStreamは２つで、それぞれFILTER_2とFILTER_3に接続しています。
+実行計画から、Tupleを投入した際にオペレータがどのように呼ばれるかを確認することができます。
+それぞれのオペレータをVertex、それらをつなぐStreamをEdgeとするGraph構造になっています。
+上記の例では、SPOUT_0・PARTITION_1・FILTER_2・FILTER_3の４つのオペレータをStreamで連結しています。
+それぞれのオペレータの下の行に、そのオペレータからのびているStreamが表示されています。
+SPOUT_0からのびているStreamは１つで、PARTION_1に接続しています。
+PARTITION_1からのびているStreamは２つで、それぞれFILTER_2とFILTER_3に接続しています。
 
 ---
 
@@ -80,7 +80,7 @@ Topologyの起動は非同期で実行される為、必ず DESC TOPOLOGY を実
     gungnir> DESC TOPOLOGY;  <-- 起動したかを確認
     {"id":"5261606ee4b099995d4f460f","explain":...","status":"RUNNING", ...}
 
-> SUBMIT TOPOLOGYの実行後に、DESC TOPOLOGYを実行してTopology IDとTopologyの状態を確認しています。
+SUBMIT TOPOLOGYの実行後に、DESC TOPOLOGYを実行してTopology IDとTopologyの状態を確認しています。
 
 ---
 
@@ -240,11 +240,10 @@ Topologyの動作確認の為に、TopologyにJOINTupleを送信します。
     gungnir> TRACK userAction {field1:10,field2:"test"}; 
 
 * Interactive Mode
->
-> TRACKコマンドには、インタラクティブにJSONTupleを編集できるモードがあります。
-> json_tuple を指定せずにTRACKコマンドを実行すると、送信するJSONTupleの入力を求められます。
-> JSONTupleのすべてのフィールドの入力が完了すると、編集したJSONTupleを送信します。
->
+
+TRACKコマンドには、インタラクティブにJSONTupleを編集できるモードがあります。
+json_tuple を指定せずにTRACKコマンドを実行すると、送信するJSONTupleの入力を求められます。
+JSONTupleのすべてのフィールドの入力が完了すると、編集したJSONTupleを送信します。
 
     gungnir> TRACK userAction;
     field1 (INT): 12345
@@ -252,12 +251,12 @@ Topologyの動作確認の為に、TopologyにJOINTupleを送信します。
     TRACK userAction {"field1":12345,"field2":"test"}
     OK
 
-> LIST, MAP, STRUCT型のフィールドの編集は、以下のように行います。
->
+LIST, MAP, STRUCT型のフィールドの編集は、以下のように行います。
+
 
     CREATE TUPLE userAction2 (f1 STRING, f2 LIST<INT>, f3 MAP<STRING, INT>, f4 STRUCT<m1 TIMESTAMP('yyyy-MM-dd HH:mm:ss'), m2 BOOLEAN>);
->
 
+> Example:
     gungnir> TRACK userAction2;
     f1 (STRING): test
     f2 (LIST)
@@ -309,7 +308,7 @@ Serverから新たなTracking IDを受け取ることができます。
     gungnir> COOKIE CLEAR;
     OK
     gungnir> COOKIE;
-[]
+    []
 
 ---
 
@@ -339,15 +338,15 @@ Monitor機能は、以下の手順で使用します。
     {"id":"5261606ee4b099995d4f460f","explain":"SPOUT_0(kafka_spout(), kafka_spout(), [userAction(field1 INT, field2 STRING)])\n ...","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z","summary":{"name":"gungnir_5261606ee4b099995d4f460f","status":"ACTIVE","uptimeSecs":403,"numWorkers":1,"numExecutors":3,"numTasks":3}}
     gungnir> MONITOR 5261606ee4b099995d4f460f;
 
-> 別のCLIを開いてTRACKコマンドを実行します。
+別のCLIを開いてTRACKコマンドを実行します。
 
     gungnir> track userAction {"field1":1234,"field2":"test"};
 
-> Monitorログが出力されます。
+Monitorログが出力されます。
 
     gungnir> MONITOR 5261606ee4b099995d4f460f;
     {"time":"2013-10-19T14:12:36.856Z","source":"SPOUT_0","target":"PARTITION_1","tuple":{"tupleName":"userAction","values":[1234,"test"]}}
     {"time":"2013-10-19T14:12:36.880Z","source":"PARTITION_1","target":"FILTER_2","tuple":{"tupleName":"userAction","values":[1234,"test"]}}
     {"time":"2013-10-19T14:12:36.953Z","source":"PARTITION_1","target":"FILTER_3","tuple":{"tupleName":"userAction","values":[1234,"test"]}}
 
-> source のオペレータから target のオペレータに向かって、Tupleが流れているのが確認できます。tuple に、流れたTupleの内容が表示されています。
+source のオペレータから target のオペレータに向かって、Tupleが流れているのが確認できます。tuple に、流れたTupleの内容が表示されています。
