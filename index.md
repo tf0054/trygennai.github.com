@@ -3,8 +3,6 @@ layout: top
 title: genn.ai
 ---
 
-## Genn.ai
-
 ### genn.ai grammer
 
 * [DDL](ddl.html)
@@ -12,3 +10,7 @@ title: genn.ai
 
 ### genn.ai tool
 * [gungnir](cli.html) (A command line tool)
+
+### genn.ai environment
+* [dev.genn.ai](http://dev.genn.ai/) (Sometimes stopped for update!)
+
