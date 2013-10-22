@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include header.html %}
+		<style>
+			body { padding-top: 60px; }
+			span { padding:30px; }
+			#toc {
+				position:fixed;
+				overflow:auto;
+			}
+			#toc ul {
+				list-style:none;
+				font-size:12px;
+			}
+			.header-h3 { }
+			.header-h4 { padding-left:10px; }
+		</style>
+	</head>
+	<body>
+			<div class="row">
+				<div class="navbar navbar-default navbar-fixed-top">
+					<div class="container">
+						<div class="navbar-header">
+							<a class="navbar-brand" href="/">genn.ai (源内)</a>
+						</div>
+						<div class="navbar-collapse collapse">
+							<ul class="nav navbar-nav">
+								<li><a href="/cli.html">How to use CLI</a></li>
+								<li><a href="/ddl.html">DDL</a></li>
+								<li><a href="/dml.html">DML</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="container">
+					<div class="col-md-3">
+						<div id="toc"></div>
+					</div>
+					<div class="col-md-9">
+						<div class="pull-right text-muted">Modified: {{ site.time }}</div>
+						{{ content }}
+						<hr/>
+				    <div id="disqus_thread"></div>
+					</div>
+				</div>
+		    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+			</div>
+		</div>
+		{% include footer.html %}
+	</body>
+	<script type="text/javascript">
+		/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+		var disqus_shortname = 'trygennai'; // required: replace example with your forum shortname
+
+		/* * * DON'T EDIT BELOW THIS LINE * * */
+		(function() {
+			var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+			dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+			(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		})();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<script src="/js/jquery.toc.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			$("#toc").toc({
+				"selectors": "h3,h4",
+				"container": "body",
+				"prefix": "header"
+			});
+		});
+	</script>
+</html>
