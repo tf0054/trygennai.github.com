@@ -381,7 +381,7 @@ EACH は、Tupleの集計や編集を実行します。
 > Example:
     EACH field1, field6.member1 AS field10, field7['visa'] AS visa
 
-field1はそのまま、field6.member1をfield10フィールドへ、field7['visa']をvisaフィールドへ抽出します。
+field1はそのまま、field6.member1をfield10フィールドへ、field7&#91;'visa']をvisaフィールドへ抽出します。
 
 ---
 
