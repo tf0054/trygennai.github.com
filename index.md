@@ -3,12 +3,13 @@ layout: top
 title: genn.ai
 ---
 
-### genn.ai grammer
+### genn.ai documents
 
+* [primer](tutorial.html)
 * [DDL](ddl.html)
 * [DML](dml.html)
 
-### genn.ai tool
+### genn.ai tool manual
 * [gungnir](cli.html) (A command line tool)
 
 ### genn.ai environment
