@@ -3,6 +3,11 @@ layout: top
 title: genn.ai
 ---
 
+### Languages
+
+* [English](index.html)
+* [Japanese](index_ja.html)
+
 ### genn.ai documents
 
 * [primer](tutorial.html)
