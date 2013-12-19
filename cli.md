@@ -22,7 +22,7 @@ Use ";" (semicolon) to terminate commands.
 
 #### quit | exit
 
-Gungnir CLIを終了します。
+This command is used to exit from Gungnir CLI.
 
     gungnir> quit;
 
@@ -30,7 +30,7 @@ Gungnir CLIを終了します。
 
 #### EXPLAIN
 
-Topologyの実行計画を表示します。
+Explain command shows the excution plan of topology.
 
     gungnir> EXPLAIN;
 
@@ -52,22 +52,23 @@ Topologyの実行計画を表示します。
     FILTER_2(field1 >= 10)
     FILTER_3(field1 < 10)
 
-実行計画から、Tupleを投入した際にオペレータがどのように呼ばれるかを確認することができます。
-それぞれのオペレータをVertex、それらをつなぐStreamをEdgeとするGraph構造になっています。
-上記の例では、SPOUT_0・PARTITION_1・FILTER_2・FILTER_3の４つのオペレータをStreamで連結しています。
-それぞれのオペレータの下の行に、そのオペレータからのびているStreamが表示されています。
-SPOUT_0からのびているStreamは１つで、PARTION_1に接続しています。
-PARTITION_1からのびているStreamは２つで、それぞれFILTER_2とFILTER_3に接続しています。
+We can see how operators in exution plan are applied to input tuples.
+A operation plan represents a graph whose vertices are operators, and edges between vertices are streams.
+In the above example, four operators (SPOUT_0, PARTITION_1, FILTER_2, FILTER_3) are conneted with streams.
+The stream from each operator is shown in the next line of the operator.
+For example, we can see that the stream derived from SPOUT_0 is onely one and it coneect to PARTITION_1 and PARTITION_1
+has two streams and they connect to FILTER_2 and FILTER_3 respectively.
 
 ---
 
 #### SUBMIT TOPOLOGY
 
-Topologyを登録して起動します。
+This command registries a topology and launch it.
 
     gungnir> SUBMIT TOPOLOGY;
 
-Topologyの起動は非同期で実行される為、必ず DESC TOPOLOGY を実行して、Topologyの状態が RUNNING（実行中）になっていることを確認してください。
+Since the launch process of a topology is execution asynchronouslly, users should confirm that the state
+of the topology is "RUNNING" by the "DESC TOPOLOGY" command.
 
 > Example:
 
@@ -77,34 +78,35 @@ Topologyの起動は非同期で実行される為、必ず DESC TOPOLOGY を実
     …
     gungnir> SUBMIT TOPOLOGY;
     OK
-    gungnir> DESC TOPOLOGY;  <-- 起動したかを確認
+    gungnir> DESC TOPOLOGY;  <-- confirm the state
     {"id":"5261606ee4b099995d4f460f","explain":...","status":"RUNNING", ...}
 
-SUBMIT TOPOLOGYの実行後に、DESC TOPOLOGYを実行してTopology IDとTopologyの状態を確認しています。
+After the execution of "SUBMIT TOPOLOGY" command, above example confirms the status of the toplogy with the "DESC TOPOLOGY" command.
 
 ---
 
 #### DESC TOPOLOGY
 
-登録したTopologyの情報を表示します。
+This command shows the regeistrated topology information.
 
     gungnir> DESC TOPOLOGY;
 
-結果はJSON形式で出力されます。
+The result is shown in JSON format.
 
 > Example:
     gungnir> DESC TOPOLOGY;
     {"id":"5261606ee4b099995d4f460f","explain":"SPOUT_0(kafka_spout(), kafka_spout(), [userAction(field1 INT, field2 STRING)])\n ...","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z","summary":{"name":"gungnir_5261606ee4b099995d4f460f","status":"ACTIVE","uptimeSecs":403,"numWorkers":1,"numExecutors":3,"numTasks":3}}
 
-* id は、Topology IDです。
-* explain は。Topologyの実行計画です。
-* status は、Topologyの状態です。
-Topologyの状態に応じて、STARTING（起動中）-> RUNNING（実行中）-> STOPPING（停止中）-> STOPPED（停止状態）と変化します。
-* owner は、Topologyを登録したユーザのユーザ名です。
-* createTime は、Topologyを登録した日時です。
-* summary は、Topologyの起動情報です。status がRUNNINGの場合のみに表示されます。
+The followings are the meanings of blocks in the above result.
+* "id" is Topology ID.
+* "explain" is execution plan of Topology.
+* "status" represents the state of topology.
+"status" takes the one of the four values (STARTING, RUNNING, STOPPING, STOPPED) and shows the status of topology.
+* "owner" represents the user name who register the Topology.
+* "createTime" shows the registration time of topology.
+* "summary" is the status information of the  Topology. This block is shown only when "status" is RUNNING.
 
-特定のTopologyの情報を表示したい場合は、情報を表示したいTopologyのTopology IDを指定します。
+When we specify the block name, we get the value of specified block.
 
     gungnir> DESC TOPOLOGY topology_id;
 
@@ -117,70 +119,73 @@ Topologyの状態に応じて、STARTING（起動中）-> RUNNING（実行中）
 
 #### SHOW TOPOLOGIES
 
-登録したTopologyの一覧を表示します。
+This command shows the list of registered topology.
 
     gungnir> SHOW TOPOLOGIES;
 
-結果はJSON形式で出力されます。
+The resuls are shown in JSON format.
 
 > Example:
 
     gungnir> SHOW TOPOLOGIES;
     [{"id":"5261606ee4b099995d4f460f","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z"}]
 
-* id は、Topology IDです。
-* status は、Topologyの状態です。
-Topologyの状態に応じて、STARTING（起動中）-> RUNNING（実行中）-> STOPPING（停止中）-> STOPPED（停止状態）と変化します。
-* owner は、Topologyを登録したユーザのユーザ名です。
-* createTime は、Topologyを登録した日時です。
+The followins are the meanings of blocks in the above result.
+* "id"  shows topology id.
+* "status" shows the status of topology.
+"status" takes the one of the four values (STARTING, RUNNING, STOPPING, STOPPED) and shows the status of topology.
+* "owner" represents the user name who register the Topology.
+* "createTime" shows the registration time of topology.
 
 ---
 
 #### STOP TOPOLOGY
 
-起動したTopologyを停止します。
+This command stops the specified topology.
 
     gungnir> STOP TOPOLOGY topology_id;
 
-* topology_id には、停止するTopologyのTopology IDを指定します。
+* Users specify the id of topology in topology_id.
 
-Topologyの停止は非同期で実行される為、必ず DESC TOPOLOGY を実行して、Topologyの状態が STOPPED （停止状態）になっていることを確認してください。
+The stop process of the specified topology is execution asynchronouslly. Therefore after the stop command, users should confirm that the state
+of the topology is "STOPPEDG" by the "DESC TOPOLOGY" command.
 
 > Example:
     gungnir> STOP TOPOLOGY 5261606ee4b099995d4f460f;
     OK
-    gungnir> DESC TOPOLOGY;  <-- 停止したかを確認
+    gungnir> DESC TOPOLOGY;  <-- confirm the state
     {"id":"5261606ee4b099995d4f460f","explain":...","status":"STOPPED", ...}
 
 ---
 
 #### START TOPOLOGY
 
-停止したTopologyを再起動します。
+This command restarts stopped topology.
 
     gungnir> START TOPOLOGY topology_id;
 
-* topology_id には、起動するTopologyのTopology IDを指定します。
+* Users specify the id of topology in topology_id.
 
-Topologyの開始は非同期で実行される為、必ず DESC TOPOLOGY を実行して、Topologyの状態が RUNNING（実行中）になっていることを確認してください。
+The start process of the specified topology is execution asynchronouslly. Therefore after the start command, users should confirm that the state
+of the topology is "RUNNING" by the "DESC TOPOLOGY" command.
 
 > Example:
     gungnir> START TOPOLOGY 5261606ee4b099995d4f460f;
     OK
-    gungnir> DESC TOPOLOGY;  <-- 起動したかを確認
+    gungnir> DESC TOPOLOGY;  <-- confirm status
     {"id":"5261606ee4b099995d4f460f","explain":...","status":"RUNNING", ...}
 
 ---
 
 #### DROP TOPOLOGY
 
-登録したTopologyを削除します。
+This command deletes registrated topology.
 
     gungnir> DROP TOPOLOGY topology_id;
 
-* topology_id には、削除するTopologyのTopology IDを指定します。
+* Users specify the id of topology in topology_id.
 
-Topologyは停止している必要があります。削除する前に DESC TOPOLOGY を実行して、Topologyの状態が STOPPED になっていることを確認してください。
+To delete a topology, the topology need to be stopped. Before delete a toplogy, users should confirm taht the status of topology is "STOPPED" with "DESC TOPOLOGY" command.
 
 > Example:
 
@@ -193,9 +198,9 @@ Topologyは停止している必要があります。削除する前に DESC TOP
 
 #### CLEAR
 
-登録したクエリをメモリから消去します。
-クエリ（FROM〜）は、TopologyをSUBMITするまでメモリに置かれます。
-クエリを打ちなおしたい場合は、CLEARコマンドを実行してメモリをクリアしてください。
+This command removes query from memory.
+Queries (FROM ...) exist on memory until the topology is submitted.
+When you want to remove the query in order to submit another query, users submit CLEAR command.
 
     gungnir> CLEAR;
 
@@ -212,38 +217,41 @@ Topologyは停止している必要があります。削除する前に DESC TOP
 
 #### SET
 
-Topologyのプロパティを設定します。
-設定したプロパティは、SUBMIT TOPOLOGY もしくは START TOPOLOGY で、起動するTopologyに反映されます。
-プロパティは、STOP TOPOLOGY で初期化されてしまうので、START TOPOLOGY を実行する前に再設定する必要があります。
+This command is used to set a property of topology.
+The submitted propertes are reflected with "SUBMIT TOPOLOGY" or "START TOPOLOGY" command.
+The reflected properties cleared with "STOP TOPOLOGY", therefore users should set the propeties again before "START TOPOLOGY".
+The following is the form of SET command.
 
     gungnir> SET property_name = property_value;
 
 > Example:
     gungnir> SET monitor = enable;
 
-> Monitorログを出力するように、プロパティを設定します。
+> The above command the a monitor property to flush Monitor log.
 
 ---
 
 #### TRACK
 
-Topologyの動作確認の為に、TopologyにJOINTupleを送信します。
+This command submits a JOINTuple to validate the topology.
 
     gungnir> TRACK tuple_name json_tuple; 
 
-* tuple_name には、送信するTuple名を指定します。
-* join_tuple には、送信するJSONTupleを記述します。
+We specify the followings.
+* tuple name in tuple_name
+* JSONTuple in join_tuple.
 
-応答にSet-Cookieヘッダが返された場合は、その内容がCLIのメモリCookieに保存され、保存されたCookieは、次回のTRACKコマンドの実行時にCookieヘッダとして送信されます。
+When a Set-Cookie header is returned in the response, the contents are stored in the Cookie of CLI memory.
+The stored Cookie is submitted as the Cookie header of next TRACK command.
 
 > Example:
     gungnir> TRACK userAction {field1:10,field2:"test"}; 
 
 * Interactive Mode
 
-TRACKコマンドには、インタラクティブにJSONTupleを編集できるモードがあります。
-json_tuple を指定せずにTRACKコマンドを実行すると、送信するJSONTupleの入力を求められます。
-JSONTupleのすべてのフィールドの入力が完了すると、編集したJSONTupleを送信します。
+The TRACK command has interactive mode in which uerss can edit JSONTuple interactively.
+When a user sumit TRACK commadn without json_tuple, CLI reqest the user to input a JSONTuple to submit.
+After editing JSONTuple, the user submit edited JSONTuple.
 
     gungnir> TRACK userAction;
     field1 (INT): 12345
@@ -251,8 +259,7 @@ JSONTupleのすべてのフィールドの入力が完了すると、編集し�
     TRACK userAction {"field1":12345,"field2":"test"}
     OK
 
-LIST, MAP, STRUCT型のフィールドの編集は、以下のように行います。
-
+The following is a example of a JSONTuple with LIST, MAP, STRUCT fields.
 
     CREATE TUPLE userAction2 (f1 STRING, f2 LIST<INT>, f3 MAP<STRING, INT>, f4 STRUCT<m1 TIMESTAMP('yyyy-MM-dd HH:mm:ss'), m2 BOOLEAN>);
 
@@ -263,7 +270,7 @@ LIST, MAP, STRUCT型のフィールドの編集は、以下のように行いま
       0 (INT): 1
       1 (INT): 2
       2 (INT): 3
-      3 (INT):   <-- [Enter key]を押して、LISTの編集を終了
+      3 (INT):   <-- push [Enter key] and finish editing LIST (f2)
     f3 (MAP)
       key (STRING): k1
       value (INT): v1
@@ -272,7 +279,7 @@ LIST, MAP, STRUCT型のフィールドの編集は、以下のように行いま
       value (INT): 2
       key (STRING): k3
       value (INT): 3
-      key (STRING):   <-- keyの入力で [Enter key]を押して、MAPの編集を終了
+      key (STRING):   <-- push [Enter key] and finish editing MAP (f3)
     f4 (STRUCT)
       m1 (TIMESTAMP(yyyy-MM-dd HH:mm:ss)): 2013-10-19 22:02:24
       m2 (BOOLEAN): false
@@ -284,8 +291,8 @@ LIST, MAP, STRUCT型のフィールドの編集は、以下のように行いま
 
 #### COOKIE
 
-メモリCookieの内容を表示します。
-メモリCookieは、CLIの終了とともにメモリから削除されます。
+COOKIE commands show the contents of on memory Cookie.
+The on memory Cookie is removed when CLI is finished.
 
     gungnir> COOKIE;
 
@@ -297,9 +304,8 @@ LIST, MAP, STRUCT型のフィールドの編集は、以下のように行いま
 
 #### COOKIE CLEAR
 
-メモリCookieの内容を削除します。
-メモリCookieには、Serverから受け取ったTracking IDが格納されている為、メモリCookieの内容を削除することによって
-Serverから新たなTracking IDを受け取ることができます。
+This command is for remove on memory Cookies.
+Since, on memory Cookie stores the traking ids, users can get another tracking id from the server after removing on memory Cookies.
 
     gungnir> COOKIE CLEAR;
 
@@ -314,19 +320,19 @@ Serverから新たなTracking IDを受け取ることができます。
 
 #### MONITOR
 
-Topologyの動作確認の為に、TupleがTopologyの中をどのように流れたをMonitor機能で確認します。
-Tupleが流れた際に出力されるMonitorログを表示することによって、確認を行います。
+With MONITOR command, users know how the input Tuple is processed in the topology. Specifically
+the Monitor log on the input tuple is flushed with this command.
 
     gungnir> MONITOR topology_id;
 
-* 確認するTopologyのTopology IDを指定します。
+* Users specify Topology ID.
 
-Monitor機能は、以下の手順で使用します。
+We use Monitor with the follwoing steps.
 
-- Monitorログを出力するようにプロパティを設定して、該当のTopologyをSUBMITします。
-- 1で起動したTopologyのTopology IDを指定して、MONITORコマンドを実行します。
-- 別のCLIを起動し、TRACKコマンドを使ってJOINTupleを送信します。JOINTupleは、curlコマンド等を使って送信することもできます。
-- MONITORコマンドを実行しているCLIに、3で送信したTupleが流れることによって出力されたMonitorログが表示されます。
+- Set the proerty to flush Monitor log and sebumit the topology.
+- Specify the Topology id in the first step, run MONITOR command.
+- Open another CLI, and then submit JOINTuple with TRACK command. JOINTuple can be submitted with the curl command.
+- Check the CLI running MONITOR command, and see the Monitor log for the submitted tuple in the third step.
 
 > Example:
 
@@ -338,15 +344,15 @@ Monitor機能は、以下の手順で使用します。
     {"id":"5261606ee4b099995d4f460f","explain":"SPOUT_0(kafka_spout(), kafka_spout(), [userAction(field1 INT, field2 STRING)])\n ...","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z","summary":{"name":"gungnir_5261606ee4b099995d4f460f","status":"ACTIVE","uptimeSecs":403,"numWorkers":1,"numExecutors":3,"numTasks":3}}
     gungnir> MONITOR 5261606ee4b099995d4f460f;
 
-別のCLIを開いてTRACKコマンドを実行します。
+Open another CLI and run TRACK command.
 
     gungnir> track userAction {"field1":1234,"field2":"test"};
 
-Monitorログが出力されます。
+Monitor log is flushed in CLI.
 
     gungnir> MONITOR 5261606ee4b099995d4f460f;
     {"time":"2013-10-19T14:12:36.856Z","source":"SPOUT_0","target":"PARTITION_1","tuple":{"tupleName":"userAction","values":[1234,"test"]}}
     {"time":"2013-10-19T14:12:36.880Z","source":"PARTITION_1","target":"FILTER_2","tuple":{"tupleName":"userAction","values":[1234,"test"]}}
     {"time":"2013-10-19T14:12:36.953Z","source":"PARTITION_1","target":"FILTER_3","tuple":{"tupleName":"userAction","values":[1234,"test"]}}
 
-source のオペレータから target のオペレータに向かって、Tupleが流れているのが確認できます。tuple に、流れたTupleの内容が表示されています。
+We can see the tuple flows from source operator into target operator. The content of tuple is shown in the above JSON log.
