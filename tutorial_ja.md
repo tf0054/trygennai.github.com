@@ -1,5 +1,5 @@
 ---
-layout: manual
+layout: manual_ja
 title: genn.ai
 ---
 
