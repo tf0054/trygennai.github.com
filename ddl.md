@@ -271,7 +271,7 @@ Tracking ID and Tracking No are automatically inserted when the user add &#x5f;t
 Generated  Tracking ID and Tracking No are inserted into a Tuple and returned with the Set-Cookie header (only Tracking ID is returned) to the source.
 The source of post submits the given Tracing ID with the Cookie header in the next JSONTuple submit.
 The Tracing ID in the submit Cookie header shows the JSONTuples were submit from the same source.
-Searching with submit Tracing ID get Tracing No and then _tid と &#x5f;tno are inserted into the Tuple.
+Searching with submit Tracing ID get Tracing No and then &#x5f;tid and &#x5f;tno are inserted into the Tuple.
 Although Both Tracking ID and Tracking No can be used to detect the the Tuple identity, users would
 think that Tracking No is easier to identify the Tuples.
 
