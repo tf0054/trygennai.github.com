@@ -431,3 +431,56 @@ Viewを削除します。
 
         DROP VIEW viewAction1
 
+---
+
+### 予約語
+
+以下に示す特定語を、schema_name, field_name, view_schema_name に使用することはできません。
+
+* ALL
+* AND
+* AS
+* BEGIN
+* BIGINT
+* BOOLEAN
+* BY
+* CLEAR
+* COOKIE
+* CREATE
+* DESC
+* DOUBLE
+* DROP
+* END
+* EVERY
+* EXPIRE
+* EXPLAIN
+* FIRST
+* FLOAT
+* GROUP
+* INT
+* LAST
+* LENGTH
+* LIMIT
+* LIST
+* MAP
+* MONITOR
+* SET
+* SHOW
+* SLIDE
+* SMALLINT
+* SNAPSHOT
+* START
+* STOP
+* STRING
+* STRUCT
+* SUBMIT
+* TIMESTAMP
+* TINYINT
+* TO
+* TOPOLOGY
+* TOPOLOGIES
+* TRACK
+* TUPLE
+* TUPLES
+* VIEW
+* VIEWS
