@@ -33,6 +33,27 @@ kafka_spout
     kafka_spout()
 
 
+#### TupleJoin
+
+    FROM (schema_name1 JOIN schema_name2 ON join_condition TO join_fields) AS schema_alias, ...
+    
+    join_condition:
+    schema_name1.field_name1 = shema_name2.field_name2 [AND schema_name1.field_name2 = schema_name2.field_name2]
+    
+    join_fields:
+    schame_name.field_name1 [AS field_alias1], ...
+
+* 複数のTupleをfieldの値を元に結合します。
+* 同名のfield_nameが存在しない場合は、ワイルドカードを利用する事が可能です。
+
+> Example:
+    FROM (
+      userAction1 JOIN userAction2 
+      ON userAction1.field1 = userAction2.field1
+      TO userAction1.field1 AS field1, userAction1.field2 AS field2, userAction2.field3 AS field3
+    ) AS ua USING kafka_spout()
+
+
 #### 入力先が内部（ストリーム）の場合
 
     FROM stream_name[(schema_alias, ...)], ...
