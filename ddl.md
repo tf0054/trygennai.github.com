@@ -5,27 +5,30 @@ title: genn.ai
 
 ## LanguageManual DDL
 
+This page describes the DDL language supported by genn.ai.
+
 ### CREATE TUPLE
 
-Tupleのスキーマを定義します。
+`CREATE TUPLE` statement defines schema.
 
-スキーマは
+Schemas are used to process the following tasks.
 
-- Tupleの受け取り可否の判定
-- JSONTupleからGungnirTupleへの変換
-- FROM statements での入力対象の指定
+- Checking the valition of input tuples.
+- Conversion from JSONTuple into GungnirTuple.
+- Specifying the input by `FROM statements`.
 
-に使用します。
+The following is the syntax of `CREATE TUPLE` statement.
 
     CREATE TUPLE schema_name
         (field_name [field_type], ...)
         [PARTITIONED BY parition_field, ...]
 
-* schema_name には、Tuple名を指定します。
-* field_name には、フィールド名を指定します。
-* field_type には、フィールドの型を指定します。省略した場合は、自動判定になります。
-* parition_field には、Tupleをパーティション単位に処理する為に、パーティションキーとなるフィールド名を指定します。
-PARTITIONED BY clause を省略した場合は、Tupleをランダムに振り分けて処理します。
+We specify the followings.
+* the Tuple name in schema_name.
+* field name in field_name.
+* field type in field_type. if users do not specify the type, the type is automatically detected.
+* field name for partition key in parition_field. The field is used to split Tuples into patititions.
+When `PARTITIONED BY clause` is not specified, Tuples are randomly partitioned.
 
 > Example:
 
@@ -48,7 +51,7 @@ PARTITIONED BY clause を省略した場合は、Tupleをランダムに振り�
 
 #### Field Types
 
-フィールドの型には、以下のものを指定します。
+For field type, users can specify the the followings.
 
 * Numeric Types
 
@@ -78,73 +81,73 @@ LIST
 
 #### TINYINT
 
-GungnirTupleでは、JavaのByteとして扱われます。
+In GungnirTuple, the value is treated as a Byte object in Java.
 
-JSONTupleでは、フィールドの値を数字で記述します。
+In JSONTuple, field value is described with digits.
 
 #### SMALLINT
 
-GungnirTupleでは、JavaのShortとして扱われます。
+In GungnirTuple, the value is treated as Short object in Java.
 
-JSONTupleでは、フィールドの値を数字で記述します。
+In JSONTuple, the field value is described with digits.
 
 #### INT
 
-GungnirTupleでは、JavaのIntegerとして扱われます。
+In GungnirTuple, the value is treated as Integer object in Java.
 
-JSONTupleでは、フィールドの値を数字で記述します。
-JSONTupleのフィールド値に数字を記述し、かつ該当のフィールドの型をスキーマで省略していた場合は、
-記述した数字の桁数に応じて、フィールド値はINT（Integer）もしくはBIGINT（Long）型に変換されます。
+In JSONTuple, the field value is described with digits.
+When a user specify a value in JSONTuple field and in addtion the field is not added in the schema,
+the value is converted into INT（Integer）or BIGINT（Long） depending on the figure length.
 
 #### BIGINT
 
-GungnirTupleでは、JavaのLongとして扱われます。
+In GungnirTuple, the value is treated as a Long object in Java.
 
-JSONTupleでは、フィールドの値を数字で記述します。
-JSONTupleのフィールド値に数字を記述し、かつ該当のフィールドの型をスキーマで省略していた場合は、
-記述した数字の桁数に応じて、フィールド値はINT（Integer）もしくはBIGINT（Long）型に変換されます。
+In JSONTuple, field values are written in digits.
+
+When a user specify a value in JSONTuple field and in addtion the field is not added in the schema,
+the value is converted into INT（Integer）or BIGINT（Long） depending on the figure length.
 
 #### FLOAT
 
-GungnirTupleでは、JavaのFloatとして扱われます。
+In GungnirTuple, the value is treated as a Float object in Java.
 
-JSONTupleでは、フィールドの値を数字（小数）で記述します。
+In JSONTuple, field values are written in decimal.
 
 #### DOUBLE
 
-GungnirTupleでは、JavaのDoubleとして扱われます。
+In GungnirTuple, the value is treated as a Double object in Java.
 
-JSONTupleでは、フィールドの値を数字（小数）で記述します。
-JSONTupleのフィールド値に小数を記述し、かつ該当のフィールドの型をスキーマで省略していた場合は、
-フィールド値はDOUBLE型（Doubleに変換されます。
+In JSONTuplem, field values are written in decimal.
+
+When a user specify a decimal value in JSONTuple field, and in addtion the field is not added in the schema,
+the value is converted into DOUBLE (Double).
 
 #### TIMESTAMP
 
 * TIMESTAMP
 
-GungnirTupleでは、Javaのjava.util.Dateとして扱われます。
+In GungnirTuple, the value is treated as java.util.Date in Java.
 
-JSONTupleでは、フィールドの値をepoch time（数字）で記述します。
-
+In JSONTuplem, field values are written in epoch time.
 
 > Example:
     field:1382086720
 
 * TIMESTAMP (date_format)
 
-date_format には、日時のフォーマットを指定します。
-Javaの[java.text.SimpleDateFormatと同じ書式](
-http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
-)を採用しています。
+In date_format, users specify date format.
+genn.ai adopt the format decribed in [java.text.SimpleDateFormat](
+http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html).
 
-GungnirTupleでは、Javaのjava.util.Dateとして扱われます。
+In GungnirTuple, the values are treated as ava.util.Date.
 
 > Example:
 
 
     field TIMESTAMP('yyyy-MM-dd HH:mm:ss')
 
-JSONTupleでは、フィールドの値をdate_format で指定したフォーマットで記述します。
+In JSONTuple, user write the values with specified format with date_format.
 
 > Example:
 
@@ -152,26 +155,26 @@ JSONTupleでは、フィールドの値をdate_format で指定したフォー�
 
 #### STRING
 
-GungnirTupleでは、JavaのStringとして扱われます。
+In GungnirTuple, the values are treated as a String object in Java.
 
-JSONTupleでは、フィールドの値をダブルクォートでくくった文字列で記述します。
+In JSONTuple, The value are described as a string surrounded with double quotation marks.
 
 #### BOOLEAN
 
-GungnirTupleでは、JavaのBooleanとして扱われます。
+In GungnirTuple, the values is a Boolean object in Java.
 
-JSONTupleでは、フィールドの値を true もしくは false で記述します。
+IN JSONTuple, the value are written as true or false.
 
 #### LIST
 
-GungnirTupleでは、Javaのjava.util.Listとして扱われます。
-LISTの要素の型には、Numeric Types、TIMESTAMP、STRING、BOOLEAN のいずれかを指定します。
+In GungnirTuple, the value is treated as java.util.List object in Java.
+Numeric Types、TIMESTAMP、STRING、BOOLEAN  can be a element type of lists.
 
 > Example:
 
     field LIST<STRING>
 
-JSONTupleでは、フィールドの値をArrays構造で記述します。
+In JSONTuple, the values are described as a Array.
 
 > Example:
 
@@ -186,13 +189,12 @@ MAPのキーと値の型には、Numeric Types、TIMESTAMP、STRING、BOOLEAN �
 
         field MAP<STRING, INT>
        
-
-JSONTupleでは、フィールドの値をObjects構造で記述します。
+In JSONTuple, the element of values are written as Objects.
 
 > Example:
     field:{"078-8220":1, "061-3601":2, "127-0001":3}
 
-キーの型にNumeric Typesを指定した場合は、値をダブルクォートでくくる必要があります。
+When user add a field with Numeric Types key, the value should be surrounded with double quotation marks.
 
 > Example:
 
@@ -200,7 +202,7 @@ JSONTupleでは、フィールドの値をObjects構造で記述します。
 
 #### STRUCT
 
-GungnirTupleでは、ai.genn.gungnir.tuple.Struct（構造体クラス）として扱われます。
+In GungnirTuple, the value are treated as ai.genn.gungnir.tuple.Struct object.
 
 
         STRUCT<field_name [field_type], ...>
@@ -210,14 +212,14 @@ GungnirTupleでは、ai.genn.gungnir.tuple.Struct（構造体クラス）とし�
         field STRUCT<member0 STRING, member1 TIMESTAMP('yyyy-MM-dd HH:mm:ss'), member2 LIST<BIGINT>>
 
 
-JSONTupleでは、フィールドの値をObjects構造で記述します。
+In JSONTuple, the values of fields are described as Objects.
 
 > Example:
         field:{member0:"gennai", member1:"2013-10-18 18:28:34", member2:[10000, 20000, 30000]}
 
 #### JSONTuple example
 
-上記の userAction1 をJSONTupleで記述した例です。
+The following is userAction1 described in the previous section in JSONTuple.
 
         {
           field1:12345,
@@ -235,53 +237,53 @@ JSONTupleでは、フィールドの値をObjects構造で記述します。
           field10:{"11":"lll", "22":"mmm"}
         }
 
-#### 特殊なフィールド
+#### Special fields
 
-スキーマには、以下の特殊なフィールドを定義することができます。
+Users can define the following special fields in schema.
 
 * &#x5f;tid
 * &#x5f;tno
 * &#x5f;time
 
-これらの名称はフィールドの予約名なので、通常のフィールド名には使用しないでください。
+These names are reserved and therefore users should not use them.
 
 * &#x5f;tid
 
-Tracking ID を格納するフィールドです。
-スキーマのフィールドに &#x5f;tid を記述すると、Tracking ID値がTupleに挿入されます。（STRING型になります）
+tid is a field to store Tracking ID.
+Adding &#x5f;tid field into a schema, Tracking IDs are inserted in Tuples (the type is STRING).
 
 * &#x5f;tno
 
-Tracking No を格納するフィールドです。
-スキーマのフィールドに &#x5f;tno を記述すると、Tracking No値がTupleに挿入されます。（INT型になります）
+This field stores Tracking No.
+Adding &#x5f;tno to a schema, The value of Tracking No (INT) is inserted.
 
 * &#x5f;time
 
-Tupleの受付時間を格納するフィールドです。
-スキーマのフィールドに &#x5f;time を記述すると、受付時間（受付時の現在時間）がTupleに挿入されます。（TIMESTAMP型になります）
+time is a field to store the time when the Tuple was stored.
+Adding the &#x5f;time field into a schema, stored time (TIMESTAMP) is inserted into the Tuple.
 
 #### Tracking ID と Tracking No
 
-Tracking ID は、Tupleの投入元を特定する為に使用する一意なID（24桁の文字列）です。
-Tracking Noは、Tracking Noを数値化した値（連番）です。
+Tracking ID is unique id (24-length string）to identify the source of Tuple.
+Tracking No is the value which is numeric converted from Tracking No.
 
-Tracking ID 及び Tracking No は、スキーマに &#x5f;tid もしくは &#x5f;tno フィールドを記述したJSONTupleを受け付けると、自動で生成されます。
-生成された Tracking ID と Tracking No は、Tupleに挿入されるとともに、Set-Cookieヘッダで投入元に返却されます。（返却されるのは Tracking ID のみになります）
-投入元は、次回のJSONTupleの投入時に、受け取ったTracing ID をCookieヘッダで送信します。
-Cookieヘッダで送信された Tracking ID から、JSONTupleが同一の投入元から送られてきたかどうかを判断できます。
-送信された Tracking ID で Tracking No を検索し、_tid と &#x5f;tno はTupleに挿入されます。
-
-Tracking ID と Tracking Noは、いずれもTupleの同一性の判定に使用できますが、Tracking No の方が、より視覚的に判断しやすくなっています。
+Tracking ID and Tracking No are automatically inserted when the user add &#x5f;tid and &#x5f;tno fields in the JSONTuple.
+Generated  Tracking ID and Tracking No are inserted into a Tuple and returned with the Set-Cookie header (only Tracking ID is returned) to the source.
+The source of post submits the given Tracing ID with the Cookie header in the next JSONTuple submit.
+The Tracing ID in the submit Cookie header shows the JSONTuples were submit from the same source.
+Searching with submit Tracing ID get Tracing No and then &#x5f;tid and &#x5f;tno are inserted into the Tuple.
+Although Both Tracking ID and Tracking No can be used to detect the the Tuple identity, users would
+think that Tracking No is easier to identify the Tuples.
 
 ---
 
 ### SHOW TUPLES
 
-定義されているTupleスキーマの一覧を表示します。
+This statement shows the list of defined Tuple schemas.
 
         SHOW TUPLES
 
-結果はJSONで出力されます。
+The results are shown in JSON as follows.
 
 > Result:
 
@@ -290,26 +292,26 @@ Tracking ID と Tracking Noは、いずれもTupleの同一性の判定に使用
          {"name":"userAction2","owner":"user@genn.ai","createTime":"2013-10-17T02:16:34.898Z"}
        ]
 
-* name は、Tuple名です。
-* owner は、Tupleを作成したユーザのユーザ名です。
-* createTime は、Tupleを作成した日時です。
+* name field shows Tuple name.
+* owner field shows the user who careate the Tuple.
+* createTime field shows the creation time of the Tuple.
 
 ---
 
 ### DESC TUPLE
 
-定義されているTupleスキーマの情報を表示します。
+This statement shows the information of specified Tuple schema.
 
         DESC TUPLE schema_name
 
 
-* schema_name には、Tuple名を指定します。
+* We add a Tuple name into schema_name int the above statement.
 
 > Example:
         DESC TUPLE userAction1
 
 
-結果はJSON形式で出力されます。
+genn.ai gives the output in JSON format.
 
 > Result:
 
@@ -319,22 +321,23 @@ Tracking ID と Tracking Noは、いずれもTupleの同一性の判定に使用
         ["field1"],"owner":"user@genn.ai","createTime":"2013-09-13T01:35:55.667Z"
       }
 
+In the above JSON, the followings is the meanings of each block.
+* name field shows Tuple name.
+* fields contains the list of fields in the Tuple.
+* owner field shows the user who careate the Tuple.
+* partitioned shows partition key field of the Tuple.
+* createTime field shows the creation time of the Tuple.
 
-* name は、Tuple名です。
-* fields は、Tupleのフィールドの一覧です。
-* partitioned は、Tupleのパーティションキーフィールドです。
-* owner は、Tupleを作成したユーザのユーザ名です。
-* createTime は、Tupleを作成した日時です。
 
 ---
 
 ### DROP TUPLE
 
-Tupleスキーマを削除します。
+This statement remove the specified Tuple schema.
 
          DROP TUPLE schema_name
 
-* schema_name には、Tuple名を指定します。
+* We add Tuple name into schema_name.
 
 > Example:
 
@@ -345,15 +348,15 @@ Tupleスキーマを削除します。
 
 ### CREATE VIEW
 
-TupleのViewを定義します。Tupleスキーマを別名で定義できます。
+This statement defines a view of specified Tuple. User can define a Tuple schema with another name.
 
 
         CREATE VIEW view_schema_name AS FROM tuple_schema_name FILTER condition;
 
-
-* view_schema_name には、View名を指定します。
-* tuple_schema_name には、元となるTuple名を指定します。
-* condition には、TupleをViewにひもづける条件を指定します。
+We specify the followings.
+* the name of View in view_schema_name.
+* the original Tuple name into tuple_schema_name.
+* the condition to connect Tuple to View condition into condition.
 
 > Example:
 
@@ -363,18 +366,18 @@ TupleのViewを定義します。Tupleスキーマを別名で定義できます
         CREATE VIEW viewAction3 AS FROM userAction1 FILTER field3 = 'CATEGORY-3'
 
 
-> userAction1のTupleスキーマをもとに、field3フィールドの値ごとに３つのviewを定義しています。
+> The above examples define three views on the basis of Tuple schema, userAction1 depending of the value of field3.
 
 ---
 
 ### SHOW VIEWS
 
-定義されているViewの一覧を表示します。
+This statement shows the list of defined Views.
 
         SHOW VIEWS
 
 
-結果はJSONで出力されます。
+genn.ai outputs the resuls in JSON format.
 
 > Result:
 > 
@@ -385,25 +388,25 @@ TupleのViewを定義します。Tupleスキーマを別名で定義できます
     ]
 
 
-* name は、View名です。
-* owner は、Viewを作成したユーザのユーザ名です。
-* createTime は、Viewを作成した日時です。
+* name field shows the View name.
+* owner field shows the user who create the view.
+* createTime field shows the creation time of the View.
 
 ---
 
 ### DESC VIEW
 
-定義されているViewの情報を表示します。
+This statement shows the infomation of specified View.
 
         DESC VIEW schema_name
 
-* schema_name には、View名を指定します。
+* We add View name into schema_name.
 
 > Example:
         DESC VIEW viewAction1
 
 
-結果はJSON形式で出力されます。
+genn.ai shows the results in JSON format.
 
 > Result:
 > 
@@ -411,21 +414,21 @@ TupleのViewを定義します。Tupleスキーマを別名で定義できます
         "name":"viewAction1","from":"userAction1","filter":"field3 = CATEGORY-1","owner":"user@genn.ai","createTime":"2013-10-19T03:19:22.241Z"
     }
 
-* name は、View名です。
-* from は、Viewの元となるTuple名です。
-* filter は、TupleをViewにひもづけている条件です。
-* owner は、Viewを作成したユーザのユーザ名です。
-* createTime は、Viewを作成した日時です。
+* name field shows the View name.
+* from field shows the original Tuple of the View.
+* filter fields shows the condition to connect Tuple and View.
+* owner field shows the user who create the view.
+* createTime field shows the creation time of the View.
 
 ---
 
 ### DROP VIEW
 
-Viewを削除します。
+This statement deletes the specified View.
 
         DROP VIEW schema_name
 
-* schema_name には、View名を指定します。
+* We add View name into schema_name.
 
 > Example:
 
