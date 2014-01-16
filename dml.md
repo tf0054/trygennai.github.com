@@ -5,48 +5,47 @@ title: genn.ai
 
 ## LanguageManual DML
 
+This page is a language manual of DML.
+
 ### FROM
 
-FROM は、Tupleを入力先から読み込みます。
+FROM statement load a Tuple from input source.
 
-#### 入力先が外部の場合
+#### When the input sources are external.
 
     FROM schema_name AS schema_alias, ... USING spout_processor
 
-
-* schema_name には、Tuple名もしくはView名を指定します。
-* schema_alias には、クエリ内で使用するTupleもしくはViewの別名を指定します。
-* spout_processor には、読み込みに使用するプロセッサを指定します。
+Users specify the followings.
+* Tuple or View name in schema_name.
+* Tuple or View name used in queries in schema_alias.
+* Processor to load input in spout_processor.
  
 > Example:
     FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout()
 
-
-外部入力は、一つのTopologyに対して一つしか定義できません。
+One topology does not have more than one exter input source.
 
 #### Spout Processor
 
 kafka_spout
 
-> TupleをKafkaから読み込みます。システムのデフォルトとして動作します。
+> From Kafka, load Tuples. This is a default configuraiton of genn.ai.
 >
     kafka_spout()
 
-
-#### 入力先が内部（ストリーム）の場合
+#### When input sources are internal (stream)
 
     FROM stream_name[(schema_alias, ...)], ...
 
 
-* stream_name には、入力先のストリーム名を指定します。
+* specify a stream name in stream_name.
 
-ストリームからすべてのTupleを読み込む場合
+The following is a example loading all the Tuples from a stream.
 
 > Example:
     FROM s1, s2
 
-
-ストリームから特定のTupleのみを読み込む場合
+The following is a example loading only the specified Tuples from a stream.
 
 > Example:
     FROM s1(ua1, ua2), s2(v1)
@@ -55,25 +54,25 @@ kafka_spout
 
 ### INTO
 
-INTO は、ストリームを分岐・合流させます。
+INTO statement is used for branching and merging a stream.
 
     INTO stream_name
 
-* stream_name には、出力するストリーム名を指定します。
+* specify output stream name in stream_name.
 
 > Example:
     FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout() INTO s1
 
-INTO を使って出力したストリームは、FROM で読み込みます。
+User can load a stream output by INTO with FROM statements.
 
-#### 分岐
+#### Branching
 
     FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout() INTO s1;
     FROM s1(ua1) ...
     FROM s1(ua2) ...
     FROM s1(v1) ...
 
-#### 合流
+#### Merging
 
     FROM s1(ua1) ... INTO s2;
     FROM s1(ua2) ... INTO s3;
@@ -84,7 +83,7 @@ INTO を使って出力したストリームは、FROM で読み込みます。
 
 ### JOIN
 
-JOINは、外部データをフィールドとしてTupleに結合します。
+JOIN adds external data into a filed of a Tuple.
 
     JOIN join_name ON join_condition TO join_fields USING fetch_processor
     
@@ -94,13 +93,11 @@ JOINは、外部データをフィールドとしてTupleに結合します。
     join_fields:
     join_name.join_field AS field_alias, ...
 
-
-* join_name には、結合する名称を指定します。join_condition や join_fields で、外部データのフィールドを識別する為に使用します。
-* join_condition には、結合条件を指定します。
-結合データのキーフィールド = Tupleのフィールド を、結合データが一意になるように指定してください。
-複合条件の場合は、AND で指定します。結合データのキーフィールドに対して、定数で条件を指定することもできます。
-* join_fields には、結合するフィールドを指定します。
-結合データのフィールド名 AS Tupleに結合する際のフィールド名 を指定します。フィールドはTupleに追加されます。
+Users specify the following arguments.
+* A name to join in join_name. The name is used in join_condition or join_fields to identify the fields of external data.
+* Condition in join_condition. Specify the key field (Tuple) of join data to make the data have unique id.
+When conditions are complex, we use AND. We can also specify the condition with constants to the key field of join data.
+* To join_fields, we specify fileds to join. Specifically we add the list of filed names and field name to be joined AS tuple. The field is added the specified Tuple.
 
 > Example:
     JOIN j1 ON j1.code1 = field1 AND j1.code2 = field2 AND j1.del = 0
@@ -111,16 +108,16 @@ JOINは、外部データをフィールドとしてTupleに結合します。
 
 ### FILTER
 
-FILTER は、単一のTupleに対してTupleの通過を判定します。
+Fileter statement judges whether the input tuple is flashed as the output or not.
 
     FILTER condition
 
-* condition には、フィルタの条件を指定します。
+* In condition, we add the condition for the filter.
 
- condition の符号には、以下のものを指定します。
+ We can use the following signs in conditions.
 
-* &#61; もしくは &#61;&#61;
-* <> もしくは !&#61;
+* &#61; or &#61;&#61;
+* <> or !&#61;
 * &gt;
 * &gt;=
 * &lt;
@@ -141,14 +138,14 @@ FILTER は、単一のTupleに対してTupleの通過を判定します。
 
 #### LIKE
 
-LIKEで使用できるワイルドカードは、"%"（複数文字）と"_"（一文字）です。
+In LIKE statement, we can use "%" (multiple character) and "_"(single character).
 
 > Example:
     field2 LIKE 't%'
 
 #### REGEXP
 
-REGEXPで使用できる正規表現は、java/util/regex/Patternと同じ書式を採用しています。
+In REGEXP, we can use the regex pattern described in java/util/regex/Pattern.
 http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html
 
 > Example:
@@ -157,13 +154,13 @@ http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html
 
 #### IN, ALL
 
-INは、LISTフィールドに対して値が一つでも含まれているかを調べます。
+IN checks whether input LIST fields contains the at least one specified values.
 
 > Example:
 
     field4 IN ('tokyo', 'kyoto', 'osaka')
 
-ALLは、LISTフィールドに対して値がすべて含まれているかを調べます。
+ALL checks whether input LIST fields contains all the specified values.
 
 > Example:
 
@@ -178,41 +175,41 @@ ALLは、LISTフィールドに対して値がすべて含まれているかを�
 
 #### AND, OR, NOT
 
-AND, OR, NOT は入れ子にすることが可能です。優先順位はNOT, AND, ORの順に処理されます。
-優先順位は、()を使用して変更できます。
+AND, OR, NOT can be nested.  The priority is NOT, AND, OR.
+We can customize the priority using parenthesis.
 
 > Example:
     field1 <= 30 AND (field5 BETWEEN 10 AND 100 OR field2 LIKE 'A%')
 
-#### STRUCT型フィールドの比較
+#### Comparison between STRUCT types
 
-TupleのフィールドがSTRUCT型の場合は、フィールド値を以下のように比較します。
+When the field of Tuple is STRUCT type, gen.ai compare the field as follows.
 
 > Example:
     field6.member3 = 100
 
-#### LIST型フィールドの比較
+#### Comparison between LIST types
 
-TupleのフィールドがLIST型の場合は、フィールド値を以下のように比較します。
+When the Tuples are LIST type,  genn.ai checks the field values as follows. 
 
 > Example:
     field4[0] = 'tokyo'
 
-#### MAP型フィールドの比較
+#### Comparison between MAP types
 
-TupleのフィールドがMAP型の場合は、フィールドの値を以下のように比較します。
+When the field of Tuple is MAP type, genn.ai checks the field as follows.
 
 > Example:
     field7['visa'] = true
 
-#### 定数
+#### Constant
 
-条件に指定できる定数は、以下になります。
+Genn.ai support the following constants.
 
-* 文字列
-シングルクォートまたはダブルクォートでくくった文字列
+* String
+list of characters quoted with single or double quotation marks.
 
-* INT値
+* INT
     number only
 
 >
@@ -220,7 +217,7 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
     2147483647
 
 
-* DOUBLE値
+* DOUBLE
     number.number
 
 >
@@ -228,7 +225,7 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
     12.5
 
 
-* BIGINT値
+* BIGINT
     numberL
 
 >
@@ -236,7 +233,7 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
     9223372036854775807L
 
 
-* SMALLINT値
+* SMALLINT
     numberS
 
 >
@@ -244,7 +241,7 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
     32767S
 
 
-* TINYINT値
+* TINYINT
     numberY
 
 >
@@ -252,7 +249,7 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
     255Y
 
 
-* FLOAT値
+* FLOAT
     number.numberF
 
 >
@@ -268,18 +265,17 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
 
 ### FILTER GROUP
 
-FILTER GROUP は、複数のTupleに対してTupleの通過を判定します。
+FILTER GROUP validates whether multiple input Tuples are flashed as the output or not.
 
     FILTER GROUP EXPIRE period [STATE TO state_field]
       condition, ...
 
 
-* period には、フィルタの状態を保持する期間を指定します。
-* state_field には、フィルタの状態を出力するフィールド名を指定します。フィルタを通過すると、指定したフィールド名で
-Tupleに状態フィールドを追加します。STATE TO clause を省略した場合は、状態フィールドは追加しません。
-* condition には、フィルタ条件を指定します。カンマ区切りで、複数のTupleに対する条件を指定します。
-カンマ区切りで指定した条件をすべて満たせば、Tupleはフィルタを通過します。
-すべての条件を満たした場合、最後に到着したTupleがフィルタを通過し、フィルタの状態は初期化されます。
+* In period, we specify the keeping time range of filter.
+* In state_field, we specify the output field to flush filter status. When input pass the filter,
+genn.ai adds the status field into tuple with specified field name. when users do not specify STATE TO clause, the status field is not added.
+* In condition, we specify fileter conditions. We can specify the multiple filters sepratated with commas for multple Tuples.
+When all the conditions are satisfied, input Tuple passes the filter and also, the filter status is initialized.
 
 > Example:
     FILTER GROUP EXPIRE 7DAYS STATE TO fg_state
@@ -287,42 +283,43 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
       (ua2.field1 <= 30 AND ua2.field2.member2 BETWEEN 2 AND 7) OR ua3.field5 LIKE 'A%'
 
 
- ua1, ua2, ua3の３つのTupleに対してフィルタを実行します。条件１と条件２（※）の両方を満たせば、Tupleはフィルタを通過します。
- （※）条件１はua1に対するフィルタで、条件２はua2とua3に対するフィルタです。
+ Above example executes the filter to three Tuples, ua1, ua2, ua3. When the input Tuple satisfy both Condition 1 and 2 (\*), the input Tuple pass the filter.
+ (\*) Condition 1 is a filter to ua1 and Condition 2 is a fliter to ua2 and ua3.
 
- 条件２は、ua2とua3の条件を"OR"で指定しているので、ua1かつua2の条件を満たすか、ua1かつua3の条件を満たすことで
- すべての条件は満たされます。
+ Since Condition 2 specify the two conditions, ua2 and ua3 with "OR", Tuple should satisfiy the ua1 and ua2 or ua1 and ua3.
 
- 条件１もしくは条件２のいずれかを満たした状態を７日間保持します。
- 例えば、条件１を最後に満たした状態で、条件２の条件を満たすまでの期間が７日以内であれば、条件１と条件２は満たされますが、
- ８日以上の日数が経過していた場合、条件１の状態は初期化されてしまう為、条件２のみ満たしている状態になります。
+ Above example declares that the status keeps 7 days when condition 1 or condition 2 is satisfied.
+ For example, when condition 1 is satisfied and then conditon 2 is satisfied in 7 days, the conditons 1 and 2 are satisfied.
+ When the condition 2 is satisfied at 8 days later, the status of conditon 1 is initialize and therefore the satus is that only condtion 2 is satisfied.
 
- state_fieldに"fg_state"を指定しているので、フィルタの状態を"fg_state"フィールドとしてTupleに追加します。
- fg_stateは、条件１と条件２のそれぞれを満たした日時が格納されます。条件の数と等しいTIMESTAMPのLISTになります。
+ In the abave example, genn.ai add the filter status into "fg_state" field of the Tuple, since "fg_state" is specified in state_field.
+ fg_state stores the list of times when condition 1 and condition 2 are satisfied, therefore the size of list is the same as the number of conditions.
 
 #### period
 
-* 秒で指定
+The way to specify the period has the variations.
+
+* Specify with second
     number(SECONDS|SEC)
 >
 > Example:
     30SECONDS
 
 
-* 分で指定
+* Specify with minutes
     number(MINUTES|MIN)
 >
 > Example:
     55MIN
   
-* 時間で指定
+* Specify with hours
     number(HOURS|H)
 >
 > Example:
     55HOURS
 
 
-* 日で指定
+* Specify with days
     number(DAYS|D)
 
 > Example:
@@ -332,69 +329,66 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
 
 ### EACH
 
-EACH は、Tupleの集計や編集を実行します。
+EACH executes the editing or aggregation of Tuples.
 
   EACH expr, ...
 
-* exprには、集計関数もしくは編集関数、フィールドのアクセサを指定します。
+* In expr, users specify a aggregation function, edit function or a field accessor.
 
-#### 集計関数
+#### Aggregation function
 
-* Tupleの到着数をカウントします。
+* Count the number of Tuples.
 >
 > Example:
     EACH count() AS cnt1
 
 
-* 到着したフィールドの値を合計します。
+* Compute the summation of input field values.
 >
 > Example:
     EACH sum(field1) AS sum1
 
-
-* 到着したフィールドの値の平均を計算します。
+* Comput the mean of input field values.
 >
 > Example:
     EACH avg(field1) AS avg1
 
+#### Edit function
 
-#### 編集関数
-
-* フィールドの値がNULLであれば、代替えの値で置き換えます。
+* When the field is NULL, the value is overried with specified value.
 >
 > Example:
     EACH ifnull(field1, 0) AS field1
 
-
-* STRING型のフィールドの値を連結したフィールドを作成します。
+* This function concatenates the values of STRING type fields.
 >
 > Example:
     EACH concat(field1, '-', field2) AS new_field
 
 
-#### 関数の引数
+#### Arugments of functions
 
-定数に関しては、関数の種類が増えてきてから改めて記述する。
+As for the constants, we will describe them after the number of supported functions is increased.
 
-#### フィールドのアクセサ
+#### Accessor of fields
 
 > Example:
     EACH field1, field6.member1 AS field10, field7['visa'] AS visa
 
-field1はそのまま、field6.member1をfield10フィールドへ、field7&#91;'visa']をvisaフィールドへ抽出します。
+The above example just outputs field1, stores field6.member1 into the field10 field, and extracts field7&#91;'visa'] into visa field.
 
 ---
 
 ### GROUP
 
-BEGIN GROUP ... END GROUP で囲まれたクエリを、グループで実行します。
+GROUP executes the queries srrounded with BEGIN GROUP ... END GROUP as a group.
 
     BEGIN GROUP BY field, ...
       [END GROUP | TO STREAM]
 
-* field には、グループ化するフィールドの名前を指定します。
+* In field, we specify the field name for the group.
 
-#### EACH をグループで実行する
+#### execute EACH as a group
 
 > Example:
     BEGIN GROUP BY user_name
@@ -403,9 +397,9 @@ BEGIN GROUP ... END GROUP で囲まれたクエリを、グループで実行し
     END GROUP
 
 
-user_name ごとに（ユーザごとに）Tupleがカウントされます。
+The above example counts the number of tuples for each user.
 
-#### FILTER GROUP をグループで実行する
+#### Execute FILTER GROUP as a group
 
 > Example:
     BEGIN GROUP BY user_name
@@ -416,48 +410,48 @@ user_name ごとに（ユーザごとに）Tupleがカウントされます。
     END GROUP
 
 
-user_nameごとに（ユーザごとに）フィルタが判定されます。
-特定のユーザが条件１と条件２を満たしているかを判定し、FILTER GROUP の状態はユーザごとに保持されます。
+Above example executes filter for each user. Specifically, the example checks whether the both condition 1
+and condition 2 are satisfied with each user and then the FILTER GROUP status of each user is stored.
 
-#### GROUP のネスト
+#### Nesting of GROUP
 
-GROUPはネストできます。
+GROUP can be nested.
 
 > Example:
-    EACH ...  <- グループ化せずに実行
+    EACH ...  <- executes without creating group
     BEGIN GROUP BY date
-      EACH ...  <- date ごとに実行される
+      EACH ...  <- executes for each date
       BEGIN GROUP BY area
-        EACH ...  <- date + area ごとに実行される
+        EACH ...  <- execute for date + area
       END GROUP 
     END GROUP
-    EACH ...  <- グループ化せずに実行
+    EACH ...  <- executes without creating group
 
 
-TO STREAM で、すべてのグループを解除します。
+TO STREAM free all the groups.
 
 > Example:
-    EACH ...  <- グループ化せずに実行
+    EACH ...  <- executes without creating group
     BEGIN GROUP BY date
-      EACH ...  <- date ごとに実行される
+      EACH ...  <- executes for each date
       BEGIN GROUP BY area
-        EACH ...  <- date + area ごとに実行される
+        EACH ...  <- execute for date + area
     TO STREAM
-    EACH ...  <- グループ化せずに実行
+    EACH ...  <- executes without creating group
 
 
-END GROUP と TO STREAM は、グループ化を解除する必要がなければ省略可能です。
+END GROUP and TO STREAM can be omitted when goups may not be free.
 
 ---
 
 ### EMIT
 
-EMITは、Tupleを外部へ出力します。
+EMIT flush Tuples
 
   EMIT output_field, ... USING emit_processor
 
-* output_field には、出力するフィールド名を指定します。ワイルドカード（&#42;）を指定できます。
-* emit_processor には、出力に使用するプロセッサを指定します。
+* Users add a list of output field in output_field. Wild cards can be specified (&#42;).
+* In emit_processor, users specify a processor to use flush output.
 
 > Example:
     EMIT field1, field2, field3 USING mongo_persist('db1', 'col1')
@@ -466,43 +460,40 @@ EMITは、Tupleを外部へ出力します。
 
 * Kafka Emit Processor  
 
-TupleをKafkaに出力します。
+Emit Processor flush Tuple into Kafka.
 
     kafka_emit(topic_name)
 
-
- * topic_name には、出力するTopic名を指定します。topic_name はプロセッサ変数に対応しています。
+ * Users specify the Topic name in topic_name. topic_name represents a processor variable.
 
 > Example:
 
     kafka_emit('topic1')
 
-
 * Mongo Persist Processor
 
-TupleをMongoDBに出力します。
+Mong Persist Procssor flush Tuples inpo MongoDB.
 
     mongo_persist(db_name, collection_name [, key_names])
 
-
-* db_name には、出力するDB名を指定します。db_name はプロセッサ変数に対応しています。
-* collection_name には、出力するCollection名を指定します。collection_name はプロセッサ変数に対応しています。
-* key_names には、出力するキーのフィールド名を指定します。複合キーの場合は配列で指定してください。
- key_names を指定した場合、出力はキーに対してupdateされます。
- key_names を指定しなかった場合は、出力はinsertになります。
+* In db_name, users specify the output DB name. db_name corresponds a processor variable.
+* In collection_name, users specify output Collection name. collection_name correspond a processor variable.
+* In key_names users specify output key field name. When key is compounded, specify with the array.
+When key_names is  specified, output is updated to the key.
+When key_names is not specified, output become instert.
 
 > Example:
     mongo_persist('db1', 'col1')  <- insert
-    mongo_persist('db1', 'col1', 'field2') <- field2 をキーとしてupdate
-    mongo_persist('db1', 'col1', ['field2', 'field3']) <- field2 + field3 を複合キーとしてupdate
+    mongo_persist('db1', 'col1', 'field2') <- update with field2 as the key
+    mongo_persist('db1', 'col1', ['field2', 'field3']) <- update with field2 + field3 as the key
 
 
-#### プロセッサ変数
+#### Processor variable
 
-Emit Processor の出力先の名称には、以下のプロセッサ変数を含めることができます。
+For output name of Emit Processor, the following processor variables can be contained.
 
-${TOPOLOGY_ID} は、起動中のTopology IDに置き換えられます。
-${ACCOUNT_ID} は、Topologyを起動したユーザのAccount IDに置き換えられます。
+${TOPOLOGY_ID} is replaced with the id of running Topology.
+${ACCOUNT_ID} is replaced wiht the id of user account who launched the running Topology.
 
 > Example:
     kafka_emit('topic_${TOPOLOGY_ID}')
