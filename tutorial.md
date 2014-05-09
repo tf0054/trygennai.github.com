@@ -125,7 +125,7 @@ Next we register another schema, **commitAction** which has four fields (two STR
     gungnir>
 
 Now we show the list of registered schemas.
-To show the list of schema, we run the `SHOW TOUPLES` command.
+To show the list of schema, we run the `SHOW TUPLES` command.
 
     gungnir> SHOW TUPLES;
     [\
@@ -147,7 +147,7 @@ As we see, the two shemas (userAction and commitAction) are registered in genn.a
 > NOTE: "\\" means lines are not breaked in the real console prompt.
 
 Next, we check the detailed structure of registered schema.
-To show the specified schema we run the `DESC TOUPLE` command.
+To show the specified schema we run the `DESC TUPLE` command.
 
     gungnir> DESC TUPLE userAction;
     {\
