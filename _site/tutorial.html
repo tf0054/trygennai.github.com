@@ -60,97 +60,95 @@
 						<div id="toc"></div>
 					</div>
 					<div class="col-md-9">
-						<div class="pull-right text-muted">Modified: Sun Nov 24 22:52:10 +0100 2013</div>
-						
-<h1 id="gennai_チュートリアル">genn.ai チュートリアル</h1>
+						<div class="pull-right text-muted">Modified: 2014-05-09 23:46:28 +0200</div>
+						<h1 id="gennai-tutorial">genn.ai Tutorial</h1>
+<p>This document is a quick start of genn.nai. Readers quickly go through the genn.ai environments.</p>
 
-<h2 id="環境の前提">環境の前提</h2>
+<h2 id="requirements">Requirements</h2>
 
-<p>このチュートリアルでは以下のような環境を前提として記載しています。 これらをご準備頂くか、またはご自身の環境に合わせて読み替えてご利用下さい。</p>
+<p>This tutorial assumes the following environments.</p>
 
-<p><strong>OS</strong></p>
-
-<ul>
-<li>Mac OSX 10.8.5</li>
-
-<li>CentOS 5.8 x86_64</li>
-</ul>
+<p><strong>OS</strong>
+- Mac OSX 10.8.5
+- CentOS 5.8 x86_64</p>
 
 <p><strong>Java</strong></p>
 
 <ul>
-<li>Oracle JDK 1.6.0_43 x86_64</li>
-
-<li>ライブラリ使用者ユーザへの<code>JAVA_HOME</code>環境変数設定</li>
+  <li>Oracle JDK 1.6.0_43 x86_64</li>
+  <li>set <code>JAVA_HOME</code></li>
 </ul>
 
-<h2 id="環境の構築">環境の構築</h2>
+<h2 id="prepare-environment">Prepare environment</h2>
+<p>In order to access genn.ai, you need not only build the environment described in the previous seciton, but also take the following steps.</p>
 
-<p>genn.aiにアクセスするための環境をつくるには、前提となる環境に加え、GitHubアカウント、genn.aiアクセスキー、genn.aiアクセスライブラリが必要となりますので、以下の説明を参考に環境を整備してください。</p>
+<p>１. Get GitHub account</p>
 
-<p>１. GitHubアカウントの取得</p>
+<p>To get a key from genn.ai, users need to get their Github account.  If you do not have Github account, get your account in the following page.</p>
 
-<p>genn.aiでキーを発行するにはGitHubアカウントが必要となりますので、アカウントをお持ちで無い方はここで登録をしてください。（詳細は省略します）</p>
+<p><a href="https://github.com/">https://github.com/</a>  </p>
 
-<p><a href="https://github.com/">https://github.com/</a></p>
-
-<p>２. アクセスキーの取得</p>
+<p>２. Get access key</p>
 
 <ul>
-<li>genn.aiにアクセスするためには専用のアクセスキーを取得する必要があります。まず <a href="http://dev.genn.ai/">http://dev.genn.ai/</a> にアクセスし、”Sign Up”をクリックして下さい。</li>
+  <li>To access genn.ai, you need to get the access key. To get the access key, access <a href="http://dev.genn.ai/">http://dev.genn.ai/</a>,
+then click “Sign Up” then the acess key for you is shown.</li>
 </ul>
 
-<p><img alt="gennai-signup" src="img_tutorial/01_signup.png" title="Signup" /></p>
+<p><img src="img_tutorial/01_signup.png" alt="gennai-signup" title="Signup" /></p>
 
 <ul>
-<li>先ほど登録したGitHubアカウントでログインします。</li>
+  <li>Login with your GitHub account.</li>
 </ul>
 
-<p><img alt="gennai-signup" src="img_tutorial/02_GithubLogin.png" title="Signup" /></p>
+<p><img src="img_tutorial/02_GithubLogin.png" alt="gennai-signup" title="Signup" /></p>
 
 <ul>
-<li>
-<p>genn.aiからGitHub情報へのアクセス許可を求めるページが表示されますので、「許可」してください。</p>
-</li>
-
-<li>
-<p>許可すると自動的にgenn.aiページに戻り、発行されたアクセスキーが表示されます。以後、このキーを用いてコマンドラインからgenn.aiを操作してゆきます。</p>
-</li>
+  <li>
+    <p>Approve the permission which is on genn.ai accessing GitHub.</p>
+  </li>
+  <li>
+    <p>When you approve it, the browser shows genn.ai page and shows the published access key. We go through this genn.ai tutorial with the access key.</p>
+  </li>
 </ul>
 
-<p><img alt="gennai-signup" src="img_tutorial/03_getkey.png" title="Signup" /></p>
+<p><img src="img_tutorial/03_getkey.png" alt="gennai-signup" title="Signup" /></p>
 
-<p>３. クライアントライブラリファイルをダウンロード</p>
+<p>３. Down load client library file</p>
 
-<p>アクセスキーが表示されたページにあるリンクから、ライブラリファイルをダウンロードしてください。</p>
+<p>Down load the genn.ai library file whose link exists in the genn.ai page.</p>
 
-<p>４. クライアントライブラリの展開</p>
+<p>４. Decompress client library</p>
 
-<p>先ほどダウンロードしたファイル、gungnir-client.tar.gzを任意のディレクトリで展開してください(以下の例では展開場所を /usr/local 配下としました)。展開したあとは、<code>PATH</code> 環境変数設定を行ってください。</p>
+<p>Decompress the downloaded file (gungnir-client.tar.gz) in a arbitary directory (following example decompresses the file in /usr/local).</p>
+
+<p>After the decompression, Set environment variable, <code>PATH</code>.</p>
 
 <pre><code>    # cd /usr/local
     # tar xzvf ~/gungnir-client.tar.gz
-    # export PATH=/usr/local/gungnir-client/bin:$PATH</code></pre>
+    # export PATH=/usr/local/gungnir-client/bin:$PATH
+</code></pre>
 
-<p>ちなみに、設定ファイルは以下のような内容になっています。</p>
+<p>The configuration file file, gungnir.yaml has the following content.</p>
 
 <pre><code>    # cat /usr/local/gungnir-client/conf/gungnir.yaml
     &gt; ...
-    &gt; gungnir.thrift.server: &quot;dev.genn.ai:9190&quot;
-    &gt; gungnir.rest.server: &quot;dev.genn.ai:9191&quot;
-    &gt; ...</code></pre>
+    &gt; gungnir.thrift.server: "dev.genn.ai:9190"
+    &gt; gungnir.rest.server: "dev.genn.ai:9191"
+    &gt; ...
+</code></pre>
 
-<p>以上で環境の設定は完了です。</p>
+<p>Now we finished building the genn.ai environment.</p>
 
-<h2 id="使ってみよう！">使ってみよう！</h2>
+<h2 id="try-gennai">Try genn.ai!</h2>
+<p>In this section, we try genn.ai with a example with minimum event processing.</p>
 
-<p>ここではgenn.aiを使ったミニマムな処理を通してイベント処理を実際に行ってみたいと思います</p>
+<h3 id="connect-gennai">Connect genn.ai</h3>
+<p>To connect genn.ai, we use <strong>gungnir</strong> command in the extracted package in the previous section. Just specifying the user account
+and access key to the command, we connect to the genn.ai’s world!</p>
 
-<h3 id="gennaiに接続する">(genn.aiに)接続する</h3>
-
-<p>genn.aiに接続するには、前述のライブラリパッケージの中にある<strong>gungnir</strong>コマンドを使用します。パラメータとして、接続ユーザ、アクセスキーを渡して実行すれば、そこはもうgenn.aiの世界です！</p>
-
-<p>以下の例では、接続ユーザを<strong>gennaitaro</strong>、先にGithubアカウントを連携させたときに取得したアクセスキー<strong>167668259f3e</strong>を与えて接続しています。</p>
+<p>In the following example, the command is given user account, <strong>gennaitaro</strong> and access key, <strong>167668259f3e</strong> which is given
+in the previous section using Github service.</p>
 
 <pre><code>$ gungnir -u gennaitaro -p 167668259f3e
 Nov 14, 2013 12:14:41 AM com.twitter.finagle.Init$ apply
@@ -158,33 +156,37 @@ INFO: Finagle version 6.5.1 (rev=57de9b06e9d9456abaa98a5b02f085cc029cde41) built
 Gungnir server connected... dev.genn.ai/54.238.99.212:9190
 Welcome gennaitaro
 　
-gungnir&gt; </code></pre>
+gungnir&gt; 
+</code></pre>
 
-<p>正常に接続が完了すると、gungnirというプロンプトが表示されてコマンド入力待ちとなります。これを以後gungnirコンソールと呼びます。</p>
+<p>Finished the connection with genn.ai, the command shows the prompt gungir and wait the input. We call this command prompt as gungir console.</p>
 
-<h3 id="コマンドを与える">コマンドを与える</h3>
-
-<p>genn.aiの世界に入ったので、なにかコマンドを与えてみましょう。 以下の例では、後に使うトポロジの実行計画を表示する<code>EXPLAIN</code>コマンドを投入しています。</p>
+<h3 id="run-command">Run command</h3>
+<p>Now we are in genn.ai world. Let’s run some commands.
+The following example runs a command, <code>EXPLAIN</code> to show execution plan of topology.</p>
 
 <pre><code>gungnir&gt; EXPLAIN;
-gungnir&gt;</code></pre>
+gungnir&gt;
+</code></pre>
 
-<p>いまはgenn.aiへ何の処理も登録していないので、何も返答は返ってきません。ここでは、特にエラーが出なければ問題ありません。</p>
+<p>As we can see, there is no response, since we have not registered any process. Here it is ok except that we do not have any errors.</p>
 
-<h3 id="スキーマschemaを作る">スキーマ(SCHEMA)を作る</h3>
+<h3 id="create-schema">Create schema</h3>
+<p>As the first step, let’s create a schema. Here schema is a data structure (JSON) to be pushed to genn.ai. Before we push data to genn.ai,
+we need to specify the JSON structure.</p>
 
-<p>ではまず、スキーマを作りましょう。スキーマとは、genn.aiに投入するデータの形のことです。genn.aiにはJSONの形式でデータを投入するため、ここではその形を指定します。</p>
-
-<p>それでは、<strong>userAction</strong>というスキーマを登録しましょう。userAction は userId と hotelId のSTRING型フィールド２つをもつスキーマです。 このためには<code>CREATE TOUPLE</code>コマンドを用います。</p>
+<p>In the following exmaple, we create a schema, <strong>userAction</strong>. userAction has two STRING type fields (userId and hotelId).
+To create a schema, we run <code>CREATE TOUPLE</code> command as follows.</p>
 
 <pre><code>gungnir&gt; CREATE TUPLE userAction (
 gungnir&gt;   userId STRING,
 gungnir&gt;   hotelId STRING
 gungnir&gt; );
 OK
-gungnir&gt;</code></pre>
+gungnir&gt;
+</code></pre>
 
-<p>次に、<strong>commitAction</strong>というスキーマも登録しておきます。こちらはSTRING型２つ、TIMESTAMP型、INT型の４フィールドを持っています。</p>
+<p>Next we register another schema, <strong>commitAction</strong> which has four fields (two STRING type filelds, one TIMESTAMP type field, one INT type field).</p>
 
 <pre><code>gungnir&gt; CREATE TUPLE commitAction (
 gungnir&gt;   userId STRING,
@@ -193,101 +195,121 @@ gungnir&gt;   checkin TIMESTAMP('yyyy-MM-dd HH:mm:ss'),
 gungnir&gt;   nights INT
 gungnir&gt; );
 OK
-gungnir&gt;</code></pre>
+gungnir&gt;
+</code></pre>
 
-<p>それでは、登録したスキーマを一覧表示させて確認しましょう。 このためには<code>SHOW TOUPLES</code>コマンドを使います。</p>
+<p>Now we show the list of registered schemas.
+To show the list of schema, we run the <code>SHOW TUPLES</code> command.</p>
 
 <pre><code>gungnir&gt; SHOW TUPLES;
 [\
  {\
-    &quot;name&quot;:&quot;userAction&quot;,\
-    &quot;owner&quot;:&quot;gennaitaro&quot;,\
-    &quot;createTime&quot;:&quot;2013-11-01T00:00:00.000Z&quot;\
+    "name":"userAction",\
+    "owner":"gennaitaro",\
+    "createTime":"2013-11-01T00:00:00.000Z"\
  },\
  {\
-    &quot;name&quot;:&quot;commitAction&quot;,\
-    &quot;owner&quot;:&quot;gennaitaro&quot;,\
-    &quot;createTime&quot;:&quot;2013-11-01T00:00:00.000Z&quot;\
+    "name":"commitAction",\
+    "owner":"gennaitaro",\
+    "createTime":"2013-11-01T00:00:00.000Z"\
  }\
 ]
-gungnir&gt;</code></pre>
+gungnir&gt;
+</code></pre>
 
-<p>この結果より、２つのスキーマ、userActionとcommitActionが登録されたことを確認できます。</p>
+<p>As we see, the two shemas (userAction and commitAction) are registered in genn.ai.</p>
 
 <blockquote>
-<p>補足：”&quot;の記号は、実際には行が続いており 1行続きであることを表しています。</p>
+  <p>NOTE: “\” means lines are not breaked in the real console prompt.</p>
 </blockquote>
 
-<p>さらに登録されたスキーマの内容をそれぞれ確認してみましょう。 このためには<code>DESC TOUPLE</code>コマンドを用います。</p>
+<p>Next, we check the detailed structure of registered schema.
+To show the specified schema we run the <code>DESC TUPLE</code> command.</p>
 
 <pre><code>gungnir&gt; DESC TUPLE userAction;
 {\
-    &quot;name&quot;:&quot;userAction&quot;,\
-    &quot;fields&quot;:{\
-        &quot;userId&quot;:{&quot;type&quot;:&quot;STRING&quot;},\
-        &quot;hotelId&quot;:{&quot;type&quot;:&quot;STRING&quot;}\
+    "name":"userAction",\
+    "fields":{\
+        "userId":{"type":"STRING"},\
+        "hotelId":{"type":"STRING"}\
     },\
-    &quot;partitioned&quot;:&quot;-&quot;,\
-    &quot;owner&quot;:&quot;gennaitaro&quot;,\
-    &quot;createTime&quot;:&quot;2013-11-01T00:00:00.000Z&quot;\
+    "partitioned":"-",\
+    "owner":"gennaitaro",\
+    "createTime":"2013-11-01T00:00:00.000Z"\
 }
 gungnir&gt; DESC TUPLE commitAction;
 {\
-    &quot;name&quot;:&quot;commitAction&quot;,\
-    &quot;fields&quot;:{\
-        &quot;userId&quot;:{&quot;type&quot;:&quot;STRING&quot;},\
-        &quot;hotelId&quot;:{&quot;type&quot;:&quot;STRING&quot;},\
-        &quot;checkin&quot;:{&quot;type&quot;:&quot;TIMESTAMP&quot;,&quot;pattern&quot;:&quot;yyyy-MM-dd HH:mm:ss&quot;},\
-        &quot;nights&quot;:{&quot;type&quot;:&quot;INT&quot;}\
+    "name":"commitAction",\
+    "fields":{\
+        "userId":{"type":"STRING"},\
+        "hotelId":{"type":"STRING"},\
+        "checkin":{"type":"TIMESTAMP","pattern":"yyyy-MM-dd HH:mm:ss"},\
+        "nights":{"type":"INT"}\
     },\
-    &quot;partitioned&quot;:&quot;-&quot;,\
-    &quot;owner&quot;:&quot;gennaitaro&quot;,\
-    &quot;createTime&quot;:&quot;2013-11-01T00:00:00.000Z&quot;\
+    "partitioned":"-",\
+    "owner":"gennaitaro",\
+    "createTime":"2013-11-01T00:00:00.000Z"\
 }
-gungnir&gt;.</code></pre>
+gungnir&gt;.
+</code></pre>
 
-<p>お気づきと思いますが、作成時に指定したフィールド以外に owner、createTime、partitioned が追加されており、順に、所有者・作成日時・…となっています。ここでは詳しく解説を行いませんので、興味のある方は <a href="./ddl.html">DDLリファレンス</a> を参照ください。</p>
+<p>We can see that not only registered fields (such as name, userid), but alos other auto generated fields
+such as owner, createTime, partitioned. The fields are described in <a href="./ddl.html">DDL reference</a>.</p>
 
-<h3 id="トポロジtopologyを作る">トポロジ(Topology)を作る</h3>
+<h3 id="create-topology">Create topology</h3>
 
-<p>トポロジとは、genn.ai内部に持たれる「データをどう受け取り、そのデータをどう処理してゆくか」のロジックのことです。これは、genn.ai独自のクエリ言語を使って、スキーマ作成と同様に作ってゆくことができます。</p>
+<p>Toplogy is the internal logic of genn.ai, which defines input sources and procedures of input data.
+Users create toplogy with a query language provided by genn.ai.</p>
 
-<p>それではトポロジを作ってみましょう。</p>
+<p>Now let’s create a topology.</p>
 
-<p>まずデータを読み上げる処理ですが、これは<code>FROM ～ USING ～</code>の形を使って行います。</p>
+<p>First we can specify input data soruce with <code>FROM ～ USING ～</code> sentence.</p>
 
 <pre><code>FROM userAction AS ua USING kafka_spout()
 FILTER ua.userId REGEXP '^[A-Z]{2}[012][0-9]{7}$'
-EMIT userId, hotelId USING kafka_emit('${TOPOLOGY_ID}_user')</code></pre>
+EMIT userId, hotelId USING kafka_emit('${TOPOLOGY_ID}_user')
+</code></pre>
 
-<p>今のgenn.aiは、外部から受け取ったデータをまずKafka(※)上に格納します。このためトポロジとしてはKafkaからデータを読み上げることから処理をスタートさせることになります。 そのためここでは <code>USING</code>に kafka_spout() を持たせます。</p>
+<p>Currently genn.ai stores the input data into <strong>Kafka</strong> and therefore any toplogy load input data from Kafka.
+As we see that the first sentence specify Kafka with <code>Using kafka_spout()</code>.</p>
 
 <blockquote>
-<p>ここで、「Kafkaってなに？」という方もおられると思いますが、ここでは「JSONデータをためておく場所」くらいに考えておいてください。</p>
+  <p>NOTE: You may do not know Kafka. Do not worry. At this point of the tutorial, you just think Kafka as a JSON pool.</p>
 </blockquote>
 
-<p>そして、<code>FROM userAction AS ua</code> ですが、これはKafkaから読み込んだJSONデータを、先に定義したuserActionのスキーマに従って解釈するように指示する定義です。</p>
+<p>Sentence <code>FROM userAction AS ua</code> orders to interpret input JSON from Kafka with userAction schema.</p>
 
-<pre><code>FROM userAction AS ua USING kafka_spout()</code></pre>
+<pre><code>FROM userAction AS ua USING kafka_spout()
+</code></pre>
 
-<p>次に、処理内容を記述してゆきます。ここではUserIdが アルファベット大文字２文字+数字0～2から始まる数字8桁であるデータだけを抜き出す、FILTER処理としました。FILTERでは、==、!=、LIKEなどのさまざまな条件が使用できますが、ここでは正規表現で記述してみます。</p>
+<p>In the next sentence, the above example describes the specific input procedures.
+The sentence describes that only the data with UserId field matching the pattern <code>^[A-Z]{2}[012][0-9]{7}$</code> are flushed.</p>
 
-<pre><code>FILTER ua.userId REGEXP '^[A-Z]{2}[012][0-9]{7}$'</code></pre>
+<p>In FILTER, we can use various conditions such as <code>==</code>, <code>!=</code>, <code>LIKE</code>.</p>
 
-<p>最後に、<code>EMIT ～ USING ～</code> で処理の結果をKafkaへ格納する(書き戻す)処理を記述します。 その際、処理結果に対して<code>${TOPOLOGY_ID}_user</code> という<strong>名前</strong>を付けるよう指定しています。 ここにある<code>${TOPOLOGY_ID}</code>は、このトポロジが実際に登録されたときに付与されるid(トポロジid)を使う、という変数指定です。 （この<strong>名前</strong>は後述の結果取得の際に使用します）</p>
+<pre><code>FILTER ua.userId REGEXP '^[A-Z]{2}[012][0-9]{7}$'
+</code></pre>
 
-<pre><code>EMIT userId, hotelId USING kafka_emit('${TOPOLOGY_ID}_user')</code></pre>
+<p>Last sentence, <code>EMIT ... USING ...</code> describes that output data are stored in Kafka.
+Last sentence also add the <strong>name</strong> <code>${TOPOLOGY_ID}_user</code> into the output.</p>
 
-<p>では、gungnirコンソールからトポロジを作成してみましょう。</p>
+<p><code>${TOPOLOGY_ID}</code> is the id which is assigned when the topology is registered.
+As for <strong>name</strong>, the value is used to get output.</p>
+
+<pre><code>EMIT userId, hotelId USING kafka_emit('${TOPOLOGY_ID}_user')
+</code></pre>
+
+<p>Now, let’s create a topology from gungnir console.</p>
 
 <pre><code>gungnir&gt; FROM userAction AS ua USING kafka_spout()
 gungnir&gt; FILTER ua.userId REGEXP '^[A-Z]{2}[012][0-9]{7}$'
 gungnir&gt; EMIT userId, hotelId USING kafka_emit('${TOPOLOGY_ID}_user')
 gungnir&gt; ;
 OK
-gungnir&gt;</code></pre>
+gungnir&gt;
+</code></pre>
 
-<p>次に、最初に使った<code>EXPLAIN</code>コマンドを用いて作成したトポロジの実行計画を確認してみましょう。</p>
+<p>Next, use <code>EXPLAIN</code> command to confirm the excution plan of created topology.</p>
 
 <pre><code>gungnir&gt; EXPLAIN;
 SPOUT_0(\
@@ -299,28 +321,35 @@ PARTITION_1(identity grouping)\
 FILTER_2(userAction.userId REGEXP ^[A-Z]{2}[012][0-9]{7}$)\
  -S-&gt; EMIT_3\
 EMIT_3(kafka_emit(${TOPOLOGY_ID}_user), [userId, hotelId])
-gungnir&gt; </code></pre>
+gungnir&gt; 
+</code></pre>
 
-<p>ここまでで、トポロジの構成を作り上げることができました。 これを実際にgenn.aiに処理してもらうためには、これをgenn.aiに登録する必要があります。</p>
+<p>Although we have create a topology, the created topology are not able to be
+processed with genn.ai before the topology is not submitted to genn.ai.</p>
 
-<p>それでは、以下でこの登録を行います。 これにより作成したロジック(トポロジ)で、ストリームデータを処理する機構が準備されます。</p>
+<p>Following command submit the created topology into genn.ai and then genn.ai prepares the
+logic defined by the topology to process stream data.</p>
 
 <pre><code>gungnir&gt; SUBMIT TOPOLOGY;
 OK
-gungnir&gt;</code></pre>
+gungnir&gt;
+</code></pre>
 
 <blockquote>
-<p>補足：<br /><code>FROM</code>コマンドなどで作成された直後のトポロジは genn.ai に “登録” されておらず、genn.ai のセッションワークメモリ上にあります。処理を行える状態とするには “登録”(<code>SUBMIT</code>) の操作が必要となります。</p>
+  <p>COMPLEMENT:
+The topologies created with <code>FROM</code> are not registered in genn.ai. The topology is on session work memory in genn.ai. To make use of the topology, users need to submit it.</p>
 </blockquote>
 
-<p>正常に登録された場合、これが想定通り実行状態となったかを確認しましょう。 このためには<code>DESC TOPOLOGY</code>コマンドを用います。</p>
+<p>When the topology is successfuly registered, we confirm whether the status of topology become running as expected.</p>
 
-<p>下記の例では status が <strong>RUNNING</strong> であることから正常な実行状態と判断できます。</p>
+<p>To check the status of topology, we run <code>DESC TOPOLOGY</code> command.</p>
+
+<p>In the following example, we can see the status is <strong>RUNNING</strong> and the topology ready to be excuted.</p>
 
 <pre><code>gungnir&gt; DESC TOPOLOGY;
 { \
-    &quot;id&quot;:&quot;5284a5b7e4b08627b67aecd3&quot;, \
-    &quot;explain&quot;:&quot;SPOUT_0(\
+    "id":"5284a5b7e4b08627b67aecd3", \
+    "explain":"SPOUT_0(\
         kafka_spout(), \
         [ \
             userAction( \
@@ -339,158 +368,179 @@ gungnir&gt;</code></pre>
         EMIT_2( \
            kafka_emit(${TOPOLOGY_ID}_user), \
            [userId, hotelId, name, image] \
-    )&quot;, \
-    &quot;status&quot;:&quot;RUNNING&quot;, \
-    &quot;owner&quot;:&quot;gennaitaro&quot;, \
-    &quot;createTime&quot;:&quot;2013-11-01T00:00:00.000Z&quot;, \
-    &quot;summary&quot;:{ \
-        &quot;name&quot;:&quot;gungnir_5284a5b7e4b08627b67aecd3&quot;, \
-        &quot;status&quot;:&quot;ACTIVE&quot;, \
-        &quot;uptimeSecs&quot;:37, \
-        &quot;numWorkers&quot;:1, \
-        &quot;numExecutors&quot;:3, \
-        &quot;numTasks&quot;:3 \
+    )", \
+    "status":"RUNNING", \
+    "owner":"gennaitaro", \
+    "createTime":"2013-11-01T00:00:00.000Z", \
+    "summary":{ \
+        "name":"gungnir_5284a5b7e4b08627b67aecd3", \
+        "status":"ACTIVE", \
+        "uptimeSecs":37, \
+        "numWorkers":1, \
+        "numExecutors":3, \
+        "numTasks":3 \
     } \
 }
 
-gungnir&gt;</code></pre>
+gungnir&gt;
+</code></pre>
 
-<p>そして、トポロジの停止や再開、結果取得などの操作にはここで表示されるid(<strong>トポロジid</strong>)必要となりますのでどこかに控えておきましょう。 また、この文字列が変数${TOPOLOGY_ID}の部分に入ることになります。</p>
-
-<p>さらにこの<strong>トポロジid</strong>はトポロジの停止や削除など、トポロジを直接指定して操作するときに使います。</p>
+<p>Note that <strong>topology id</strong> is needed to run command for manipulating the submitted topologies.
+Users should have a memo on the value such as stopping / starting a topology.</p>
 
 <blockquote>
-<p>参考：</p>
+  <p>INFO:</p>
 
-<ul>
-<li>
-<p>Topologyの停止、削除方法</p>
+  <ul>
+    <li>
+      <p>Stop and remove topology</p>
 
-<pre><code>  gungnir&gt; STOP TOPOLOGY 5284a5b7e4b08627b67aecd3;
+      <pre><code>  gungnir&gt; STOP TOPOLOGY 5284a5b7e4b08627b67aecd3;
   OK
   gungnir&gt; DROP TOPOLOGY 5284a5b7e4b08627b67aecd3;
   OK
-  gungnir&gt;</code></pre>
-</li>
+  gungnir&gt;
+</code></pre>
+    </li>
+    <li>
+      <p>Remove topology on session work memory</p>
 
-<li>
-<p>セッションワークメモリ上にあるTopologyを削除</p>
-
-<pre><code>  gungnir&gt; CLEAR;
+      <pre><code>  gungnir&gt; CLEAR;
   OK
   gungnir&gt; DESC TOPOLOGY;
   FAILED: Topology is not registered
-  gungnir&gt;</code></pre>
-</li>
-</ul>
+  gungnir&gt;
+</code></pre>
+    </li>
+  </ul>
+
 </blockquote>
 
-<h3 id="ここまででどんなものができたのか">ここまででどんなものができたのか</h3>
+<h3 id="review-what-we-have-done">Review what we have done</h3>
 
-<p>先ほどの <code>SUBMIT TOPLOGY</code> でトポロジは起動している状態となっています。トポロジを含めた全体概略イメージを示すと以下のようになります。</p>
+<p>Now The topology submitted with <code>SUBMIT TOPLOGY</code> is ready to run. The followin is the image of whole system including the topology.</p>
 
-<p><img alt="all" src="img_tutorial/10_diagram.png" title="all" /></p>
+<p><img src="img_tutorial/10_diagram.png" alt="all" title="all" /></p>
 
-<p>このあとに説明する方法でデータを投入すると、トポロジへデータが流れ、処理され、結果がKafkaに格納される(<code>kafka_emit()</code>による)こととなります。</p>
+<p>When we put the data, the data is flowed into the topology and processed, and then the results are stored into Kafka.
+In the later section, we will see how to show the stored data in Kafka.</p>
 
-<p>なお後述しますが、kafkaに格納された(書き戻された)結果データを見るためには、ダウンロードしたライブラリに含まれる<strong>kafka-consumer.sh</strong>を使います。</p>
+<h3 id="submit-data">Submit Data</h3>
 
-<h3 id="データを投入する">データを投入する</h3>
+<p>Users can submit data with the REST interface or gungnir console. We will try both.</p>
 
-<p>データの投入は通常、RESTのインターフェイスを用いて行いますが、デバッグの目的でgungnirコンソールからの投入も可能となっています。ここでは双方の方法を試してみましょう。</p>
+<p>First run <code>TRACK</code> command for debbuging, and try to submit data with <strong>gungnir console</strong>.</p>
 
-<p>まずデバッグ用の<code>TRACK</code>コマンドを用いて、<strong>gungnirコンソールから</strong>の投入を実施してみましょう。</p>
-
-<pre><code>gungnir&gt; TRACK userAction {&quot;userId&quot;:&quot;AA01234567&quot;, &quot;hotelId&quot;:&quot;226979&quot;};
+<pre><code>gungnir&gt; TRACK userAction {"userId":"AA01234567", "hotelId":"226979"};
 
 OK
-gungnir&gt; </code></pre>
+gungnir&gt; 
+</code></pre>
 
-<p>正常に投入できるようであれば、次に実際の利用で使われる<strong>RESTインターフェイスから</strong>投入してみましょう。</p>
+<p>When you can submit successfuly as the above example, next we will try to send the data with <strong>REST interface</strong>.
+The fowwloing is the url of REST interface.</p>
 
-<p>このためには、投入するためのURLを確認する必要があります。URLは、<br /><code>http://dev.genn.ai:9191/gungnir/v1.0/track/ユーザid/スキーマ名</code></p>
+<p><code>http://dev.genn.ai:9191/gungnir/v1.0/track/user-id/schema-name</code></p>
 
-<p>の形で、各利用者ごと、スキーマごとに作られています。 そして、ここで使われている<strong>ユーザid</strong>は、gungnirコンソール上から <code>DESC USER</code>コマンドで確認します。</p>
+<p>In the above url, users change the <strong>user-id</strong> and <strong>schema-name</strong> following their environment.
+We can confirm the <strong>user id</strong> with the <code>DESC USER</code> command.</p>
 
 <pre><code>gungnir&gt; DESC USER;
 {\
-  &quot;id&quot;:&quot;5271d4c9e4b08627b67aeccd&quot;,\
-  &quot;name&quot;:&quot;gennaitaro&quot;,\
-  &quot;password&quot;:&quot;0A042lHaOOWdvEyYCK7r1piXIT6TYwUVD6V99RNitig=&quot;,\
-  &quot;createTime&quot;:&quot;2013-11-01T00:00:00.000Z&quot;\
+  "id":"5271d4c9e4b08627b67aeccd",\
+  "name":"gennaitaro",\
+  "password":"0A042lHaOOWdvEyYCK7r1piXIT6TYwUVD6V99RNitig=",\
+  "createTime":"2013-11-01T00:00:00.000Z"\
 }
-gungnir&gt; </code></pre>
+gungnir&gt; 
+</code></pre>
 
-<p>この結果内でidとして表示される<strong>ユーザid</strong>と、データ投入先の<strong>スキーマ名</strong>であるuserActionを当てはめ、以下のようなURLを作ります。</p>
+<p>We can create the following url using the <strong>user id</strong> and the output <strong>schema name</strong> (in the above example, “userAction”). </p>
 
 <p>http://dev.genn.ai:9191/gungnir/v1.0/track/<strong>5271d4c9e4b08627b67aeccd</strong>/<strong>userAction</strong></p>
 
-<p>それでは、ここにデータを投入してみましょう。 これは先のgungnirコンソールは終了せず、新たなターミナル画面で実施してください。</p>
+<p>Let’s submit data! We run the following curl command with another terminal.</p>
 
-<pre><code>$ curl -v -H &quot;Content-type: application/json&quot; -X POST \
-    -d '{&quot;userId&quot;:&quot;AA11234567&quot;, &quot;hotelId&quot;:&quot;226979&quot;}' \
+<blockquote>
+  <p>NOTE: please do not terminate the previous gungnir console.</p>
+</blockquote>
+
+<pre><code>$ curl -v -H "Content-type: application/json" -X POST \
+    -d '{"userId":"AA11234567", "hotelId":"226979"}' \
     http://dev.genn.ai:9191/gungnir/v1.0/track/5271d4c9e4b08627b67aeccd/userAction
 &gt;
 &gt;* About to connect() to dev.genn.ai port 9191
 &gt;*   Trying 54.238.99.212... connected
 &gt;* Connected to dev.genn.ai (54.238.99.212) port 9191
 ...(省略)...
-$ </code></pre>
+$ 
+</code></pre>
 
-<p>このとき、上手く投入ができていれば、HTTPとして以下のようなレスポンスを得られます。</p>
+<p>When the data was successfuly submitted, we can get the following HTTTP response.</p>
 
 <pre><code>HTTP/1.1 200 OK
 Content-Length: 0
-Date: Fir, 01 Nov 2013 12:00:00 GMT</code></pre>
+Date: Fir, 01 Nov 2013 12:00:00 GMT
+</code></pre>
 
-<p>先に少し触れた通り、genn.aiは、(1)このRESTで受け止めたJSONをまずKafkaにのせ、(2)さらに各トポロジがこれを拾い上げる、という流れで処理を実行してゆきます。</p>
+<p>The execution of the sending data has two steps. genn.ai first load the JSON into Kafka, and then the each topology get the loaded data.</p>
 
-<h3 id="結果をみる">結果をみる</h3>
+<h3 id="check-the-result">Check the result</h3>
 
-<p>トポロジ記述のところでご説明したとおり、処理結果は<code>kafka_emit()</code>によってkafkaに格納されます。格納されたデータを取得して確認するためには、gungnirコマンドと同じディレクトリにある<strong>kafka-consumer.shスクリプト</strong>※を使用します。<br />このスクリプトは、引数として<strong>処理結果につけた名前</strong>を必要としますが、 この名前は「トポロジを作ってみる」の項で同関数に与えた<code>${TOPOLOGY_ID}_user</code>になります。</p>
+<p>As described in the previous section, the output is stored in Kafka. To confirm the stored output data, we use <strong>kafka-consumer.sh</strong>
+script which exists in bin directory as the gungnir command.
+This script requests <strong>output name</strong>, which forms <code>${TOPOLOGY_ID}_user</code>.</p>
 
-<p>もっとも、この中の<code>${TOPOLOGY_ID}</code>部分は <code>DESC TOPOLOGY;</code>コマンドの結果に表示されるid(<strong>トポロジid</strong>)に置き換えて出力されるため、指定する引数は<code>5284a5b7e4b08627b67aecd3_user</code>という文字列となります。</p>
+<p>The<code>${TOPOLOGY_ID}</code> in the output name is replaced with the topology id which is shown with <code>DESC TOPOLOGY;</code> command as a JSON block.
+For instance, <code>${TOPOLOGY_ID}</code> is replaced with the user id, <code>5284a5b7e4b08627b67aecd3</code> in the follwoing example.</p>
 
-<p>それでは、結果を取り出してみましょう。</p>
+<p>Now let’s extract the results with the following command.</p>
 
 <pre><code>$ kafka-consumer.sh 5284a5b7e4b08627b67aecd3_user
 2013-11-01 12:00:00,000 kafka.tools.SimpleConsumerShell$ \
                    INFO (Logging.scala:61) Starting consumer...
 
 &gt; 2013-11-01 12:00:00,000 kafka.tools.SimpleConsumerShell$ \
-&gt;    INFO (Logging.scala:61) consumed: {&quot;userId&quot;:&quot;AA01234567&quot;,&quot;hotelId&quot;:&quot;226979&quot;}
+&gt;    INFO (Logging.scala:61) consumed: {"userId":"AA01234567","hotelId":"226979"}
 &gt; 2013-11-01 12:00:00,000 kafka.tools.SimpleConsumerShell$ \
-&gt;    INFO (Logging.scala:61) consumed: {&quot;userId&quot;:&quot;AA11234567&quot;,&quot;hotelId&quot;:&quot;226979&quot;}
-&gt; ...</code></pre>
+&gt;    INFO (Logging.scala:61) consumed: {"userId":"AA11234567","hotelId":"226979"}
+&gt; ...
+</code></pre>
 
-<p>「データを投入してみる」の項で、 <code>TRACK</code>と<code>curl</code>コマンドの計２回、データを投入したので処理結果が２つ返ってきます。<br />なお、kafka-consumer.shスクリプトは、Kafkaへデータをポーリングし続けるので、２行の結果を表示した後も終了しません※。genn.aiに新たなデータが投入され、処理されれば、その数秒後に結果が表示されます。</p>
+<p>We can see that the two data submitted in the section Submit Data are returned.
+Note that, the kafka-consumer.sh script continue to poling data and not finished
+all the data are flushed. When new data is sent to genn.nai, the results are shown in the console.</p>
 
 <blockquote>
-<p>※ 終了は[CTRL]+[C]です。</p>
+  <p>NOTE: the command is finished with [CTRL]+[C].</p>
 </blockquote>
 
-<p>これを確認するため、kafka-consumer.shはそのままに、別のターミナルからまたgenn.aiコンソールを起動しデータを投入してみましょう。</p>
+<p>Let’s add new data with the following curl command. Please do not kill kafka-consumer.sh and open another terminal and run genn.ai console.</p>
 
-<pre><code>$ curl -v -H &quot;Content-type: application/json&quot; -X POST \
-    -d '{&quot;userId&quot;:&quot;AA21234567&quot;, &quot;hotelId&quot;:&quot;226979&quot;}' \
-    http://dev.genn.ai:9191/gungnir/v1.0/track/5271d4c9e4b08627b67aeccd/userAction</code></pre>
+<pre><code>$ curl -v -H "Content-type: application/json" -X POST \
+    -d '{"userId":"AA21234567", "hotelId":"226979"}' \
+    http://dev.genn.ai:9191/gungnir/v1.0/track/5271d4c9e4b08627b67aeccd/userAction
+</code></pre>
 
-<p>すると、先のkafka-consumer.shコンソールに、以下の行が追加で表示されるはずです。</p>
+<p>Then, we can see that the new data is added in kafka-consumer.sh console as follows.</p>
 
 <pre><code>&gt; 2013-11-19 22:30:19,317 kafka.tools.SimpleConsumerShell$ \
-&gt;    INFO (Logging.scala:61) consumed: {&quot;userId&quot;:&quot;AA21234567&quot;,&quot;hotelId&quot;:&quot;226979&quot;}</code></pre>
+&gt;    INFO (Logging.scala:61) consumed: {"userId":"AA21234567","hotelId":"226979"}
+</code></pre>
 
-<p>では最後に、userIdを “AA31234567”としてデータを投入してみましょう。この投入についてkafka-consume.shコンソールに処理結果は表示されません。</p>
+<p>In the last, we add a data with userId as “AA31234567”. The output should not be flushed on the data in kafka-consume.sh console.</p>
 
-<pre><code>$ curl -v -H &quot;Content-type: application/json&quot; -X POST \
-    -d '{&quot;userId&quot;:&quot;AA31234567&quot;, &quot;hotelId&quot;:&quot;226979&quot;}' \
-    http://dev.genn.ai:9191/gungnir/v1.0/track/5271d4c9e4b08627b67aeccd/userAction</code></pre>
+<pre><code>$ curl -v -H "Content-type: application/json" -X POST \
+    -d '{"userId":"AA31234567", "hotelId":"226979"}' \
+    http://dev.genn.ai:9191/gungnir/v1.0/track/5271d4c9e4b08627b67aeccd/userAction
+</code></pre>
 
-<p>これにより、トポロジの中で記述したFILTER処理がきちんと動作していることが確認できた、ということになります。</p>
+<p>The above results show that the topology works as expected.</p>
 
-<h2 id="チュートリアルの終わりに">チュートリアルの終わりに</h2>
+<h2 id="end-of-tutorial">End of tutorial</h2>
 
-<p>いかがでしたでしょうか。 genn.aiを使用することでストリーム処理を簡単に行えることがご理解いただけたと思います。 これにより、最近注目を集めてきているストリーミング処理を体験してみること、活用してみることが出来ます。 みなさまもぜひトライしてみて下さい。</p>
+<p>We have go throuh genn.ai and learn how easy to handle stream data with genn.ai.
+For detailed usages, please check other doucments.</p>
 
 						<hr/>
 				    <div id="disqus_thread"></div>
