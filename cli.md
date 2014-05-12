@@ -35,6 +35,7 @@ Explain command shows the excution plan of topology.
     gungnir> EXPLAIN;
 
 > Example:
+
     gungnir> CREATE TUPLE userAction (field1 INT, field2 STRING);
     OK
     gungnir> FROM userAction AS ua1 USING kafka_spout() INTO s1;
