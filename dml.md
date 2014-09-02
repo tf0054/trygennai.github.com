@@ -29,10 +29,10 @@ One topology does not have more than one exter input source.
 
 ### Spout Processor
 
-kafka_spout
+#### kafka_spout
 
-> From Kafka, load Tuples. This is a default configuraiton of genn.ai.
->
+From Kafka, load Tuples. This is a default configuraiton of genn.ai.
+
     kafka_spout()
 
 ### When input sources are internal (stream)
@@ -121,7 +121,7 @@ Fileter statement judges whether the input tuple is flashed as the output or not
 
 * In condition, we add the condition for the filter.
 
- We can use the following signs in conditions.
+We can use the following signs in conditions.
 
 * &#61; or &#61;&#61;
 * <> or !&#61;
@@ -155,7 +155,7 @@ In LIKE statement, we can use "%" (multiple character) and "_"(single character)
 ### REGEXP
 
 In REGEXP, we can use the regex pattern described in java/util/regex/Pattern.
-http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html
+[http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html](http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html)
 
 > Example:
 >
@@ -220,45 +220,59 @@ When the field of Tuple is MAP type, genn.ai checks the field as follows.
 Genn.ai support the following constants.
 
 * String
-list of characters quoted with single or double quotation marks.
+
+    list of characters quoted with single or double quotation marks.
 
 * INT
+
     number only
-> Example:
->
-        2147483647
+
+    > Example:
+    >
+      2147483647
 
 * DOUBLE
+
     number.number
-> Example:
->
-        12.5
+
+    > Example:
+    >
+      12.5
 
 * BIGINT
+
     numberL
-> Example:
->
-        9223372036854775807L
+
+    > Example:
+    >
+      9223372036854775807L
 
 * SMALLINT
+
     numberS
-> Example:
->
-        32767S
+
+    > Example:
+    >
+      32767S
 
 * TINYINT
+
     numberY
-> Example:
->
-        255Y
+
+    > Example:
+    >
+      255Y
 
 * FLOAT
+
     number.numberF
-> Example:
->
-        12.5F
+
+    > Example:
+    >
+      12.5F
 
 * BOOLEAN値
+
     true|false
 
 ---
@@ -301,28 +315,36 @@ When all the conditions are satisfied, input Tuple passes the filter and also, t
 The way to specify the period has the variations.
 
 * Specify with second
+
     number(SECONDS|SEC)
-> Example:
->
-        30SECONDS
+
+    > Example:
+    >
+      30SECONDS
 
 * Specify with minutes
+
     number(MINUTES|MIN)
-> Example:
->
-        55MIN
+
+    > Example:
+    >
+      55MIN
   
 * Specify with hours
+
     number(HOURS|H)
-> Example:
->
-        55HOURS
+
+    > Example:
+    >
+      55HOURS
 
 * Specify with days
+
     number(DAYS|D)
-> Example:
->
-        15DAYS
+
+    > Example:
+    >
+      15DAYS
 
 ---
 
@@ -337,31 +359,36 @@ EACH executes the editing or aggregation of Tuples.
 ### Aggregation function
 
 * Count the number of Tuples.
-> Example:
->
-        EACH count() AS cnt1
+
+    > Example:
+    >
+      EACH count() AS cnt1
 
 * Compute the summation of input field values.
-> Example:
->
-        EACH sum(field1) AS sum1
+
+    > Example:
+    >
+      EACH sum(field1) AS sum1
 
 * Comput the mean of input field values.
-> Example:
->
-        EACH avg(field1) AS avg1
+
+    > Example:
+    >
+      EACH avg(field1) AS avg1
 
 ### Edit function
 
 * When the field is NULL, the value is overried with specified value.
-> Example:
->
-        EACH ifnull(field1, 0) AS field1
+
+    > Example:
+    >
+      EACH ifnull(field1, 0) AS field1
 
 * This function concatenates the values of STRING type fields.
-> Example:
->
-        EACH concat(field1, '-', field2) AS new_field
+
+    > Example:
+    >
+      EACH concat(field1, '-', field2) AS new_field
 
 
 ### Arugments of functions
@@ -462,7 +489,7 @@ EMIT flush Tuples
 
 ### Emit Processor
 
-* Kafka Emit Processor  
+#### Kafka Emit Processor  
 
 Emit Processor flush Tuple into Kafka.
 
@@ -474,7 +501,7 @@ Emit Processor flush Tuple into Kafka.
 >
     kafka_emit('topic1')
 
-* Mongo Persist Processor
+#### Mongo Persist Processor
 
 Mong Persist Procssor flush Tuples inpo MongoDB.
 

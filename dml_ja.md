@@ -27,10 +27,10 @@ FROM は、Tupleを入力先から読み込みます。
 
 ### Spout Processor
 
-kafka_spout
+#### kafka_spout
 
-> TupleをKafkaから読み込みます。システムのデフォルトとして動作します。
->
+TupleをKafkaから読み込みます。システムのデフォルトとして動作します。
+
     kafka_spout()
 
 
@@ -122,7 +122,7 @@ FILTER は、単一のTupleに対してTupleの通過を判定します。
 
 * condition には、フィルタの条件を指定します。
 
- condition の符号には、以下のものを指定します。
+condition の符号には、以下のものを指定します。
 
 * &#61; もしくは &#61;&#61;
 * <> もしくは !&#61;
@@ -156,7 +156,7 @@ LIKEで使用できるワイルドカードは、"%"（複数文字）と"_"（�
 ### REGEXP
 
 REGEXPで使用できる正規表現は、java/util/regex/Patternと同じ書式を採用しています。
-http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html
+[http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html](http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html)
 
 > Example:
 >
@@ -189,6 +189,7 @@ AND, OR, NOT は入れ子にすることが可能です。優先順位はNOT, AN
 優先順位は、()を使用して変更できます。
 
 > Example:
+>
     field1 <= 30 AND (field5 BETWEEN 10 AND 100 OR field2 LIKE 'A%')
 
 ### STRUCT型フィールドの比較
@@ -219,45 +220,59 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
 条件に指定できる定数は、以下になります。
 
 * 文字列
-シングルクォートまたはダブルクォートでくくった文字列
+
+    シングルクォートまたはダブルクォートでくくった文字列
 
 * INT値
+
     number only
-> Example:
->
-        2147483647
+
+    > Example:
+    >
+      2147483647
 
 * DOUBLE値
+
     number.number
-> Example:
->
-        12.5
+
+    > Example:
+    >
+      12.5
 
 * BIGINT値
+
     numberL
-> Example:
->
-        9223372036854775807L
+
+    > Example:
+    >
+      9223372036854775807L
 
 * SMALLINT値
+
     numberS
-> Example:
->
-        32767S
+
+    > Example:
+    >
+      32767S
 
 * TINYINT値
+
     numberY
-> Example:
->
-            255Y
+
+    > Example:
+    >
+      255Y
 
 * FLOAT値
+
     number.numberF
-> Example:
->
-        12.5F
+
+    > Example:
+    >
+      12.5F
 
 * BOOLEAN値
+
     true|false
 
 
@@ -301,28 +316,36 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
 ### period
 
 * 秒で指定
+
     number(SECONDS|SEC)
-> Example:
->
-        30SECONDS
+
+    > Example:
+    >
+      30SECONDS
 
 * 分で指定
+
     number(MINUTES|MIN)
-> Example:
->
-        55MIN
+
+    > Example:
+    >
+      55MIN
   
 * 時間で指定
+
     number(HOURS|H)
-> Example:
->
-        55HOURS
+
+    > Example:
+    >
+      55HOURS
 
 * 日で指定
+
     number(DAYS|D)
-> Example:
->
-        15DAYS
+
+    > Example:
+    >
+      15DAYS
 
 ---
 
@@ -330,39 +353,123 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
 
 EACH は、Tupleの集計や編集を実行します。
 
-  EACH expr, ...
+    EACH expr, ...
 
 * exprには、集計関数もしくは編集関数、フィールドのアクセサを指定します。
 
 ### 集計関数
 
-* Tupleの到着数をカウントします。
+#### count
+
+Tupleの到着数をカウントします。
+
 > Example:
 >
-        EACH count() AS cnt1
+    EACH count() AS cnt1
 
+#### sum
 
-* 到着したフィールドの値を合計します。
+到着したフィールドの値を合計します。
+
 > Example:
 >
-        EACH sum(field1) AS sum1
+    EACH sum(field1) AS sum1
 
-* 到着したフィールドの値の平均を計算します。
+#### avg
+
+到着したフィールドの値の平均を計算します。
+
 > Example:
 >
-        EACH avg(field1) AS avg1
+    EACH avg(field1) AS avg1
 
 ### 編集関数
 
-* フィールドの値がNULLであれば、代替えの値で置き換えます。
-> Example:
->
-        EACH ifnull(field1, 0) AS field1
+#### ifnull
 
-* STRING型のフィールドの値を連結したフィールドを作成します。
+フィールドの値がNULLであれば、代替の値で置き換えます。
+
 > Example:
 >
-        EACH concat(field1, '-', field2) AS new_field
+    EACH ifnull(field1, 0) AS field1
+
+#### concat
+
+STRING型のフィールドの値を連結したフィールドを作成します。
+
+> Example:
+>
+    EACH concat(field1, '-', field2) AS new_field
+
+#### split
+
+フィールドの値を区切り文字列もしくは正規表現によってリストに変換します。
+
+    split(string str, string pattern)
+
+* strには、対象フィールドを指定します。
+* patternには、区切り文字列もしくは正規表現で指定します。
+
+> Example:
+>
+    EACH split(field1, ',') AS new_list
+
+#### regexp_extract
+
+フィールドの値から正規表現によって値を抜き出します。
+
+    regexp_extract(string subject, string pattern, int index)
+
+* subjectには、対象フィールドを指定します。
+* patternには、正規表現パターンを指定します。
+* indexには、抜き出すグループの番号を指定します。
+
+> Example:
+>
+    EACH regexp_extract(field1, '(\d{4})-(\d{2})-(\d{2})', 1) AS new_field
+
+#### parse_url
+
+フィールドの値(URL)をパースして、一部を返します。
+
+    parse_url(string urlString, string partToExtract [, string keyToExtract])
+
+* urlStringには、パースするURLフィールドを指定します。
+* partToExtractには、下記のいずれかを指定します。
+    * HOST
+    * PATH
+    * QUERY
+    * REF
+    * PROTOCOL
+    * AUTHORITY
+    * FILE
+    * USERINFO
+* keyToExtractには、partToExtractがQUERYの場合、取得するパラメータ名称を指定します。
+
+> Example:
+>
+    EACH parse_url(urlField, 'QUERY', 'k1') AS new_field
+
+#### cast
+
+フィールドの値を指定した型に変換します。
+
+    cast(expr as \<type\>)
+
+* exprには、対象フィールドを指定します。
+* \<type\>には、下記の型のみ指定可能です。
+    * TIMESTAMP
+    * TINYINT
+    * SMALLINT
+    * INT
+    * BIGINT
+    * FLOAT
+    * DOUBLE
+    * BOOLEAN
+
+> Example:
+>
+    EACH cast(field1 AS TIMESTAMP('yyyyMMddHHmmss')) AS new_field
 
 ### 関数の引数
 
@@ -375,6 +482,100 @@ EACH は、Tupleの集計や編集を実行します。
     EACH field1, field6.member1 AS field10, field7['visa'] AS visa
 
 field1はそのまま、field6.member1をfield10フィールドへ、field7&#91;'visa']をvisaフィールドへ抽出します。
+
+---
+
+## LIMIT
+
+Tupleの流れを制限します。
+
+    LIMIT [FIRST|LAST] period
+
+* periodには、時間もしくはTuple数を指定します。
+* FIRSTは、指定範囲内に最初に到着したTupleを後続のオペレータに渡します。
+* LASTは、指定範囲内の最後に到着したTupleを後続のオペレータに渡します。
+
+### 時間による流量制限
+
+* 時間の起点は、最初にTupleが到着した時間です。
+* 起点は指定時間が経過した以降にリセットされます。
+
+> Example: 最初に到着したTupleを後続に送り、以降30分はTupleを送らない。
+>
+    LIMIT FIRST EVERY 30min
+
+> Example: Tupleが最初に到着してから、30分間に到着した最後のTupleを後続に送る。
+>
+    LIMIT LAST EVERY 30min
+
+
+### Tuple数による流量制限
+
+> Example: 5件のTupleの中で、最初に到着したTupleを後続に送る。
+>
+    LIMIT FIRST EVERY 5
+
+> Example: 5件のTupleの中で、最後に到着したTupleを後続に送る。
+>
+    LIMIT LAST EVERY 5
+
+---
+
+## SLIDE
+
+集計関数によるスライド集計を実行します。間隔は時間もしくはTuple数を指定することが可能です。スライドはTupleの到着時にのみ実行されます。
+
+    SLIDE period expr
+
+* periodには、スライド時間もしくはタプル数を指定します。
+
+* exprには、集計関数やフィールドのアクセサを指定します。利用可能な集計関数はEACHと同様です。
+
+### 時間でスライド
+
+    SLIDE LENGTH period BY time_field expr
+
+* time_fieldには、起点となるTIMESTAMP型のフィールドを指定します。
+
+> Example:
+>
+    SLIDE LENGTH 10sec BY _time sum(field1) AS new_field
+
+### Tuple数でスライド
+
+> Exapmle:
+>
+    SLIDE LENGTH 100 sum(field2) AS new_field
+
+---
+
+## SNAPSHOT
+
+一定間隔による集計を実行します。間隔は時間もしくはTuple数を指定することが可能です。
+
+    SNAPSHOT EVERY period expr
+
+* periodには、時間・Tuple数を指定します。
+* exprには、集計関数やフィールドアクセサを指定します。
+
+### 時間による一定間隔に実行
+
+* cron形式でも指定することができます。
+* 指定可能な時間は1分以上です。
+* 集計値は指定時間毎にリセットされます。
+
+> Example: 7分毎に実行
+>
+    SNAPSHOT EVERY 7min sum(field1) AS new_field
+    SNAPSHOT EVERY "*/7 * * * *" sum(field1) AS new_field
+
+### Tuple数による一定間隔に実行
+
+* 指定したTuple数の集計を実行し、後続のオペレータに結果を送ります。
+
+> Example:
+>
+    SNAPSHOT EVERY 10 sum(field1) AS new_field
 
 ---
 
@@ -458,7 +659,7 @@ EMITは、Tupleを外部へ出力します。
 
 ### Emit Processor
 
-* Kafka Emit Processor  
+#### Kafka Emit Processor  
 
 TupleをKafkaに出力します。
 
@@ -472,7 +673,7 @@ TupleをKafkaに出力します。
     kafka_emit('topic1')
 
 
-* Mongo Persist Processor
+#### Mongo Persist Processor
 
 TupleをMongoDBに出力します。
 

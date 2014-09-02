@@ -34,21 +34,21 @@ When `PARTITIONED BY clause` is not specified, Tuples are randomly partitioned.
 > Example:
 >
     CREATE TUPLE userAction1 (
-        _tno,
-        _tid,
-        _time,
-        field1 INT,
-        field2 STRING,
-        field3 STRING,
-        field4 LIST<STRING>,
-        field5 TINYINT,
-        field6 STRUCT<member1 TIMESTAMP('yyyy-MM-dd HH:mm:ss'), member2 LIST<BIGINT>>,
-        field7 MAP<STRING, BOOLEAN>,
-        field8 BOOLEAN,
-        field9 TIMESTAMP,
-        field10 MAP<INT, STRING>
-        )
-        PARTITIONED BY _tno
+      _tno,
+      _tid,
+      _time,
+      field1 INT,
+      field2 STRING,
+      field3 STRING,
+      field4 LIST<STRING>,
+      field5 TINYINT,
+      field6 STRUCT<member1 TIMESTAMP('yyyy-MM-dd HH:mm:ss'), member2 LIST<BIGINT>>,
+      field7 MAP<STRING, BOOLEAN>,
+      field8 BOOLEAN,
+      field9 TIMESTAMP,
+      field10 MAP<INT, STRING>
+    )
+    PARTITIONED BY _tno
 
 ### Field Types
 
@@ -56,12 +56,7 @@ For field type, users can specify the the followings.
 
 * Numeric Types
 
-    TINYINT
-    , SMALLINT
-    , INT
-    , BIGINT
-    , FLOAT
-    , DOUBLE
+    TINYINT, SMALLINT, INT, BIGINT, FLOAT, DOUBLE
 
 * Date/Time Types
 
@@ -77,9 +72,7 @@ For field type, users can specify the the followings.
 
 * Complex Types
 
-    LIST
-    , MAP
-    , STRUCT
+    LIST, MAP, STRUCT
 
 ### TINYINT
 
@@ -227,19 +220,19 @@ In JSONTuple, the values of fields are described as Objects.
 The following is userAction1 described in the previous section in JSONTuple.
 
     {
-        field1:12345,
-        field2:"xxx",
-        field3:"yyy",
-        field4:["aaa","bbb","ccc"],
-        field5:1,
-        field6:{
-          member1:"2013-10-18 18:28:34",
-          member2:[10000, 20000, 30000]
-        },
-        field7:{"A":true, "B":false, "C":false},
-        field8:true,
-        field9:1382086720,
-        field10:{"11":"lll", "22":"mmm"}
+      field1:12345,
+      field2:"xxx",
+      field3:"yyy",
+      field4:["aaa","bbb","ccc"],
+      field5:1,
+      field6:{
+        member1:"2013-10-18 18:28:34",
+        member2:[10000, 20000, 30000]
+      },
+      field7:{"A":true, "B":false, "C":false},
+      field8:true,
+      field9:1382086720,
+      field10:{"11":"lll", "22":"mmm"}
     }
 
 ### Special fields
@@ -293,8 +286,8 @@ The results are shown in JSON as follows.
 > Result:
 >
     [
-        {"name":"userAction1","owner":"user@genn.ai","createTime":"2013-10-18T02:14:00.241Z"},
-        {"name":"userAction2","owner":"user@genn.ai","createTime":"2013-10-17T02:16:34.898Z"}
+      {"name":"userAction1","owner":"user@genn.ai","createTime":"2013-10-18T02:14:00.241Z"},
+      {"name":"userAction2","owner":"user@genn.ai","createTime":"2013-10-17T02:16:34.898Z"}
     ]
 
 * name field shows Tuple name.
@@ -322,9 +315,15 @@ genn.ai gives the output in JSON format.
 > Result:
 >
     {
-        "name":"userAction2","fields":{"field1":{"type":"BIGINT"},"field2":
-        {"type":"STRING"},"field3":{"type":"STRING"}},"partitioned":       
-        ["field1"],"owner":"user@genn.ai","createTime":"2013-09-13T01:35:55.667Z"
+      "name":"userAction2",
+      "fields":{
+        "field1":{"type":"BIGINT"},
+        "field2":{"type":"STRING"},
+        "field3":{"type":"STRING"}
+      },
+      "partitioned":["field1"],
+      "owner":"user@genn.ai",
+      "createTime":"2013-09-13T01:35:55.667Z"
     }
 
 In the above JSON, the followings is the meanings of each block.
@@ -418,7 +417,11 @@ genn.ai shows the results in JSON format.
 > Result:
 > 
     {
-        "name":"viewAction1","from":"userAction1","filter":"field3 = CATEGORY-1","owner":"user@genn.ai","createTime":"2013-10-19T03:19:22.241Z"
+      "name":"viewAction1",
+      "from":"userAction1",
+      "filter":"field3 = CATEGORY-1",
+      "owner":"user@genn.ai",
+      "createTime":"2013-10-19T03:19:22.241Z"
     }
 
 * name field shows the View name.
