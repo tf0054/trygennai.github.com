@@ -3,9 +3,9 @@ layout: manual
 title: genn.ai
 ---
 
-## LanguageManual CLI
+# LanguageManual CLI
 
-### Gungnir Command Line Options
+## Gungnir Command Line Options
 
     $ gungnir options
 
@@ -16,11 +16,11 @@ title: genn.ai
 
 ---
 
-### Gungnir Interactive Shell Commands
+## Gungnir Interactive Shell Commands
 
 Use ";" (semicolon) to terminate commands.
 
-#### quit | exit
+### quit | exit
 
 This command is used to exit from Gungnir CLI.
 
@@ -28,14 +28,14 @@ This command is used to exit from Gungnir CLI.
 
 ---
 
-#### EXPLAIN
+### EXPLAIN
 
 Explain command shows the excution plan of topology.
 
     gungnir> EXPLAIN;
 
 > Example:
-
+>
     gungnir> CREATE TUPLE userAction (field1 INT, field2 STRING);
     OK
     gungnir> FROM userAction AS ua1 USING kafka_spout() INTO s1;
@@ -62,7 +62,7 @@ has two streams and they connect to FILTER_2 and FILTER_3 respectively.
 
 ---
 
-#### SUBMIT TOPOLOGY
+### SUBMIT TOPOLOGY
 
 This command registries a topology and launch it.
 
@@ -72,7 +72,7 @@ Since the launch process of a topology is execution asynchronouslly, users shoul
 of the topology is "RUNNING" by the "DESC TOPOLOGY" command.
 
 > Example:
-
+>
     gungnir> FROM userAction AS ua1 USING kafka_spout() FILTER field1 = 10 INTO s1;
     OK
     gungnir> EXPLAIN;
@@ -80,13 +80,13 @@ of the topology is "RUNNING" by the "DESC TOPOLOGY" command.
     gungnir> SUBMIT TOPOLOGY;
     OK
     gungnir> DESC TOPOLOGY;  <-- confirm the state
-    {"id":"5261606ee4b099995d4f460f","explain":...","status":"RUNNING", ...}
+    {"id":"5261606ee4b099995d4f460f","status":"RUNNING", ...}
 
 After the execution of "SUBMIT TOPOLOGY" command, above example confirms the status of the toplogy with the "DESC TOPOLOGY" command.
 
 ---
 
-#### DESC TOPOLOGY
+### DESC TOPOLOGY
 
 This command shows the regeistrated topology information.
 
@@ -95,10 +95,25 @@ This command shows the regeistrated topology information.
 The result is shown in JSON format.
 
 > Example:
+>
     gungnir> DESC TOPOLOGY;
-    {"id":"5261606ee4b099995d4f460f","explain":"SPOUT_0(kafka_spout(), kafka_spout(), [userAction(field1 INT, field2 STRING)])\n ...","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z","summary":{"name":"gungnir_5261606ee4b099995d4f460f","status":"ACTIVE","uptimeSecs":403,"numWorkers":1,"numExecutors":3,"numTasks":3}}
+    {
+        "id":"5261606ee4b099995d4f460f",
+        "status":"RUNNING",
+        "owner":"user@genn.ai",
+        "createTime":"2013-10-18T16:23:09.901Z",
+        "summary":{
+            "name":"gungnir_5261606ee4b099995d4f460f",
+            "status":"ACTIVE",
+            "uptimeSecs":403,
+            "numWorkers":1,
+            "numExecutors":3,
+            "numTasks":3
+        }
+    }
 
 The followings are the meanings of blocks in the above result.
+
 * "id" is Topology ID.
 * "explain" is execution plan of Topology.
 * "status" represents the state of topology.
@@ -112,13 +127,13 @@ When we specify the block name, we get the value of specified block.
     gungnir> DESC TOPOLOGY topology_id;
 
 > Example:
-
+>
     gungnir> DESC TOPOLOGY 5261606ee4b099995d4f460f;
     {"id":"5261606ee4b099995d4f460f", ...}
 
 ---
 
-#### SHOW TOPOLOGIES
+### SHOW TOPOLOGIES
 
 This command shows the list of registered topology.
 
@@ -127,11 +142,12 @@ This command shows the list of registered topology.
 The resuls are shown in JSON format.
 
 > Example:
-
+>
     gungnir> SHOW TOPOLOGIES;
     [{"id":"5261606ee4b099995d4f460f","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z"}]
 
 The followins are the meanings of blocks in the above result.
+
 * "id"  shows topology id.
 * "status" shows the status of topology.
 "status" takes the one of the four values (STARTING, RUNNING, STOPPING, STOPPED) and shows the status of topology.
@@ -140,7 +156,7 @@ The followins are the meanings of blocks in the above result.
 
 ---
 
-#### STOP TOPOLOGY
+### STOP TOPOLOGY
 
 This command stops the specified topology.
 
@@ -152,14 +168,15 @@ The stop process of the specified topology is execution asynchronouslly. Therefo
 of the topology is "STOPPEDG" by the "DESC TOPOLOGY" command.
 
 > Example:
+>
     gungnir> STOP TOPOLOGY 5261606ee4b099995d4f460f;
     OK
     gungnir> DESC TOPOLOGY;  <-- confirm the state
-    {"id":"5261606ee4b099995d4f460f","explain":...","status":"STOPPED", ...}
+    {"id":"5261606ee4b099995d4f460f","status":"STOPPED", ...}
 
 ---
 
-#### START TOPOLOGY
+### START TOPOLOGY
 
 This command restarts stopped topology.
 
@@ -171,14 +188,15 @@ The start process of the specified topology is execution asynchronouslly. Theref
 of the topology is "RUNNING" by the "DESC TOPOLOGY" command.
 
 > Example:
+>
     gungnir> START TOPOLOGY 5261606ee4b099995d4f460f;
     OK
     gungnir> DESC TOPOLOGY;  <-- confirm status
-    {"id":"5261606ee4b099995d4f460f","explain":...","status":"RUNNING", ...}
+    {"id":"5261606ee4b099995d4f460f","status":"RUNNING", ...}
 
 ---
 
-#### DROP TOPOLOGY
+### DROP TOPOLOGY
 
 This command deletes registrated topology.
 
@@ -189,15 +207,15 @@ This command deletes registrated topology.
 To delete a topology, the topology need to be stopped. Before delete a toplogy, users should confirm taht the status of topology is "STOPPED" with "DESC TOPOLOGY" command.
 
 > Example:
-
-    gungnir> DESC TOPOLOGY;  <-- 停止しているかを確認
-    {"id":"5261606ee4b099995d4f460f","explain":...","status":"STOPPED", ...}
+>
+    gungnir> DESC TOPOLOGY;  <-- confirm status
+    {"id":"5261606ee4b099995d4f460f","status":"STOPPED", ...}
     gungnir> DROP TOPOLOGY 5261606ee4b099995d4f460f;
     OK
 
 ---
 
-#### CLEAR
+### CLEAR
 
 This command removes query from memory.
 Queries (FROM ...) exist on memory until the topology is submitted.
@@ -206,6 +224,7 @@ When you want to remove the query in order to submit another query, users submit
     gungnir> CLEAR;
 
 > Example:
+>
     gungnir> EXPLAIN;
     SPOUT_0(kafka_spout(), kafka_spout(), [userAction(field1 INT, field2 STRING)])
     …
@@ -216,7 +235,7 @@ When you want to remove the query in order to submit another query, users submit
 
 ---
 
-#### SET
+### SET
 
 This command is used to set a property of topology.
 The submitted propertes are reflected with "SUBMIT TOPOLOGY" or "START TOPOLOGY" command.
@@ -226,38 +245,40 @@ The following is the form of SET command.
     gungnir> SET property_name = property_value;
 
 > Example:
-    gungnir> SET monitor = enable;
+>
+    gungnir> SET monitor.enabled = true;
 
 > The above command the a monitor property to flush Monitor log.
 
 ---
 
-#### TRACK
+### POST
 
 This command submits a JOINTuple to validate the topology.
 
-    gungnir> TRACK tuple_name json_tuple; 
+    gungnir> POST tuple_name json_tuple; 
 
 We specify the followings.
 * tuple name in tuple_name
 * JSONTuple in join_tuple.
 
 When a Set-Cookie header is returned in the response, the contents are stored in the Cookie of CLI memory.
-The stored Cookie is submitted as the Cookie header of next TRACK command.
+The stored Cookie is submitted as the Cookie header of next POST command.
 
 > Example:
-    gungnir> TRACK userAction {field1:10,field2:"test"}; 
+>
+    gungnir> POST userAction {field1:10,field2:"test"}; 
 
-* Interactive Mode
+#### Interactive Mode
 
-The TRACK command has interactive mode in which uerss can edit JSONTuple interactively.
-When a user sumit TRACK commadn without json_tuple, CLI reqest the user to input a JSONTuple to submit.
+The POST command has interactive mode in which uerss can edit JSONTuple interactively.
+When a user sumit POST commadn without json_tuple, CLI reqest the user to input a JSONTuple to submit.
 After editing JSONTuple, the user submit edited JSONTuple.
 
-    gungnir> TRACK userAction;
+    gungnir> POST userAction;
     field1 (INT): 12345
     field2 (STRING): test
-    TRACK userAction {"field1":12345,"field2":"test"}
+    POST userAction {"field1":12345,"field2":"test"}
     OK
 
 The following is a example of a JSONTuple with LIST, MAP, STRUCT fields.
@@ -265,7 +286,8 @@ The following is a example of a JSONTuple with LIST, MAP, STRUCT fields.
     CREATE TUPLE userAction2 (f1 STRING, f2 LIST<INT>, f3 MAP<STRING, INT>, f4 STRUCT<m1 TIMESTAMP('yyyy-MM-dd HH:mm:ss'), m2 BOOLEAN>);
 
 > Example:
-    gungnir> TRACK userAction2;
+>
+    gungnir> POST userAction2;
     f1 (STRING): test
     f2 (LIST)
       0 (INT): 1
@@ -284,13 +306,13 @@ The following is a example of a JSONTuple with LIST, MAP, STRUCT fields.
     f4 (STRUCT)
       m1 (TIMESTAMP(yyyy-MM-dd HH:mm:ss)): 2013-10-19 22:02:24
       m2 (BOOLEAN): false
-
-    TRACK userAction2 {"f1":"test","f2":[1,2,3],"f3":{"k1":1,"k2":2,"k3":3},"f4":{"m1":"2013-10-19 22:02:24","m2":false}}
+>
+    POST userAction2 {"f1":"test","f2":[1,2,3],"f3":{"k1":1,"k2":2,"k3":3},"f4":{"m1":"2013-10-19 22:02:24","m2":false}}
     OK
 
 ---
 
-#### COOKIE
+### COOKIE
 
 COOKIE commands show the contents of on memory Cookie.
 The on memory Cookie is removed when CLI is finished.
@@ -298,12 +320,13 @@ The on memory Cookie is removed when CLI is finished.
     gungnir> COOKIE;
 
 > Exmaple:
+>
     gungnir> COOKIE;
     {"name":"TID","value":"52558684e4b0f241c72d0365","domain":null,"path":null,"comment":null,"commentUrl":null,"discard":false,"ports":[],"maxAge":864000000,"version":1,"secure":false,"httpOnly":false}]
 
 ---
 
-#### COOKIE CLEAR
+### COOKIE CLEAR
 
 This command is for remove on memory Cookies.
 Since, on memory Cookie stores the traking ids, users can get another tracking id from the server after removing on memory Cookies.
@@ -311,7 +334,7 @@ Since, on memory Cookie stores the traking ids, users can get another tracking i
     gungnir> COOKIE CLEAR;
 
 > Example:
-
+>
     gungnir> COOKIE CLEAR;
     OK
     gungnir> COOKIE;
@@ -319,7 +342,7 @@ Since, on memory Cookie stores the traking ids, users can get another tracking i
 
 ---
 
-#### MONITOR
+### MONITOR
 
 With MONITOR command, users know how the input Tuple is processed in the topology. Specifically
 the Monitor log on the input tuple is flushed with this command.
@@ -330,24 +353,24 @@ the Monitor log on the input tuple is flushed with this command.
 
 We use Monitor with the follwoing steps.
 
-- Set the proerty to flush Monitor log and sebumit the topology.
-- Specify the Topology id in the first step, run MONITOR command.
-- Open another CLI, and then submit JOINTuple with TRACK command. JOINTuple can be submitted with the curl command.
-- Check the CLI running MONITOR command, and see the Monitor log for the submitted tuple in the third step.
+1. Set the proerty to flush Monitor log and sebumit the topology.
+2. Specify the Topology id in the first step, run MONITOR command.
+3. Open another CLI, and then submit JOINTuple with POST command. JOINTuple can be submitted with the curl command.
+4. Check the CLI running MONITOR command, and see the Monitor log for the submitted tuple in the third step.
 
 > Example:
-
-    gungnir> SET monitor = enable;
+>
+    gungnir> SET monitor.enabled = true;
     OK
     gungnir> SUBMIT TOPOLOGY;
     OK
     gungnir> DESC TOPOLOGY;
-    {"id":"5261606ee4b099995d4f460f","explain":"SPOUT_0(kafka_spout(), kafka_spout(), [userAction(field1 INT, field2 STRING)])\n ...","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z","summary":{"name":"gungnir_5261606ee4b099995d4f460f","status":"ACTIVE","uptimeSecs":403,"numWorkers":1,"numExecutors":3,"numTasks":3}}
+    {"id":"5261606ee4b099995d4f460f","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z","summary":{"name":"gungnir_5261606ee4b099995d4f460f","status":"ACTIVE","uptimeSecs":403,"numWorkers":1,"numExecutors":3,"numTasks":3}}
     gungnir> MONITOR 5261606ee4b099995d4f460f;
 
-Open another CLI and run TRACK command.
+Open another CLI and run POST command.
 
-    gungnir> track userAction {"field1":1234,"field2":"test"};
+    gungnir> POST userAction {"field1":1234,"field2":"test"};
 
 Monitor log is flushed in CLI.
 
