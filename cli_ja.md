@@ -39,7 +39,7 @@ Topologyの実行計画を表示します。
     gungnir> EXPLAIN;
 
 > Example:
-
+>
     gungnir> CREATE TUPLE userAction (field1 INT, field2 STRING);
     OK
     gungnir> FROM userAction AS ua1 USING kafka_spout() INTO s1;
@@ -71,14 +71,14 @@ Topologyのより詳細な実行計画を表示します。
     gungnir> EXPLAIN EXTENDED;
 
 > Example:
-
+>
     gungnir> FROM userAction AS ua1 USING kafka_spout() INTO s1;
     OK
     gungnir> FROM s1 FILTER field1 >= 10 INTO s2;
     OK
     gungnir> FROM s1 FILTER field1 < 10 INTO s3;
     OK
-    gungnir EXPLAIN EXTENDED;
+    gungnir> EXPLAIN EXTENDED;
     Explain:
       SPOUT_0(kafka_spout(), [userAction(field1 INT, field2 STRING)]) parallelism=1
         -S-> PARTITION_1
@@ -135,10 +135,10 @@ Topologyを登録して起動します。
 
     gungnir> SUBMIT TOPOLOGY;
 
-Topologyの起動は非同期で実行される為、必ず DESC TOPOLOGY を実行して、Topologyの状態が RUNNING（実行中）になっていることを確認してください。
+Topologyの起動は非同期で実行される為、必ず `DESC TOPOLOGY` を実行して、Topologyの状態が RUNNING（実行中）になっていることを確認してください。
 
 > Example:
-
+>
     gungnir> FROM userAction AS ua1 USING kafka_spout() FILTER field1 = 10 INTO s1;
     OK
     gungnir> EXPLAIN;
@@ -146,9 +146,9 @@ Topologyの起動は非同期で実行される為、必ず DESC TOPOLOGY を実
     gungnir> SUBMIT TOPOLOGY;
     OK
     gungnir> DESC TOPOLOGY;  <-- 起動したかを確認
-    {"id":"5261606ee4b099995d4f460f","explain":...","status":"RUNNING", ...}
+    {"id":"5261606ee4b099995d4f460f","status":"RUNNING", ...}
 
-SUBMIT TOPOLOGYの実行後に、DESC TOPOLOGYを実行してTopology IDとTopologyの状態を確認しています。
+`SUBMIT TOPOLOGY;` の実行後に、 `DESC TOPOLOGY` を実行してTopology IDとTopologyの状態を確認しています。
 
 ---
 
@@ -161,15 +161,24 @@ SUBMIT TOPOLOGYの実行後に、DESC TOPOLOGYを実行してTopology IDとTopol
 結果はJSON形式で出力されます。
 
 > Example:
-
+>
     gungnir> DESC TOPOLOGY;
     {
       "id":"5261606ee4b099995d4f460f",
-      "explain":"SPOUT_0(kafka_spout(), kafka_spout(), [userAction(field1 INT, field2 STRING)])\n ...","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z","summary":{"name":"gungnir_5261606ee4b099995d4f460f","status":"ACTIVE","uptimeSecs":403,"numWorkers":1,"numExecutors":3,"numTasks":3}
+      "status":"RUNNING",
+			"owner":"user@genn.ai",
+			"createTime":"2013-10-18T16:23:09.901Z",
+			"summary":{
+				"name":"gungnir_5261606ee4b099995d4f460f",
+				"status":"ACTIVE",
+				"uptimeSecs":403,
+				"numWorkers":1,
+				"numExecutors":3,
+				"numTasks":3
+			}
     }
 
 * id は、Topology IDです。
-* explain は。Topologyの実行計画です。
 * status は、Topologyの状態です。
 Topologyの状態に応じて、STARTING（起動中）-> RUNNING（実行中）-> STOPPING（停止中）-> STOPPED（停止状態）と変化します。
 * owner は、Topologyを登録したユーザのユーザ名です。
@@ -181,7 +190,7 @@ Topologyの状態に応じて、STARTING（起動中）-> RUNNING（実行中）
     gungnir> DESC TOPOLOGY topology_id;
 
 > Example:
-
+>
     gungnir> DESC TOPOLOGY 5261606ee4b099995d4f460f;
     {"id":"5261606ee4b099995d4f460f", ...}
 
@@ -193,10 +202,10 @@ Topologyの状態に応じて、STARTING（起動中）-> RUNNING（実行中）
 
     gungnir> SHOW TOPOLOGIES;
 
-結果はJSON形式で出力されます。
+結果はJSON形式の配列で出力されます。
 
 > Example:
-
+>
     gungnir> SHOW TOPOLOGIES;
     [{"id":"5261606ee4b099995d4f460f","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z"}]
 
@@ -216,14 +225,14 @@ Topologyの状態に応じて、STARTING（起動中）-> RUNNING（実行中）
 
 * topology_id には、停止するTopologyのTopology IDを指定します。
 
-Topologyの停止は非同期で実行される為、必ず DESC TOPOLOGY を実行して、Topologyの状態が STOPPED （停止状態）になっていることを確認してください。
+Topologyの停止は非同期で実行される為、必ず `DESC TOPOLOGY` を実行して、Topologyの状態が STOPPED （停止状態）になっていることを確認してください。
 
 > Example:
-
+>
     gungnir> STOP TOPOLOGY 5261606ee4b099995d4f460f;
     OK
     gungnir> DESC TOPOLOGY;  <-- 停止したかを確認
-    {"id":"5261606ee4b099995d4f460f","explain":...","status":"STOPPED", ...}
+    {"id":"5261606ee4b099995d4f460f","status":"STOPPED", ...}
 
 ---
 
@@ -235,14 +244,14 @@ Topologyの停止は非同期で実行される為、必ず DESC TOPOLOGY を実
 
 * topology_id には、起動するTopologyのTopology IDを指定します。
 
-Topologyの開始は非同期で実行される為、必ず DESC TOPOLOGY を実行して、Topologyの状態が RUNNING（実行中）になっていることを確認してください。
+Topologyの開始は非同期で実行される為、必ず `DESC TOPOLOGY` を実行して、Topologyの状態が RUNNING（実行中）になっていることを確認してください。
 
 > Example:
-
+>
     gungnir> START TOPOLOGY 5261606ee4b099995d4f460f;
     OK
     gungnir> DESC TOPOLOGY;  <-- 起動したかを確認
-    {"id":"5261606ee4b099995d4f460f","explain":...","status":"RUNNING", ...}
+    {"id":"5261606ee4b099995d4f460f","status":"RUNNING", ...}
 
 ---
 
@@ -254,12 +263,12 @@ Topologyの開始は非同期で実行される為、必ず DESC TOPOLOGY を実
 
 * topology_id には、削除するTopologyのTopology IDを指定します。
 
-Topologyは停止している必要があります。削除する前に DESC TOPOLOGY を実行して、Topologyの状態が STOPPED になっていることを確認してください。
+Topologyは停止している必要があります。削除する前に `DESC TOPOLOGY` を実行して、Topologyの状態が STOPPED になっていることを確認してください。
 
 > Example:
-
+>
     gungnir> DESC TOPOLOGY;  <-- 停止しているかを確認
-    {"id":"5261606ee4b099995d4f460f","explain":...","status":"STOPPED", ...}
+    {"id":"5261606ee4b099995d4f460f","status":"STOPPED", ...}
     gungnir> DROP TOPOLOGY 5261606ee4b099995d4f460f;
     OK
 
@@ -274,7 +283,7 @@ Topologyは停止している必要があります。削除する前に DESC TOP
     gungnir> CLEAR;
 
 > Example:
-
+>
     gungnir> EXPLAIN;
     SPOUT_0(kafka_spout(), kafka_spout(), [userAction(field1 INT, field2 STRING)])
     …
@@ -288,14 +297,14 @@ Topologyは停止している必要があります。削除する前に DESC TOP
 ### SET
 
 Topologyのプロパティを設定します。
-設定したプロパティは、SUBMIT TOPOLOGY もしくは START TOPOLOGY で、起動するTopologyに反映されます。
-プロパティは、STOP TOPOLOGY で初期化されてしまうので、START TOPOLOGY を実行する前に再設定する必要があります。
+設定したプロパティは、 `SUBMIT TOPOLOGY` もしくは `START TOPOLOGY` で、起動するTopologyに反映されます。
+プロパティは、 `STOP TOPOLOGY` で初期化されてしまうので、 `START TOPOLOGY` を実行する前に再設定する必要があります。
 
     gungnir> SET property_name = property_value;
 
 > Example:
-
-    gungnir> SET monitor = enable;
+>
+    gungnir> SET monitor.enabled = true;
 
 Monitorログを出力するように、プロパティを設定します。
 
@@ -313,7 +322,7 @@ Topologyの動作確認の為に、TopologyにJOINTupleを送信します。
 応答にSet-Cookieヘッダが返された場合は、その内容がCLIのメモリCookieに保存され、保存されたCookieは、次回のPOSTコマンドの実行時にCookieヘッダとして送信されます。
 
 > Example:
-
+>
     gungnir> POST userAction {field1:10,field2:"test"}; 
 
 #### Interactive Mode
@@ -330,11 +339,10 @@ JSONTupleのすべてのフィールドの入力が完了すると、編集し�
 
 LIST, MAP, STRUCT型のフィールドの編集は、以下のように行います。
 
-
     CREATE TUPLE userAction2 (f1 STRING, f2 LIST<INT>, f3 MAP<STRING, INT>, f4 STRUCT<m1 TIMESTAMP('yyyy-MM-dd HH:mm:ss'), m2 BOOLEAN>);
 
 > Example:
-
+>
     gungnir> POST userAction2;
     f1 (STRING): test
     f2 (LIST)
@@ -354,7 +362,7 @@ LIST, MAP, STRUCT型のフィールドの編集は、以下のように行いま
     f4 (STRUCT)
       m1 (TIMESTAMP(yyyy-MM-dd HH:mm:ss)): 2013-10-19 22:02:24
       m2 (BOOLEAN): false
-
+>
     POST userAction2 {"f1":"test","f2":[1,2,3],"f3":{"k1":1,"k2":2,"k3":3},"f4":{"m1":"2013-10-19 22:02:24","m2":false}}
     OK
 
@@ -368,7 +376,7 @@ LIST, MAP, STRUCT型のフィールドの編集は、以下のように行いま
     gungnir> COOKIE;
 
 > Exmaple:
-
+>
     gungnir> COOKIE;
     {"name":"TID","value":"52558684e4b0f241c72d0365","domain":null,"path":null,"comment":null,"commentUrl":null,"discard":false,"ports":[],"maxAge":864000000,"version":1,"secure":false,"httpOnly":false}]
 
@@ -383,7 +391,7 @@ Serverから新たなTracking IDを受け取ることができます。
     gungnir> COOKIE CLEAR;
 
 > Example:
-
+>
     gungnir> COOKIE CLEAR;
     OK
     gungnir> COOKIE;
@@ -402,19 +410,19 @@ Tupleが流れた際に出力されるMonitorログを表示することによ�
 
 Monitor機能は、以下の手順で使用します。
 
-- Monitorログを出力するようにプロパティを設定して、該当のTopologyをSUBMITします。
-- 1で起動したTopologyのTopology IDを指定して、MONITORコマンドを実行します。
-- 別のCLIを起動し、POSTコマンドを使ってJOINTupleを送信します。JOINTupleは、curlコマンド等を使って送信することもできます。
-- MONITORコマンドを実行しているCLIに、3で送信したTupleが流れることによって出力されたMonitorログが表示されます。
+1. Monitorログを出力するようにプロパティを設定して、該当のTopologyをSUBMITします。
+2. 1で起動したTopologyのTopology IDを指定して、MONITORコマンドを実行します。
+3. 別のCLIを起動し、POSTコマンドを使ってJOINTupleを送信します。JOINTupleは、curlコマンド等を使って送信することもできます。
+4. MONITORコマンドを実行しているCLIに、3で送信したTupleが流れることによって出力されたMonitorログが表示されます。
 
 > Example:
-
-    gungnir> SET monitor = enable;
+>
+    gungnir> SET monitor.enabled = true;
     OK
     gungnir> SUBMIT TOPOLOGY;
     OK
     gungnir> DESC TOPOLOGY;
-    {"id":"5261606ee4b099995d4f460f","explain":"SPOUT_0(kafka_spout(), kafka_spout(), [userAction(field1 INT, field2 STRING)])\n ...","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z","summary":{"name":"gungnir_5261606ee4b099995d4f460f","status":"ACTIVE","uptimeSecs":403,"numWorkers":1,"numExecutors":3,"numTasks":3}}
+    {"id":"5261606ee4b099995d4f460f","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z","summary":{"name":"gungnir_5261606ee4b099995d4f460f","status":"ACTIVE","uptimeSecs":403,"numWorkers":1,"numExecutors":3,"numTasks":3}}
     gungnir> MONITOR 5261606ee4b099995d4f460f;
 
 別のCLIを開いてPOSTコマンドを実行します。
@@ -445,7 +453,7 @@ gungnirコマンドのバッチモードを使用します。
 実行するクエリはダブルクォーテーションで括る必要があります。
 
 > Example:
-
+>
     $ gungnir -u gennai -p gennai -e "DESC USER;"
     Gungnir server connected... localhost/127.0.0.1:9190
     Gungnir version 0.0.1 build at 20140811-013538
@@ -462,7 +470,7 @@ gungnirコマンドのバッチモードを使用します。
     $ gungnir -u [user] -p [pass] -f [query file]
 
 > Example:
-
+>
     $ cat test.q
     FROM userAction AS ua1 USING kafka_spout() INTO s1;
     FROM s1 FILTER field1 >= 10 INTO s2;

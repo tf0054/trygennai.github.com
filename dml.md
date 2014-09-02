@@ -3,29 +3,31 @@ layout: manual
 title: genn.ai
 ---
 
-## LanguageManual DML
+# LanguageManual DML
 
 This page is a language manual of DML.
 
-### FROM
+## FROM
 
 FROM statement load a Tuple from input source.
 
-#### When the input sources are external.
+### When the input sources are external.
 
     FROM schema_name AS schema_alias, ... USING spout_processor
 
 Users specify the followings.
+
 * Tuple or View name in schema_name.
 * Tuple or View name used in queries in schema_alias.
 * Processor to load input in spout_processor.
  
 > Example:
+>
     FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout()
 
 One topology does not have more than one exter input source.
 
-#### Spout Processor
+### Spout Processor
 
 kafka_spout
 
@@ -33,7 +35,7 @@ kafka_spout
 >
     kafka_spout()
 
-#### When input sources are internal (stream)
+### When input sources are internal (stream)
 
     FROM stream_name[(schema_alias, ...)], ...
 
@@ -43,16 +45,18 @@ kafka_spout
 The following is a example loading all the Tuples from a stream.
 
 > Example:
+>
     FROM s1, s2
 
 The following is a example loading only the specified Tuples from a stream.
 
 > Example:
+>
     FROM s1(ua1, ua2), s2(v1)
 
 ---
 
-### INTO
+## INTO
 
 INTO statement is used for branching and merging a stream.
 
@@ -61,18 +65,19 @@ INTO statement is used for branching and merging a stream.
 * specify output stream name in stream_name.
 
 > Example:
+>
     FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout() INTO s1
 
 User can load a stream output by INTO with FROM statements.
 
-#### Branching
+### Branching
 
     FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout() INTO s1;
     FROM s1(ua1) ...
     FROM s1(ua2) ...
     FROM s1(v1) ...
 
-#### Merging
+### Merging
 
     FROM s1(ua1) ... INTO s2;
     FROM s1(ua2) ... INTO s3;
@@ -81,7 +86,7 @@ User can load a stream output by INTO with FROM statements.
 
 ---
 
-### JOIN
+## JOIN
 
 JOIN adds external data into a filed of a Tuple.
 
@@ -94,19 +99,21 @@ JOIN adds external data into a filed of a Tuple.
     join_name.join_field AS field_alias, ...
 
 Users specify the following arguments.
+
 * A name to join in join_name. The name is used in join_condition or join_fields to identify the fields of external data.
 * Condition in join_condition. Specify the key field (Tuple) of join data to make the data have unique id.
 When conditions are complex, we use AND. We can also specify the condition with constants to the key field of join data.
 * To join_fields, we specify fileds to join. Specifically we add the list of filed names and field name to be joined AS tuple. The field is added the specified Tuple.
 
 > Example:
+>
     JOIN j1 ON j1.code1 = field1 AND j1.code2 = field2 AND j1.del = 0
       TO j1.name AS field10, j1.type AS field11
       USING mongo_fetch('db1', 'col1')
 
 ---
 
-### FILTER
+## FILTER
 
 Fileter statement judges whether the input tuple is flashed as the output or not.
 
@@ -131,78 +138,84 @@ Fileter statement judges whether the input tuple is flashed as the output or not
 * OR
 * NOT
 
-#### &#61;, &#61;&#61;, <>, !&#61;, >, >&#61;, <, <&#61;
+### &#61;, &#61;&#61;, <>, !&#61;, >, >&#61;, <, <&#61;
 
 > Example:
+>
     field1 >= 10
 
-#### LIKE
+### LIKE
 
 In LIKE statement, we can use "%" (multiple character) and "_"(single character).
 
 > Example:
+>
     field2 LIKE 't%'
 
-#### REGEXP
+### REGEXP
 
 In REGEXP, we can use the regex pattern described in java/util/regex/Pattern.
 http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html
 
 > Example:
-
+>
     field3 REGEXP '^[A-Z]{2}-[0-9]{4}$'
 
-#### IN, ALL
+### IN, ALL
 
 IN checks whether input LIST fields contains the at least one specified values.
 
 > Example:
-
+>
     field4 IN ('tokyo', 'kyoto', 'osaka')
 
 ALL checks whether input LIST fields contains all the specified values.
 
 > Example:
-
+>
     field4 ALL ('tokyo', 'kyoto', 'osaka')
 
-#### BETWEEN
+### BETWEEN
 
 > Example:
-
+>
     field1 10 AND 100
 
 
-#### AND, OR, NOT
+### AND, OR, NOT
 
 AND, OR, NOT can be nested.  The priority is NOT, AND, OR.
 We can customize the priority using parenthesis.
 
 > Example:
+>
     field1 <= 30 AND (field5 BETWEEN 10 AND 100 OR field2 LIKE 'A%')
 
-#### Comparison between STRUCT types
+### Comparison between STRUCT types
 
 When the field of Tuple is STRUCT type, gen.ai compare the field as follows.
 
 > Example:
+>
     field6.member3 = 100
 
-#### Comparison between LIST types
+### Comparison between LIST types
 
 When the Tuples are LIST type,  genn.ai checks the field values as follows. 
 
 > Example:
+>
     field4[0] = 'tokyo'
 
-#### Comparison between MAP types
+### Comparison between MAP types
 
 When the field of Tuple is MAP type, genn.ai checks the field as follows.
 
 > Example:
+>
     field7['visa'] = true
 
-#### Constant
+### Constant
 
 Genn.ai support the following constants.
 
@@ -211,59 +224,46 @@ list of characters quoted with single or double quotation marks.
 
 * INT
     number only
-
->
 > Example:
-    2147483647
-
+>
+        2147483647
 
 * DOUBLE
     number.number
-
->
 > Example:
-    12.5
-
+>
+        12.5
 
 * BIGINT
     numberL
-
->
 > Example:
-    9223372036854775807L
-
+>
+        9223372036854775807L
 
 * SMALLINT
     numberS
-
->
 > Example:
-    32767S
-
+>
+        32767S
 
 * TINYINT
     numberY
-
->
 > Example:
-    255Y
-
+>
+        255Y
 
 * FLOAT
     number.numberF
-
->
 > Example:
-    12.5F
-
+>
+        12.5F
 
 * BOOLEAN値
     true|false
 
-
 ---
 
-### FILTER GROUP
+## FILTER GROUP
 
 FILTER GROUP validates whether multiple input Tuples are flashed as the output or not.
 
@@ -278,6 +278,7 @@ genn.ai adds the status field into tuple with specified field name. when users d
 When all the conditions are satisfied, input Tuple passes the filter and also, the filter status is initialized.
 
 > Example:
+>
     FILTER GROUP EXPIRE 7DAYS STATE TO fg_state
       ua1.field1 >= 10 AND ua1.field8 = true,
       (ua2.field1 <= 30 AND ua2.field2.member2 BETWEEN 2 AND 7) OR ua3.field5 LIKE 'A%'
@@ -295,39 +296,37 @@ When all the conditions are satisfied, input Tuple passes the filter and also, t
  In the abave example, genn.ai add the filter status into "fg_state" field of the Tuple, since "fg_state" is specified in state_field.
  fg_state stores the list of times when condition 1 and condition 2 are satisfied, therefore the size of list is the same as the number of conditions.
 
-#### period
+### period
 
 The way to specify the period has the variations.
 
 * Specify with second
     number(SECONDS|SEC)
->
 > Example:
-    30SECONDS
-
+>
+        30SECONDS
 
 * Specify with minutes
     number(MINUTES|MIN)
->
 > Example:
-    55MIN
+>
+        55MIN
   
 * Specify with hours
     number(HOURS|H)
->
 > Example:
-    55HOURS
-
+>
+        55HOURS
 
 * Specify with days
     number(DAYS|D)
-
 > Example:
-    15DAYS
+>
+        15DAYS
 
 ---
 
-### EACH
+## EACH
 
 EACH executes the editing or aggregation of Tuples.
 
@@ -335,51 +334,51 @@ EACH executes the editing or aggregation of Tuples.
 
 * In expr, users specify a aggregation function, edit function or a field accessor.
 
-#### Aggregation function
+### Aggregation function
 
 * Count the number of Tuples.
->
 > Example:
-    EACH count() AS cnt1
-
+>
+        EACH count() AS cnt1
 
 * Compute the summation of input field values.
->
 > Example:
-    EACH sum(field1) AS sum1
+>
+        EACH sum(field1) AS sum1
 
 * Comput the mean of input field values.
->
 > Example:
-    EACH avg(field1) AS avg1
+>
+        EACH avg(field1) AS avg1
 
-#### Edit function
+### Edit function
 
 * When the field is NULL, the value is overried with specified value.
->
 > Example:
-    EACH ifnull(field1, 0) AS field1
+>
+        EACH ifnull(field1, 0) AS field1
 
 * This function concatenates the values of STRING type fields.
->
 > Example:
-    EACH concat(field1, '-', field2) AS new_field
+>
+        EACH concat(field1, '-', field2) AS new_field
 
 
-#### Arugments of functions
+### Arugments of functions
 
 As for the constants, we will describe them after the number of supported functions is increased.
 
-#### Accessor of fields
+### Accessor of fields
 
 > Example:
+>
     EACH field1, field6.member1 AS field10, field7['visa'] AS visa
 
 The above example just outputs field1, stores field6.member1 into the field10 field, and extracts field7&#91;'visa'] into visa field.
 
 ---
 
-### GROUP
+## GROUP
 
 GROUP executes the queries srrounded with BEGIN GROUP ... END GROUP as a group.
 
@@ -388,9 +387,10 @@ GROUP executes the queries srrounded with BEGIN GROUP ... END GROUP as a group.
 
 * In field, we specify the field name for the group.
 
-#### execute EACH as a group
+### execute EACH as a group
 
 > Example:
+>
     BEGIN GROUP BY user_name
     EACH user_name, count() AS gc1
     EMIT * USING mongo_persist('db1', 'col2', 'user_name');
@@ -399,9 +399,10 @@ GROUP executes the queries srrounded with BEGIN GROUP ... END GROUP as a group.
 
 The above example counts the number of tuples for each user.
 
-#### Execute FILTER GROUP as a group
+### Execute FILTER GROUP as a group
 
 > Example:
+>
     BEGIN GROUP BY user_name
     FILTER GROUP EXPIRE 1DAYS
       ua1.field1 >= 10 AND ua1.field8 = true,
@@ -413,11 +414,12 @@ The above example counts the number of tuples for each user.
 Above example executes filter for each user. Specifically, the example checks whether the both condition 1
 and condition 2 are satisfied with each user and then the FILTER GROUP status of each user is stored.
 
-#### Nesting of GROUP
+### Nesting of GROUP
 
 GROUP can be nested.
 
 > Example:
+>
     EACH ...  <- executes without creating group
     BEGIN GROUP BY date
       EACH ...  <- executes for each date
@@ -431,6 +433,7 @@ GROUP can be nested.
 TO STREAM free all the groups.
 
 > Example:
+>
     EACH ...  <- executes without creating group
     BEGIN GROUP BY date
       EACH ...  <- executes for each date
@@ -444,7 +447,7 @@ END GROUP and TO STREAM can be omitted when goups may not be free.
 
 ---
 
-### EMIT
+## EMIT
 
 EMIT flush Tuples
 
@@ -454,9 +457,10 @@ EMIT flush Tuples
 * In emit_processor, users specify a processor to use flush output.
 
 > Example:
+>
     EMIT field1, field2, field3 USING mongo_persist('db1', 'col1')
 
-#### Emit Processor
+### Emit Processor
 
 * Kafka Emit Processor  
 
@@ -467,7 +471,7 @@ Emit Processor flush Tuple into Kafka.
  * Users specify the Topic name in topic_name. topic_name represents a processor variable.
 
 > Example:
-
+>
     kafka_emit('topic1')
 
 * Mongo Persist Processor
@@ -483,12 +487,13 @@ When key_names is  specified, output is updated to the key.
 When key_names is not specified, output become instert.
 
 > Example:
+>
     mongo_persist('db1', 'col1')  <- insert
     mongo_persist('db1', 'col1', 'field2') <- update with field2 as the key
     mongo_persist('db1', 'col1', ['field2', 'field3']) <- update with field2 + field3 as the key
 
 
-#### Processor variable
+### Processor variable
 
 For output name of Emit Processor, the following processor variables can be contained.
 
@@ -496,5 +501,6 @@ ${TOPOLOGY_ID} is replaced with the id of running Topology.
 ${ACCOUNT_ID} is replaced wiht the id of user account who launched the running Topology.
 
 > Example:
+>
     kafka_emit('topic_${TOPOLOGY_ID}')
 
