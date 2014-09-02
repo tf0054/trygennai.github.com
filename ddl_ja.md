@@ -52,12 +52,7 @@ PARTITIONED BY clause を省略した場合は、Tupleをランダムに振り�
 
 * Numeric Types
 
-    TINYINT
-    , SMALLINT
-    , INT
-    , BIGINT
-    , FLOAT
-    , DOUBLE
+    TINYINT, SMALLINT, INT, BIGINT, FLOAT, DOUBLE
 
 * Date/Time Types
 
@@ -73,9 +68,7 @@ PARTITIONED BY clause を省略した場合は、Tupleをランダムに振り�
 
 * Complex Types
 
-    LIST
-    , MAP
-    , STRUCT
+    LIST, MAP, STRUCT
 
 ### TINYINT
 
@@ -224,19 +217,19 @@ JSONTupleでは、フィールドの値をObjects構造で記述します。
 上記の userAction1 をJSONTupleで記述した例です。
 
     {
-        field1:12345,
-        field2:"xxx",
-        field3:"yyy",
-        field4:["aaa","bbb","ccc"],
-        field5:1,
-        field6:{
-          member1:"2013-10-18 18:28:34",
-          member2:[10000, 20000, 30000]
-        },
-        field7:{"A":true, "B":false, "C":false},
-        field8:true,
-        field9:1382086720,
-        field10:{"11":"lll", "22":"mmm"}
+      field1:12345,
+      field2:"xxx",
+      field3:"yyy",
+      field4:["aaa","bbb","ccc"],
+      field5:1,
+      field6:{
+        member1:"2013-10-18 18:28:34",
+        member2:[10000, 20000, 30000]
+      },
+      field7:{"A":true, "B":false, "C":false},
+      field8:true,
+      field9:1382086720,
+      field10:{"11":"lll", "22":"mmm"}
     }
 
 ### 特殊なフィールド
@@ -290,8 +283,8 @@ Tracking ID と Tracking Noは、いずれもTupleの同一性の判定に使用
 > Result:
 >
     [
-        {"name":"userAction1","owner":"user@genn.ai","createTime":"2013-10-18T02:14:00.241Z"},
-        {"name":"userAction2","owner":"user@genn.ai","createTime":"2013-10-17T02:16:34.898Z"}
+      {"name":"userAction1","owner":"user@genn.ai","createTime":"2013-10-18T02:14:00.241Z"},
+      {"name":"userAction2","owner":"user@genn.ai","createTime":"2013-10-17T02:16:34.898Z"}
     ]
 
 * name は、Tuple名です。
@@ -319,15 +312,15 @@ Tracking ID と Tracking Noは、いずれもTupleの同一性の判定に使用
 > Result:
 >
     {
-        "name":"userAction2",
-        "fields":{
-            "field1":{"type":"BIGINT"},
-            "field2":{"type":"STRING"},
-            "field3":{"type":"STRING"}
-        },
-        "partitioned":["field1"],
-        "owner":"user@genn.ai",
-        "createTime":"2013-09-13T01:35:55.667Z"
+      "name":"userAction2",
+      "fields":{
+        "field1":{"type":"BIGINT"},
+        "field2":{"type":"STRING"},
+        "field3":{"type":"STRING"}
+      },
+      "partitioned":["field1"],
+      "owner":"user@genn.ai",
+      "createTime":"2013-09-13T01:35:55.667Z"
     }
 
 
@@ -372,8 +365,7 @@ TupleのViewを定義します。Tupleスキーマを別名で定義できます
     CREATE VIEW viewAction2 AS FROM userAction1 FILTER field3 = 'CATEGORY-2'
     CREATE VIEW viewAction3 AS FROM userAction1 FILTER field3 = 'CATEGORY-3'
 
-
-> userAction1のTupleスキーマをもとに、field3フィールドの値ごとに３つのviewを定義しています。
+userAction1のTupleスキーマをもとに、field3フィールドの値ごとに３つのviewを定義しています。
 
 ---
 
@@ -419,11 +411,11 @@ TupleのViewを定義します。Tupleスキーマを別名で定義できます
 > Result:
 > 
     {
-        "name":"viewAction1",
-        "from":"userAction1",
-        "filter":"field3 = CATEGORY-1",
-        "owner":"user@genn.ai",
-        "createTime":"2013-10-19T03:19:22.241Z"
+      "name":"viewAction1",
+      "from":"userAction1",
+      "filter":"field3 = CATEGORY-1",
+      "owner":"user@genn.ai",
+      "createTime":"2013-10-19T03:19:22.241Z"
     }
 
 * name は、View名です。

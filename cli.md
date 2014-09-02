@@ -98,18 +98,18 @@ The result is shown in JSON format.
 >
     gungnir> DESC TOPOLOGY;
     {
-        "id":"5261606ee4b099995d4f460f",
-        "status":"RUNNING",
-        "owner":"user@genn.ai",
-        "createTime":"2013-10-18T16:23:09.901Z",
-        "summary":{
-            "name":"gungnir_5261606ee4b099995d4f460f",
-            "status":"ACTIVE",
-            "uptimeSecs":403,
-            "numWorkers":1,
-            "numExecutors":3,
-            "numTasks":3
-        }
+      "id":"5261606ee4b099995d4f460f",
+      "status":"RUNNING",
+      "owner":"user@genn.ai",
+      "createTime":"2013-10-18T16:23:09.901Z",
+      "summary":{
+        "name":"gungnir_5261606ee4b099995d4f460f",
+        "status":"ACTIVE",
+        "uptimeSecs":403,
+        "numWorkers":1,
+        "numExecutors":3,
+        "numTasks":3
+      }
     }
 
 The followings are the meanings of blocks in the above result.
@@ -247,7 +247,7 @@ The following is the form of SET command.
 > Example:
 >
     gungnir> SET monitor.enabled = true;
-
+>
 > The above command the a monitor property to flush Monitor log.
 
 ---

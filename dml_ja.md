@@ -27,10 +27,10 @@ FROM は、Tupleを入力先から読み込みます。
 
 ### Spout Processor
 
-kafka_spout
+#### kafka_spout
 
-> TupleをKafkaから読み込みます。システムのデフォルトとして動作します。
->
+TupleをKafkaから読み込みます。システムのデフォルトとして動作します。
+
     kafka_spout()
 
 
@@ -122,7 +122,7 @@ FILTER は、単一のTupleに対してTupleの通過を判定します。
 
 * condition には、フィルタの条件を指定します。
 
- condition の符号には、以下のものを指定します。
+condition の符号には、以下のものを指定します。
 
 * &#61; もしくは &#61;&#61;
 * <> もしくは !&#61;
@@ -156,7 +156,7 @@ LIKEで使用できるワイルドカードは、"%"（複数文字）と"_"（�
 ### REGEXP
 
 REGEXPで使用できる正規表現は、java/util/regex/Patternと同じ書式を採用しています。
-http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html
+[http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html](http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html)
 
 > Example:
 >
@@ -189,6 +189,7 @@ AND, OR, NOT は入れ子にすることが可能です。優先順位はNOT, AN
 優先順位は、()を使用して変更できます。
 
 > Example:
+>
     field1 <= 30 AND (field5 BETWEEN 10 AND 100 OR field2 LIKE 'A%')
 
 ### STRUCT型フィールドの比較
@@ -219,45 +220,59 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
 条件に指定できる定数は、以下になります。
 
 * 文字列
-シングルクォートまたはダブルクォートでくくった文字列
+
+    シングルクォートまたはダブルクォートでくくった文字列
 
 * INT値
+
     number only
-> Example:
->
-        2147483647
+
+    > Example:
+    >
+      2147483647
 
 * DOUBLE値
+
     number.number
-> Example:
->
-        12.5
+
+    > Example:
+    >
+      12.5
 
 * BIGINT値
+
     numberL
-> Example:
->
-        9223372036854775807L
+
+    > Example:
+    >
+      9223372036854775807L
 
 * SMALLINT値
+
     numberS
-> Example:
->
-        32767S
+
+    > Example:
+    >
+      32767S
 
 * TINYINT値
+
     numberY
-> Example:
->
-            255Y
+
+    > Example:
+    >
+      255Y
 
 * FLOAT値
+
     number.numberF
-> Example:
->
-        12.5F
+
+    > Example:
+    >
+      12.5F
 
 * BOOLEAN値
+
     true|false
 
 
@@ -301,28 +316,36 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
 ### period
 
 * 秒で指定
+
     number(SECONDS|SEC)
-> Example:
->
-        30SECONDS
+
+    > Example:
+    >
+      30SECONDS
 
 * 分で指定
+
     number(MINUTES|MIN)
-> Example:
->
-        55MIN
+
+    > Example:
+    >
+      55MIN
   
 * 時間で指定
+
     number(HOURS|H)
-> Example:
->
-        55HOURS
+
+    > Example:
+    >
+      55HOURS
 
 * 日で指定
+
     number(DAYS|D)
-> Example:
->
-        15DAYS
+
+    > Example:
+    >
+      15DAYS
 
 ---
 
@@ -337,32 +360,37 @@ EACH は、Tupleの集計や編集を実行します。
 ### 集計関数
 
 * Tupleの到着数をカウントします。
-> Example:
->
-        EACH count() AS cnt1
+
+    > Example:
+    >
+      EACH count() AS cnt1
 
 
 * 到着したフィールドの値を合計します。
-> Example:
->
-        EACH sum(field1) AS sum1
+
+    > Example:
+    >
+      EACH sum(field1) AS sum1
 
 * 到着したフィールドの値の平均を計算します。
-> Example:
->
-        EACH avg(field1) AS avg1
+
+    > Example:
+    >
+      EACH avg(field1) AS avg1
 
 ### 編集関数
 
 * フィールドの値がNULLであれば、代替えの値で置き換えます。
-> Example:
->
-        EACH ifnull(field1, 0) AS field1
+
+    > Example:
+    >
+      EACH ifnull(field1, 0) AS field1
 
 * STRING型のフィールドの値を連結したフィールドを作成します。
-> Example:
->
-        EACH concat(field1, '-', field2) AS new_field
+
+    > Example:
+    >
+      EACH concat(field1, '-', field2) AS new_field
 
 ### 関数の引数
 
@@ -458,7 +486,7 @@ EMITは、Tupleを外部へ出力します。
 
 ### Emit Processor
 
-* Kafka Emit Processor  
+#### Kafka Emit Processor  
 
 TupleをKafkaに出力します。
 
@@ -472,7 +500,7 @@ TupleをKafkaに出力します。
     kafka_emit('topic1')
 
 
-* Mongo Persist Processor
+#### Mongo Persist Processor
 
 TupleをMongoDBに出力します。
 
