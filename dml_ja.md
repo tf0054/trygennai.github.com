@@ -353,44 +353,123 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
 
 EACH は、Tupleの集計や編集を実行します。
 
-  EACH expr, ...
+    EACH expr, ...
 
 * exprには、集計関数もしくは編集関数、フィールドのアクセサを指定します。
 
 ### 集計関数
 
-* Tupleの到着数をカウントします。
+#### count
 
-    > Example:
-    >
-      EACH count() AS cnt1
+Tupleの到着数をカウントします。
 
+> Example:
+>
+    EACH count() AS cnt1
 
-* 到着したフィールドの値を合計します。
+#### sum
 
-    > Example:
-    >
-      EACH sum(field1) AS sum1
+到着したフィールドの値を合計します。
 
-* 到着したフィールドの値の平均を計算します。
+> Example:
+>
+    EACH sum(field1) AS sum1
 
-    > Example:
-    >
-      EACH avg(field1) AS avg1
+#### avg
+
+到着したフィールドの値の平均を計算します。
+
+> Example:
+>
+    EACH avg(field1) AS avg1
 
 ### 編集関数
 
-* フィールドの値がNULLであれば、代替えの値で置き換えます。
+#### ifnull
 
-    > Example:
-    >
-      EACH ifnull(field1, 0) AS field1
+フィールドの値がNULLであれば、代替の値で置き換えます。
 
-* STRING型のフィールドの値を連結したフィールドを作成します。
+> Example:
+>
+    EACH ifnull(field1, 0) AS field1
 
-    > Example:
-    >
-      EACH concat(field1, '-', field2) AS new_field
+#### concat
+
+STRING型のフィールドの値を連結したフィールドを作成します。
+
+> Example:
+>
+    EACH concat(field1, '-', field2) AS new_field
+
+#### split
+
+フィールドの値を区切り文字列もしくは正規表現によってリストに変換します。
+
+    split(string str, string pattern)
+
+* strには、対象フィールドを指定します。
+* patternには、区切り文字列もしくは正規表現で指定します。
+
+> Example:
+>
+    EACH split(field1, ',') AS new_list
+
+#### regexp_extract
+
+フィールドの値から正規表現によって値を抜き出します。
+
+    regexp_extract(string subject, string pattern, int index)
+
+* subjectには、対象フィールドを指定します。
+* patternには、正規表現パターンを指定します。
+* indexには、抜き出すグループの番号を指定します。
+
+> Example:
+>
+    EACH regexp_extract(field1, '(\d{4})-(\d{2})-(\d{2})', 1) AS new_field
+
+#### parse_url
+
+フィールドの値(URL)をパースして、一部を返します。
+
+    parse_url(string urlString, string partToExtract [, string keyToExtract])
+
+* urlStringには、パースするURLフィールドを指定します。
+* partToExtractには、下記のいずれかを指定します。
+    * HOST
+    * PATH
+    * QUERY
+    * REF
+    * PROTOCOL
+    * AUTHORITY
+    * FILE
+    * USERINFO
+* keyToExtractには、partToExtractがQUERYの場合、取得するパラメータ名称を指定します。
+
+> Example:
+>
+    EACH parse_url(urlField, 'QUERY', 'k1') AS new_field
+
+#### cast
+
+フィールドの値を指定した型に変換します。
+
+    cast(expr as \<type\>)
+
+* exprには、対象フィールドを指定します。
+* \<type\>には、下記の型のみ指定可能です。
+    * TIMESTAMP
+    * TINYINT
+    * SMALLINT
+    * INT
+    * BIGINT
+    * FLOAT
+    * DOUBLE
+    * BOOLEAN
+
+> Example:
+>
+    EACH cast(field1 AS TIMESTAMP('yyyyMMddHHmmss')) AS new_field
 
 ### 関数の引数
 
@@ -403,6 +482,100 @@ EACH は、Tupleの集計や編集を実行します。
     EACH field1, field6.member1 AS field10, field7['visa'] AS visa
 
 field1はそのまま、field6.member1をfield10フィールドへ、field7&#91;'visa']をvisaフィールドへ抽出します。
+
+---
+
+## LIMIT
+
+Tupleの流れを制限します。
+
+    LIMIT [FIRST|LAST] period
+
+* periodには、時間もしくはTuple数を指定します。
+* FIRSTは、指定範囲内に最初に到着したTupleを後続のオペレータに渡します。
+* LASTは、指定範囲内の最後に到着したTupleを後続のオペレータに渡します。
+
+### 時間による流量制限
+
+* 時間の起点は、最初にTupleが到着した時間です。
+* 起点は指定時間が経過した以降にリセットされます。
+
+> Example: 最初に到着したTupleを後続に送り、以降30分はTupleを送らない。
+>
+    LIMIT FIRST EVERY 30min
+
+> Example: Tupleが最初に到着してから、30分間に到着した最後のTupleを後続に送る。
+>
+    LIMIT LAST EVERY 30min
+
+
+### Tuple数による流量制限
+
+> Example: 5件のTupleの中で、最初に到着したTupleを後続に送る。
+>
+    LIMIT FIRST EVERY 5
+
+> Example: 5件のTupleの中で、最後に到着したTupleを後続に送る。
+>
+    LIMIT LAST EVERY 5
+
+---
+
+## SLIDE
+
+集計関数によるスライド集計を実行します。間隔は時間もしくはTuple数を指定することが可能です。スライドはTupleの到着時にのみ実行されます。
+
+    SLIDE period expr
+
+* periodには、スライド時間もしくはタプル数を指定します。
+
+* exprには、集計関数やフィールドのアクセサを指定します。利用可能な集計関数はEACHと同様です。
+
+### 時間でスライド
+
+    SLIDE LENGTH period BY time_field expr
+
+* time_fieldには、起点となるTIMESTAMP型のフィールドを指定します。
+
+> Example:
+>
+    SLIDE LENGTH 10sec BY _time sum(field1) AS new_field
+
+### Tuple数でスライド
+
+> Exapmle:
+>
+    SLIDE LENGTH 100 sum(field2) AS new_field
+
+---
+
+## SNAPSHOT
+
+一定間隔による集計を実行します。間隔は時間もしくはTuple数を指定することが可能です。
+
+    SNAPSHOT EVERY period expr
+
+* periodには、時間・Tuple数を指定します。
+* exprには、集計関数やフィールドアクセサを指定します。
+
+### 時間による一定間隔に実行
+
+* cron形式でも指定することができます。
+* 指定可能な時間は1分以上です。
+* 集計値は指定時間毎にリセットされます。
+
+> Example: 7分毎に実行
+>
+    SNAPSHOT EVERY 7min sum(field1) AS new_field
+    SNAPSHOT EVERY "*/7 * * * *" sum(field1) AS new_field
+
+### Tuple数による一定間隔に実行
+
+* 指定したTuple数の集計を実行し、後続のオペレータに結果を送ります。
+
+> Example:
+>
+    SNAPSHOT EVERY 10 sum(field1) AS new_field
 
 ---
 
