@@ -13,8 +13,9 @@
 				list-style:none;
 				font-size:12px;
 			}
-			.header-h3 { }
-			.header-h4 { padding-left:10px; }
+			.header-h2 { }
+			.header-h3 { padding-left:10px }
+			.header-h4 { padding-left:20px; }
 		</style>
 	</head>
 	<body>
@@ -67,7 +68,7 @@
 	<script>
 		$(document).ready(function(){
 			$("#toc").toc({
-				"selectors": "h3,h4",
+				"selectors": "h2,h3,h4",
 				"container": "body",
 				"prefix": "header"
 			});
