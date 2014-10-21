@@ -67,11 +67,13 @@
 	<script src="/js/jquery.toc.min.js"></script>
 	<script>
 		$(document).ready(function(){
-			$("#toc").toc({
-				"selectors": "h2,h3",
-				"container": "body",
-				"prefix": "header"
-			});
+			if (window.innerWidth > 990) {
+				$("#toc").toc({
+					"selectors": "h2,h3",
+					"container": "body",
+					"prefix": "header"
+				});
+			}
 		});
 	</script>
 </html>
