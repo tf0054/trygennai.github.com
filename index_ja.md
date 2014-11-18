@@ -12,6 +12,9 @@ title: genn.ai
 ### genn.ai ツールマニュアル
 * [gungnir](cli_ja.html) (コマンドラインツール)
 
-### genn.ai の実行環境
-* [dev.genn.ai](http://dev.genn.ai/) (環境のアップデートのために停止している場合があります。)
+### genn.ai の実行環境(ローカル用)
+* [vagrant (VM)](https://github.com/siniida/gennai.vagrant)
+
+### genn.ai の実行環境(AWS)
+* [dev.genn.ai](http://dev.genn.ai/) (経験者向け。環境のアップデートのため停止している場合があります。)
 
