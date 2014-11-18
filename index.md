@@ -12,6 +12,8 @@ title: genn.ai
 ### genn.ai tool manual
 * [gungnir](cli.html) (A command line tool)
 
-### genn.ai environment
-* [dev.genn.ai](http://dev.genn.ai/) (Sometimes stopped for update!)
+### genn.ai trial on local.
+* [vagrant (VM)](https://github.com/siniida/gennai.vagrant)
 
+### genn.ai trial on AWS
+* [dev.genn.ai](http://dev.genn.ai/) (Experienced users only / Sometimes stopped for update!)
