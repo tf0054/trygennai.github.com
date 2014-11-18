@@ -25,7 +25,7 @@ FROM は、Tupleを入力先から読み込みます。
 
 外部入力は、一つのTopologyに対して一つしか定義できません。
 
-### Spout Processor
+#### Spout Processor
 
 #### kafka_spout
 
@@ -70,14 +70,16 @@ INTO は、ストリームを分岐・合流させます。
 
 INTO を使って出力したストリームは、FROM で読み込みます。
 
-### 分岐
+### 分岐, 合流
+
+分岐の例を以下に示します。
 
     FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout() INTO s1;
     FROM s1(ua1) ...
     FROM s1(ua2) ...
     FROM s1(v1) ...
 
-### 合流
+合流の例を以下に示します。
 
     FROM s1(ua1) ... INTO s2;
     FROM s1(ua2) ... INTO s3;
@@ -99,18 +101,24 @@ JOINは、外部データをフィールドとしてTupleに結合します。
     join_name.join_field AS field_alias, ...
 
 
-* join_name には、結合する名称を指定します。join_condition や join_fields で、外部データのフィールドを識別する為に使用します。
+* join_name には、結合する名称を指定します。
+join_condition や join_fields で、外部データのフィールドを識別する為に使用します。
 * join_condition には、結合条件を指定します。
 結合データのキーフィールド = Tupleのフィールド を、結合データが一意になるように指定してください。
 複合条件の場合は、AND で指定します。結合データのキーフィールドに対して、定数で条件を指定することもできます。
-* join_fields には、結合するフィールドを指定します。
-結合データのフィールド名 AS Tupleに結合する際のフィールド名 を指定します。フィールドはTupleに追加されます。
+* join_fields には、結合するフィールドを全て指定します。
+結合データのフィールド名 AS Tupleに結合する際のフィールド名 を指定します。
+フィールドはTupleに追加されます。
 
 > Example:
 >
     JOIN j1 ON j1.code1 = field1 AND j1.code2 = field2 AND j1.del = 0
       TO j1.name AS field10, j1.type AS field11
       USING mongo_fetch('db1', 'col1')
+
+### MongoDBデータとの結合
+
+今現在、MongoDB上にあるデータとの結合が可能です。
 
 ---
 
@@ -120,7 +128,7 @@ FILTER は、単一のTupleに対してTupleの通過を判定します。
 
     FILTER condition
 
-* condition には、フィルタの条件を指定します。
+* condition に、フィルタの条件を指定します。
 
 condition の符号には、以下のものを指定します。
 
@@ -141,19 +149,19 @@ condition の符号には、以下のものを指定します。
 
 ### &#61;, &#61;&#61;, <>, !&#61;, >, >&#61;, <, <&#61;
 
+論理比較を行います。
+
 > Example:
 >
     field1 >= 10
 
-### LIKE
+### LIKE, REGEXP
 
 LIKEで使用できるワイルドカードは、"%"（複数文字）と"_"（一文字）です。
 
 > Example:
 >
     field2 LIKE 't%'
-
-### REGEXP
 
 REGEXPで使用できる正規表現は、java/util/regex/Patternと同じ書式を採用しています。
 [http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html](http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html)
@@ -192,7 +200,11 @@ AND, OR, NOT は入れ子にすることが可能です。優先順位はNOT, AN
 >
     field1 <= 30 AND (field5 BETWEEN 10 AND 100 OR field2 LIKE 'A%')
 
-### STRUCT型フィールドの比較
+### その他
+
+#### 比較
+
+#### STRUCT型フィールドの比較
 
 TupleのフィールドがSTRUCT型の場合は、フィールド値を以下のように比較します。
 
@@ -200,14 +212,14 @@ TupleのフィールドがSTRUCT型の場合は、フィールド値を以下の
 >
     field6.member3 = 100
 
-### LIST型フィールドの比較
+#### LIST型フィールドの比較
 
 TupleのフィールドがLIST型の場合は、フィールド値を以下のように比較します。
 
 > Example:
     field4[0] = 'tokyo'
 
-### MAP型フィールドの比較
+#### MAP型フィールドの比較
 
 TupleのフィールドがMAP型の場合は、フィールドの値を以下のように比較します。
 
@@ -215,7 +227,8 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
 >
     field7['visa'] = true
 
-### 定数
+
+#### 定数
 
 条件に指定できる定数は、以下になります。
 
@@ -313,7 +326,9 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
  state_fieldに"fg_state"を指定しているので、フィルタの状態を"fg_state"フィールドとしてTupleに追加します。
  fg_stateは、条件１と条件２のそれぞれを満たした日時が格納されます。条件の数と等しいTIMESTAMPのLISTになります。
 
-### period
+### 状態の保持
+
+period を用いて、フィルタの状態をどれだけ保持するか、を指定します。
 
 * 秒で指定
 
@@ -471,9 +486,9 @@ STRING型のフィールドの値を連結したフィールドを作成しま�
 >
     EACH cast(field1 AS TIMESTAMP('yyyyMMddHHmmss')) AS new_field
 
-### 関数の引数
-
-定数に関しては、関数の種類が増えてきてから改めて記述する。
+; ### 関数の引数
+;
+; 定数に関しては、関数の種類が増えてきてから改めて記述する。
 
 ### フィールドのアクセサ
 
@@ -657,7 +672,7 @@ EMITは、Tupleを外部へ出力します。
 >
     EMIT field1, field2, field3 USING mongo_persist('db1', 'col1')
 
-### Emit Processor
+### 出力先が外部の場合
 
 #### Kafka Emit Processor  
 
@@ -693,7 +708,7 @@ TupleをMongoDBに出力します。
     mongo_persist('db1', 'col1', ['field2', 'field3']) <- field2 + field3 を複合キーとしてupdate
 
 
-### プロセッサ変数
+#### プロセッサ変数
 
 Emit Processor の出力先の名称には、以下のプロセッサ変数を含めることができます。
 
