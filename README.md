@@ -1,4 +1,4 @@
-Gen.nai Website
+gen.nai Website
 ===============
 
 About
@@ -9,7 +9,7 @@ This repository has Markdown syntax files compiled into http://pages.genn.ai/ we
 Prerequisites
 --------------
 
-* Jekyll (1.3 or greater)
+* Jekyll (2.5 or greater)
 
 How to Build
 --------------

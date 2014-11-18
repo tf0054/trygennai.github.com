@@ -30,9 +30,6 @@ PARTITIONED BY clause を省略した場合は、Tupleをランダムに振り�
 > Example:
 >
     CREATE TUPLE userAction1 (
-        _tno,
-        _tid,
-        _time,
         field1 INT,
         field2 STRING,
         field3 STRING,
@@ -44,7 +41,7 @@ PARTITIONED BY clause を省略した場合は、Tupleをランダムに振り�
         field9 TIMESTAMP,
         field10 MAP<INT, STRING>
         )
-        PARTITIONED BY _tno
+        PARTITIONED BY field1
 
 ### Field Types
 
@@ -70,19 +67,19 @@ PARTITIONED BY clause を省略した場合は、Tupleをランダムに振り�
 
     LIST, MAP, STRUCT
 
-### TINYINT
+#### TINYINT
 
 GungnirTupleでは、JavaのByteとして扱われます。
 
 JSONTupleでは、フィールドの値を数字で記述します。
 
-### SMALLINT
+#### SMALLINT
 
 GungnirTupleでは、JavaのShortとして扱われます。
 
 JSONTupleでは、フィールドの値を数字で記述します。
 
-### INT
+#### INT
 
 GungnirTupleでは、JavaのIntegerとして扱われます。
 
@@ -90,7 +87,7 @@ JSONTupleでは、フィールドの値を数字で記述します。
 JSONTupleのフィールド値に数字を記述し、かつ該当のフィールドの型をスキーマで省略していた場合は、
 記述した数字の桁数に応じて、フィールド値はINT（Integer）もしくはBIGINT（Long）型に変換されます。
 
-### BIGINT
+#### BIGINT
 
 GungnirTupleでは、JavaのLongとして扱われます。
 
@@ -98,13 +95,13 @@ JSONTupleでは、フィールドの値を数字で記述します。
 JSONTupleのフィールド値に数字を記述し、かつ該当のフィールドの型をスキーマで省略していた場合は、
 記述した数字の桁数に応じて、フィールド値はINT（Integer）もしくはBIGINT（Long）型に変換されます。
 
-### FLOAT
+#### FLOAT
 
 GungnirTupleでは、JavaのFloatとして扱われます。
 
 JSONTupleでは、フィールドの値を数字（小数）で記述します。
 
-### DOUBLE
+#### DOUBLE
 
 GungnirTupleでは、JavaのDoubleとして扱われます。
 
@@ -112,7 +109,7 @@ JSONTupleでは、フィールドの値を数字（小数）で記述します�
 JSONTupleのフィールド値に小数を記述し、かつ該当のフィールドの型をスキーマで省略していた場合は、
 フィールド値はDOUBLE型（Doubleに変換されます。
 
-### TIMESTAMP
+#### TIMESTAMP
 
 * TIMESTAMP
 
@@ -144,19 +141,19 @@ JSONTupleでは、フィールドの値をdate_format で指定したフォー�
 >
     field:"2013-10-18 18:07:25"
 
-### STRING
+#### STRING
 
 GungnirTupleでは、JavaのStringとして扱われます。
 
 JSONTupleでは、フィールドの値をダブルクォートでくくった文字列で記述します。
 
-### BOOLEAN
+#### BOOLEAN
 
 GungnirTupleでは、JavaのBooleanとして扱われます。
 
 JSONTupleでは、フィールドの値を true もしくは false で記述します。
 
-### LIST
+#### LIST
 
 GungnirTupleでは、Javaのjava.util.Listとして扱われます。
 LISTの要素の型には、Numeric Types、TIMESTAMP、STRING、BOOLEAN のいずれかを指定します。
@@ -171,7 +168,7 @@ JSONTupleでは、フィールドの値をArrays構造で記述します。
 >
     field:["tokyo","kyoto","osaka"]
 
-### MAP
+#### MAP
 
 GungnirTupleでは、Javaのjava.util.Mapとして扱われます。
 MAPのキーと値の型には、Numeric Types、TIMESTAMP、STRING、BOOLEAN のいずれかを指定します。
@@ -193,7 +190,7 @@ JSONTupleでは、フィールドの値をObjects構造で記述します。
 >
     field MAP<INT, DOUBLE> --> field:{"1":0.6, "200":2.3, "560":3.0}
 
-### STRUCT
+#### STRUCT
 
 GungnirTupleでは、ai.genn.gungnir.tuple.Struct（構造体クラス）として扱われます。
 
@@ -256,6 +253,25 @@ JSONTupleでは、フィールドの値をObjects構造で記述します。
 
     Tupleの受付時間を格納するフィールドです。
     スキーマのフィールドに &#x5f;time を記述すると、受付時間（受付時の現在時間）がTupleに挿入されます。（TIMESTAMP型になります）
+
+> Example:
+>
+    CREATE TUPLE userAction1 (
+        _tno,
+        _tid,
+        _time,
+        field1 INT,
+        field2 STRING,
+        field3 STRING,
+        field4 LIST<STRING>,
+        field5 TINYINT,
+        field6 STRUCT<member1 TIMESTAMP('yyyy-MM-dd HH:mm:ss'), member2 LIST<BIGINT>>,
+        field7 MAP<STRING, BOOLEAN>,
+        field8 BOOLEAN,
+        field9 TIMESTAMP,
+        field10 MAP<INT, STRING>
+        )
+        PARTITIONED BY _tno
 
 ### Tracking ID と Tracking No
 
@@ -335,6 +351,7 @@ Tracking ID と Tracking Noは、いずれもTupleの同一性の判定に使用
 ## DROP TUPLE
 
 Tupleスキーマを削除します。
+どのトポロジからも使われてないもののみ削除可能です。
 
     DROP TUPLE schema_name
 
