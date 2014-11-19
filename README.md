@@ -9,7 +9,7 @@ This repository has Markdown syntax files compiled into http://pages.genn.ai/ we
 Prerequisites
 --------------
 
-* Jekyll (2.5 or greater)
+* [Jekyll](http://jekyllrb.com/) (2.5 or greater)
 
 How to Build
 --------------
