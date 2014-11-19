@@ -5,9 +5,13 @@ title: genn.ai
 
 # LanguageManual DML
 
+    genn.aiのRESTサーバが受け取ったイベントは、genn.aiの中ではTupleと呼ばれます。
+    また、Tupleはデータベースのテーブル定義のように、スキーマ(構造定義)を持ちます。
+    この定義については [DDL](ddl_ja.html)のページをご参照下さい。
+
 ## FROM
 
-FROM は、Tupleを入力先から読み込みます。
+FROM を使い、Tupleの入力元をスキーマとともに指定します。
 
 ### 入力先が外部の場合
 
@@ -135,7 +139,7 @@ join_condition や join_fields で、外部データのフィールドを識別�
 キャッシュは結合キーごとに保存されます。
 
 > Example:
-> 
+>
     JOIN books ON books.title = ccc AND books.author = ddd
       TO books.id AS book_id, books.price AS price
       EXPIRE 10min
@@ -145,7 +149,7 @@ join_condition や join_fields で、外部データのフィールドを識別�
 
 ## FILTER
 
-FILTER は、単一のTupleに対してTupleの通過を判定します。
+FILTER は、単一のTupleに対して通過の可否を判定します。
 
     FILTER condition
 
@@ -221,9 +225,7 @@ AND, OR, NOT は入れ子にすることが可能です。優先順位はNOT, AN
 >
     field1 <= 30 AND (field5 BETWEEN 10 AND 100 OR field2 LIKE 'A%')
 
-### その他
-
-#### 比較
+### その他(比較)
 
 #### STRUCT型フィールドの比較
 
@@ -366,7 +368,7 @@ period を用いて、フィルタの状態をどれだけ保持するか、を�
     > Example:
     >
       55MIN
-  
+
 * 時間で指定
 
     number(HOURS|H)
@@ -528,8 +530,8 @@ Tupleの流れを制限します。
     LIMIT [FIRST|LAST] period
 
 * periodには、時間もしくはTuple数を指定します。
-* FIRSTは、指定範囲内に最初に到着したTupleを後続のオペレータに渡します。
-* LASTは、指定範囲内の最後に到着したTupleを後続のオペレータに渡します。
+* FIRSTは、指定範囲内に最初に到着したTupleを後続の処理に渡します。
+* LASTは、指定範囲内の最後に到着したTupleを後続の処理に渡します。
 
 ### 時間による流量制限
 
@@ -546,7 +548,6 @@ Tupleの流れを制限します。
 
 * 時間の起点は、最初にTupleが届いた時になります。起点は30分経過後にリセットされます。
 * 30分経過したかどうかは、30分経過後に初めてTupleが届いた時点で判断されます。　　
-LASTを指定した場合で、30分間の最後にTupleが届いた時点から、次のTupleが届くまでに１週間かかった場合は、最後のTupleが送られるのは１週間後になります。
 
 ### Tuple数による流量制限
 
@@ -566,8 +567,9 @@ LIMITを使うことによって、
 LIMIT FIRSTであれば、１度EMIT（通知）したTupleを一定時間EMITさせないように制限したり、
 LIMIT LASTであれば、最初にアクションし始めてから、４時間の間で一番最後に行ったアクションを抽出したりすることができると思います。
 
-LIMIT LASTの場合、Tupleの通過のトリガーが、時間経過後に初めてきたTupleになるので、通過までタイムラグが発生します。これを時間経過と同時に通過させる
-（時間をトリガーにする）ことも可能ですが、どちらがいいのか迷いました。。
+ただし、LIMIT LASTの場合、Tupleの通過のトリガーが、時間経過後に初めてきたTupleになるので、通過までタイムラグが発生します。
+
+例えば、30分間の最後にTupleが届き、次のTupleが届くまでに１週間かかった場合、その最後のTupleが送られるのは１週間後になります。
 
 ---
 
@@ -606,15 +608,17 @@ LENGTH スライド時間 BY 起点となるフィールド名 集計関数
 
 LENGTHにスライドするTupleの数を指定します。
 
-SLIDE句はSlideOperatorを生成して処理されます。
-スライドに使用する領域は現在メモリになっていますが、将来的に外部DBへの差し替えを可能にしたいと考えています。
 スライドはTupleの到着時にのみ実行されます。（スライドによる再計算も到着時のみ）
 
-SlideOperatorは、Tupleが到着する度にTupleをウィンドウ領域に貯めつつ、都度集計を行なっていきます。
+処理的には、Tupleが到着する度にTupleをウィンドウ領域に貯めつつ、都度集計を行なっていきます。
 その際、ウィンドウ幅から除外されたTuple（※）を集計結果から減算します。
 （※）スライドして集計対象から外れたTuple
 
 ウィンドウ領域に保存するTupleは、集計に必要なフィールドのみを選択しています。
+
+(*)
+スライドに使用する領域は現在メモリになっていますが、将来的に外部DBへの差し替えを可能にしたいと考えています。
+
 
 ---
 
@@ -638,9 +642,9 @@ SlideOperatorは、Tupleが到着する度にTupleをウィンドウ領域に貯
     SNAPSHOT EVERY 7min sum(field1) AS new_field
     SNAPSHOT EVERY "*/7 * * * *" sum(field1) AS new_field
 
-集計はTupleが送られてくる度に実行されますが、集計結果は７分に１回だけ次のOperatorに送られます。
+集計はTupleが送られてくる度に実行されますが、集計結果は７分に１回だけ次の処理に送られます。
 下段の例は、時間をcron形式で指定したものです。（注：ダブルクォートでくくる必要があります）
-７分の間に１度もTupleが送られてこなかった場合は、集計結果が生成されない為、Tupleは次のOperatorに送られません。
+７分の間に１度もTupleが送られてこなかった場合は、集計結果が生成されない為、Tupleは次の処理に送られません。
 指定できる時間は１分以上です。
 集計結果は７分毎にリセットされます。
 
@@ -652,13 +656,13 @@ SlideOperatorは、Tupleが到着する度にTupleをウィンドウ領域に貯
 
 ### Tuple数ベースでの実行
 
-* 指定したTuple数の集計を実行し、後続のオペレータに結果を送ります。
+* 指定したTuple数の集計を実行し、後続の処理に結果を送ります。
 
 > Example:
 >
     SNAPSHOT EVERY 10 sum(field1) AS new_field
 
-指定した回数分のTupleが届いたタイミングで、集計結果が次のOperatorに送られます。
+指定した回数分のTupleが届いたタイミングで、集計結果が次の処理に送られます。
 集計結果は10件毎にリセットされます。
 
 ---
@@ -743,7 +747,7 @@ EMITは、Tupleを外部へ出力します。
 
 ### 出力先が外部の場合
 
-#### Kafka Emit Processor  
+#### Kafka Emit Processor
 
 TupleをKafkaに出力します。
 
