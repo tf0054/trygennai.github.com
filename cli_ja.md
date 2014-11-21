@@ -3,7 +3,9 @@ layout: manual_ja
 title: genn.ai
 ---
 
-# LanguageManual CLI
+# genn.ai CLI
+
+> ここでは、genn.aiを操作するためのコマンドラインツールであるgungnirについて記載します。
 
 ## Gungnir Command Line Options
 
@@ -314,7 +316,7 @@ Monitorログを出力するように、プロパティを設定します。
 
 Topologyの動作確認の為に、TopologyにJOINTupleを送信します。
 
-    gungnir> POST tuple_name json_tuple; 
+    gungnir> POST tuple_name json_tuple;
 
 * tuple_name には、送信するTuple名を指定します。
 * join_tuple には、送信するJSONTupleを記述します。
@@ -323,7 +325,7 @@ Topologyの動作確認の為に、TopologyにJOINTupleを送信します。
 
 > Example:
 >
-    gungnir> POST userAction {field1:10,field2:"test"}; 
+    gungnir> POST userAction {field1:10,field2:"test"};
 
 #### Interactive Mode
 
