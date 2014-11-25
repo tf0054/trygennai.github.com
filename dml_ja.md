@@ -6,7 +6,7 @@ title: genn.ai
 # genn.ai DML
 
 > genn.aiは、大きくRESTサーバとクエリサーバから構成され、
-	前者RESTサーバは、httpにて外部からjsonのデータを受け取りKafkaに格納します。
+	前者RESTサーバは、httpにて外部からjsonのデータを受け取りStormに渡します(正確には、そのためにKafkaに格納します)。
 	後者クエリサーバは、genn.ai独自の **クエリ** で書かれたイベント処理ロジックをコンパイルし、Stormに登録します。
 	(この処理ロジックでは、通常、最初にKafkaからデータを読み出します)
 
@@ -767,6 +767,13 @@ TupleをKafkaに出力します。
 >
     kafka_emit('topic1')
 
+また、Kafka上の書き出しは標準ではJSONになりますが、CSVでの書き出しも可能です。
+このとき、出力の並びはEXPLAINで確認できる並びとなります。
+
+> Example:
+>
+    EMIT * USING kafka_emit('topic1', 'csv');
+
 
 #### Mongo Persist Processor
 
@@ -786,6 +793,21 @@ TupleをMongoDBに出力します。
     mongo_persist('db1', 'col1')  <- insert
     mongo_persist('db1', 'col1', 'field2') <- field2 をキーとしてupdate
     mongo_persist('db1', 'col1', ['field2', 'field3']) <- field2 + field3 を複合キーとしてupdate
+
+#### Web Emit Processor
+
+Tupleを他のRESTサーバに向けて送信します。
+
+    web_emit(url_name)
+
+
+ * url_name には、出力する先のURLを指定します。
+
+現在、Elasticsearchに格納する場合、第二引数に"es"を指定すると、[blukインサート](http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/bulk.html) に対応した書式で投げ込みます(第三引数にメタデータを指定して下さい)。
+
+> Example:
+>
+    EMIT * USING web_emit('http://localhost:9200/_bulk', 'es', {'index':'test', 'type':'xyz'});
 
 
 #### プロセッサ変数
