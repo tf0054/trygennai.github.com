@@ -195,11 +195,12 @@ LIKEで使用できるワイルドカードは、"%"（複数文字）と"_"（�
 
 REGEXPで使用できる正規表現は、[java/util/regex/Patternと同じ書式](http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html)
 を採用しています。
+
 > Example:
 >
     field3 REGEXP '^[A-Z]{2}-[0-9]{4}$'
 
-### IN, ALL
+### IN, ALL, BETWEEN
 
 INは、LISTフィールドに対して値が一つでも含まれているかを調べます。
 
@@ -213,7 +214,7 @@ ALLは、LISTフィールドに対して値がすべて含まれているかを�
 >
     field4 ALL ('tokyo', 'kyoto', 'osaka')
 
-### BETWEEN
+BETWEENは、INT型での範囲を指定します。
 
 > Example:
 >
@@ -230,6 +231,8 @@ AND, OR, NOT は入れ子にすることが可能です。優先順位はNOT, AN
     field1 <= 30 AND (field5 BETWEEN 10 AND 100 OR field2 LIKE 'A%')
 
 ### その他(比較)
+
+以下、基本型以外での比較方法を示します。
 
 #### STRUCT型フィールドの比較
 
@@ -314,7 +317,9 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
 
 * BOOLEAN値
 
-    true|false
+    > Example:
+    >
+      true|false
 
 
 ---
