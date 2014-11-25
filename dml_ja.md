@@ -36,8 +36,6 @@ FROM を使い、Tupleの入力元をスキーマとともに指定します。
 
 外部入力は、一つのTopologyに対して一つしか定義できません。
 
-#### Spout Processor
-
 #### kafka_spout
 
 TupleをKafkaから読み込みます。システムのデフォルトとして動作します。
@@ -49,8 +47,8 @@ TupleをKafkaから読み込みます。システムのデフォルトとして�
 
     FROM stream_name[(schema_alias, ...)], ...
 
-
-* stream_name には、入力先のストリーム名を指定します。
+* ストリームとは別に定義したトポロジからの入力のことです。
+* stream_name には、入力したいのストリーム名を指定します。
 
 ストリームからすべてのTupleを読み込む場合
 
@@ -118,7 +116,7 @@ join_condition や join_fields で、外部データのフィールドを識別�
 結合データのキーフィールド = Tupleのフィールド を、結合データが一意になるように指定してください。
 複合条件の場合は、AND で指定します。結合データのキーフィールドに対して、定数で条件を指定することもできます。
 * join_fields には、結合するフィールドを全て指定します。
-結合データのフィールド名 AS Tupleに結合する際のフィールド名 を指定します。
+結合データのフィールド名 AS Tupleに結合する際のフィールド名 を指定するか、フィールド名だけを指定します。
 フィールドはTupleに追加されます。
 
 > Example:
@@ -195,9 +193,8 @@ LIKEで使用できるワイルドカードは、"%"（複数文字）と"_"（�
 >
     field2 LIKE 't%'
 
-REGEXPで使用できる正規表現は、java/util/regex/Patternと同じ書式を採用しています。
-[http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html](http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html)
-
+REGEXPで使用できる正規表現は、[java/util/regex/Patternと同じ書式](http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html)
+を採用しています。
 > Example:
 >
     field3 REGEXP '^[A-Z]{2}-[0-9]{4}$'
@@ -247,6 +244,7 @@ TupleのフィールドがSTRUCT型の場合は、フィールド値を以下の
 TupleのフィールドがLIST型の場合は、フィールド値を以下のように比較します。
 
 > Example:
+>
     field4[0] = 'tokyo'
 
 #### MAP型フィールドの比較
@@ -343,7 +341,8 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
       (ua2.field1 <= 30 AND ua2.field2.member2 BETWEEN 2 AND 7) OR ua3.field5 LIKE 'A%'
 
 
- ua1, ua2, ua3の３つのTupleに対してフィルタを実行します。条件１と条件２（※）の両方を満たせば、Tupleはフィルタを通過します。
+ ua1, ua2, ua3の３つのTupleに対してフィルタを実行します。
+ 条件１と条件２（※）の両方を満たせば、Tupleはフィルタを通過します。
  （※）条件１はua1に対するフィルタで、条件２はua2とua3に対するフィルタです。
 
  条件２は、ua2とua3の条件を"OR"で指定しているので、ua1かつua2の条件を満たすか、ua1かつua3の条件を満たすことで
@@ -354,7 +353,8 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
  ８日以上の日数が経過していた場合、条件１の状態は初期化されてしまう為、条件２のみ満たしている状態になります。
 
  state_fieldに"fg_state"を指定しているので、フィルタの状態を"fg_state"フィールドとしてTupleに追加します。
- fg_stateは、条件１と条件２のそれぞれを満たした日時が格納されます。条件の数と等しいTIMESTAMPのLISTになります。
+ fg_stateは、条件１と条件２のそれぞれを満たした日時が格納されます。
+ 条件の数と等しいTIMESTAMPのLISTになります。
 
 ### 状態の保持
 
@@ -499,10 +499,10 @@ STRING型のフィールドの値を連結したフィールドを作成しま�
 
 フィールドの値を指定した型に変換します。
 
-    cast(expr as \<type\>)
+    cast(expr as &#12296;type&#12297;)
 
 * exprには、対象フィールドを指定します。
-* \<type\>には、下記の型のみ指定可能です。
+* &#12296;type&#12297;には、下記の型のみ指定可能です。
     * TIMESTAMP
     * TINYINT
     * SMALLINT
@@ -516,9 +516,8 @@ STRING型のフィールドの値を連結したフィールドを作成しま�
 >
     EACH cast(field1 AS TIMESTAMP('yyyyMMddHHmmss')) AS new_field
 
-; ### 関数の引数
-;
-; 定数に関しては、関数の種類が増えてきてから改めて記述する。
+![Alt text](/img/underconstruction.png)
+定数に関しては、関数の種類が増えてきてから改めて記述する。
 
 ### フィールドのアクセサ
 
@@ -526,13 +525,14 @@ STRING型のフィールドの値を連結したフィールドを作成しま�
 >
     EACH field1, field6.member1 AS field10, field7['visa'] AS visa
 
-field1はそのまま、field6.member1をfield10フィールドへ、field7&#91;'visa']をvisaフィールドへ抽出します。
+field1はそのまま、field6.member1をfield10フィールドへ、field7&#91;'visa'&#93;をvisaフィールドへ抽出します。
 
 ---
 
 ## LIMIT
 
 Tupleの流れを制限します。
+現在、時間による制限と、タプル数による制限の方法があります。
 
     LIMIT [FIRST|LAST] period
 
@@ -545,11 +545,15 @@ Tupleの流れを制限します。
 * 時間の起点は、最初にTupleが到着した時間です。
 * 起点は指定時間が経過した以降にリセットされます。
 
-> Example: 最初に到着したTupleを後続に送り、以降30分はTupleを送らない。
+最初に到着したTupleを後続に送り、以降30分はTupleを送らない。
+
+> Example:
 >
     LIMIT FIRST EVERY 30min
 
-> Example: Tupleが最初に到着してから、30分間に到着した最後のTupleを後続に送る。
+Tupleが最初に到着してから、30分間に到着した最後のTupleを後続に送る。
+
+> Example:
 >
     LIMIT LAST EVERY 30min
 
@@ -558,31 +562,36 @@ Tupleの流れを制限します。
 
 ### Tuple数による流量制限
 
-> Example: 5件のTupleの中で、最初に到着したTupleを後続に送る。
+5件のTupleの中で、最初に到着したTupleを後続に送る。
+
+> Example:
 >
     LIMIT FIRST EVERY 5
 
-> Example: 5件のTupleの中で、最後に到着したTupleを後続に送る。
+5件のTupleの中で、最後に到着したTupleを後続に送る。
+
+> Example:
 >
     LIMIT LAST EVERY 5
 
- * いずれもカウンタは５件ごとにクリアされます。
+ * いずれもカウンタは５件受け取るごとにクリアされます。
 
 #### 補足
 
 LIMITを使うことによって、
 LIMIT FIRSTであれば、１度EMIT（通知）したTupleを一定時間EMITさせないように制限したり、
-LIMIT LASTであれば、最初にアクションし始めてから、４時間の間で一番最後に行ったアクションを抽出したりすることができると思います。
+LIMIT LASTであれば、最初にアクションし始めてから、４時間の間で一番最後に行ったアクションを抽出したりすることができます。
 
 ただし、LIMIT LASTの場合、Tupleの通過のトリガーが、時間経過後に初めてきたTupleになるので、通過までタイムラグが発生します。
-
 例えば、30分間の最後にTupleが届き、次のTupleが届くまでに１週間かかった場合、その最後のTupleが送られるのは１週間後になります。
 
 ---
 
 ## SLIDE
 
-集計関数によるスライド集計を実行します。間隔は時間もしくはTuple数を指定することが可能です。スライドはTupleの到着時にのみ実行されます。
+集計関数によるスライド集計を実行します。
+間隔は時間もしくはTuple数を指定することが可能です。
+スライドはTupleの到着時にのみ実行されます。
 
     SLIDE period [period BY time_field| count] 集計関数
 
@@ -623,8 +632,8 @@ LENGTHにスライドするTupleの数を指定します。
 
 ウィンドウ領域に保存するTupleは、集計に必要なフィールドのみを選択しています。
 
-(*)
-スライドに使用する領域は現在メモリになっていますが、将来的に外部DBへの差し替えを可能にしたいと考えています。
+![Alt text](/img/underconstruction.png)
+スライドに使用する領域は現在メモリになっていますが、将来的に外部DBへの差し替えを予定。
 
 
 ---
@@ -644,7 +653,9 @@ LENGTHにスライドするTupleの数を指定します。
 * 指定可能な時間は1分以上です。
 * 集計値は指定時間毎にリセットされます。
 
-> Example: 7分毎に実行
+7分毎に実行
+
+> Example:
 >
     SNAPSHOT EVERY 7min sum(field1) AS new_field
     SNAPSHOT EVERY "*/7 * * * *" sum(field1) AS new_field
