@@ -135,9 +135,10 @@ Topologyのより詳細な実行計画を表示します。
 
 Topologyを登録して起動します。
 
-    gungnir> SUBMIT TOPOLOGY;
+    gungnir> SUBMIT TOPOLOGY topology_name;
 
-Topologyの起動は非同期で実行される為、必ず `DESC TOPOLOGY` を実行して、Topologyの状態が RUNNING（実行中）になっていることを確認してください。
+* topology_name には一意となる任意の文字列を指定します。
+* topology_name は英数字およびアンダースコアを使用できます。
 
 > Example:
 >
@@ -145,12 +146,26 @@ Topologyの起動は非同期で実行される為、必ず `DESC TOPOLOGY` を�
     OK
     gungnir> EXPLAIN;
     …
-    gungnir> SUBMIT TOPOLOGY;
+    gungnir> SUBMIT TOPOLOGY test_topology_1;
     OK
-    gungnir> DESC TOPOLOGY;  <-- 起動したかを確認
-    {"id":"5261606ee4b099995d4f460f","status":"RUNNING", ...}
+    Starting ... Done
+    {
+      "id":"54753ae70cf2422ae5af8e1e",
+      "name":"test_topology_1",
+      "status":"RUNNING",
+      "owner":"user@genn.ai",
+      "createTime":"2014-11-26T02:28:55.612Z",
+      "summary":{
+        "name":"gungnir_54753ae70cf2422ae5af8e1e",
+        "status":"ACTIVE",
+        "uptimeSecs":1,
+        "numWorkers":1,
+        "numExecutors":3,
+        "numTasks":3
+      }
+    }
 
-`SUBMIT TOPOLOGY;` の実行後に、 `DESC TOPOLOGY` を実行してTopology IDとTopologyの状態を確認しています。
+`SUBMIT TOPOLOGY` の実行後、表示されるJSONは `DESC TOPOLOGY` を実行して得られる内容と同一です。
 
 ---
 
@@ -158,20 +173,22 @@ Topologyの起動は非同期で実行される為、必ず `DESC TOPOLOGY` を�
 
 登録したTopologyの情報を表示します。
 
-    gungnir> DESC TOPOLOGY;
+    gungnir> DESC TOPOLOGY [topology_name];
 
-結果はJSON形式で出力されます。
+* 結果はJSON形式で出力されます。
+* topology_name を省略した場合は、現在のセッションで最後に投入した Topology の情報を表示します。
 
 > Example:
 >
     gungnir> DESC TOPOLOGY;
     {
-      "id":"5261606ee4b099995d4f460f",
+      "id":"54753ae70cf2422ae5af8e1e",
+      "name":"test_topology_1",
       "status":"RUNNING",
       "owner":"user@genn.ai",
-      "createTime":"2013-10-18T16:23:09.901Z",
+      "createTime":"2014-11-26T02:28:55.612Z",
       "summary":{
-        "name":"gungnir_5261606ee4b099995d4f460f",
+        "name":"gungnir_54753ae70cf2422ae5af8e1e",
         "status":"ACTIVE",
         "uptimeSecs":403,
         "numWorkers":1,
@@ -181,20 +198,21 @@ Topologyの起動は非同期で実行される為、必ず `DESC TOPOLOGY` を�
     }
 
 * id は、Topology IDです。
+* name は、`SUBMIT TOPOLOGY`で設定した名称です。
 * status は、Topologyの状態です。
 Topologyの状態に応じて、STARTING（起動中）-> RUNNING（実行中）-> STOPPING（停止中）-> STOPPED（停止状態）と変化します。
 * owner は、Topologyを登録したユーザのユーザ名です。
 * createTime は、Topologyを登録した日時です。
 * summary は、Topologyの起動情報です。status がRUNNINGの場合のみに表示されます。
 
-特定のTopologyの情報を表示したい場合は、情報を表示したいTopologyのTopology IDを指定します。
+特定のTopologyの情報を表示したい場合は、情報を表示したいTopologyの名称を指定します。
 
-    gungnir> DESC TOPOLOGY topology_id;
+    gungnir> DESC TOPOLOGY topology_name;
 
 > Example:
 >
-    gungnir> DESC TOPOLOGY 5261606ee4b099995d4f460f;
-    {"id":"5261606ee4b099995d4f460f", ...}
+    gungnir> DESC TOPOLOGY test_topology_1;
+    {"id":"54753ae70cf2422ae5af8e1e", ...}
 
 ---
 
@@ -209,9 +227,18 @@ Topologyの状態に応じて、STARTING（起動中）-> RUNNING（実行中）
 > Example:
 >
     gungnir> SHOW TOPOLOGIES;
-    [{"id":"5261606ee4b099995d4f460f","status":"RUNNING","owner":"user@genn.ai","createTime":"2013-10-18T16:23:09.901Z"}]
+    [
+      {
+        "id":"54753ae70cf2422ae5af8e1e",
+        "name":"test_topology_1",
+        "status":"RUNNING",
+        "owner":"user@genn.ai",
+        "createTime":"2014-11-26T02:28:55.612Z"
+      }
+    ]
 
 * id は、Topology IDです。
+* name は、`SUBMIT TOPOLOGY`で設定した名称です。
 * status は、Topologyの状態です。
 Topologyの状態に応じて、STARTING（起動中）-> RUNNING（実行中）-> STOPPING（停止中）-> STOPPED（停止状態）と変化します。
 * owner は、Topologyを登録したユーザのユーザ名です。
@@ -221,39 +248,55 @@ Topologyの状態に応じて、STARTING（起動中）-> RUNNING（実行中）
 
 ### STOP TOPOLOGY
 
-起動したTopologyを停止します。
+起動している Topology を停止します。
 
-    gungnir> STOP TOPOLOGY topology_id;
+    gungnir> STOP TOPOLOGY topology_name;
 
-* topology_id には、停止するTopologyのTopology IDを指定します。
-
-Topologyの停止は非同期で実行される為、必ず `DESC TOPOLOGY` を実行して、Topologyの状態が STOPPED （停止状態）になっていることを確認してください。
+* topology_name には、停止するTopologyの名称を指定します。
 
 > Example:
 >
-    gungnir> STOP TOPOLOGY 5261606ee4b099995d4f460f;
+    gungnir> STOP TOPOLOGY test_topology_1;
     OK
-    gungnir> DESC TOPOLOGY;  <-- 停止したかを確認
-    {"id":"5261606ee4b099995d4f460f","status":"STOPPED", ...}
+    Stopping ...... Done
+    {
+      "id":"54753ae70cf2422ae5af8e1e",
+      "name":"test_topology_1",
+      "status":"STOPPED",
+      "owner":"user@genn.ai",
+      "createTime":"2014-11-26T02:28:55.612Z"
+    }
 
 ---
 
 ### START TOPOLOGY
 
-停止したTopologyを再起動します。
+停止している Topology を再起動します。
 
-    gungnir> START TOPOLOGY topology_id;
+    gungnir> START TOPOLOGY topology_name;
 
-* topology_id には、起動するTopologyのTopology IDを指定します。
-
-Topologyの開始は非同期で実行される為、必ず `DESC TOPOLOGY` を実行して、Topologyの状態が RUNNING（実行中）になっていることを確認してください。
+* topology_name には、起動するTopologyの名称を指定します。
 
 > Example:
 >
-    gungnir> START TOPOLOGY 5261606ee4b099995d4f460f;
+    gungnir> START TOPOLOGY test_topology_1;
     OK
-    gungnir> DESC TOPOLOGY;  <-- 起動したかを確認
-    {"id":"5261606ee4b099995d4f460f","status":"RUNNING", ...}
+    Starting ... Done
+    {
+      "id":"54753ae70cf2422ae5af8e1e",
+      "name":"test_topology_1",
+      "status":"RUNNING",
+      "owner":"user@genn.ai",
+      "createTime":"2014-11-26T02:28:55.612Z",
+      "summary":{
+        "name":"gungnir_54753ae70cf2422ae5af8e1e",
+        "status":"ACTIVE",
+        "uptimeSecs":2,
+        "numWorkers":1,
+        "numExecutors":3,
+        "numTasks":3
+      }
+    }
 
 ---
 
@@ -261,17 +304,17 @@ Topologyの開始は非同期で実行される為、必ず `DESC TOPOLOGY` を�
 
 登録したTopologyを削除します。
 
-    gungnir> DROP TOPOLOGY topology_id;
+    gungnir> DROP TOPOLOGY topology_name;
 
-* topology_id には、削除するTopologyのTopology IDを指定します。
+* topology_name には、削除するTopologyの名称を指定します。
 
 Topologyは停止している必要があります。削除する前に `DESC TOPOLOGY` を実行して、Topologyの状態が STOPPED になっていることを確認してください。
 
 > Example:
 >
-    gungnir> DESC TOPOLOGY;  <-- 停止しているかを確認
-    {"id":"5261606ee4b099995d4f460f","status":"STOPPED", ...}
-    gungnir> DROP TOPOLOGY 5261606ee4b099995d4f460f;
+    gungnir> DESC TOPOLOGY test_topology_1;  <-- 停止しているかを確認
+    {"id":"54753ae70cf2422ae5af8e1e","name":"test_topology_1","status":"STOPPED",...}
+    gungnir> DROP TOPOLOGY test_topology_1;
     OK
 
 ---
@@ -326,6 +369,8 @@ Topologyの動作確認の為に、TopologyにJOINTupleを送信します。
 > Example:
 >
     gungnir> POST userAction {field1:10,field2:"test"};
+    POST http://localhost:7200/gungnir/v0.1/547539ed0cf2422ae5af8e1c/userAction/json
+    OK
 
 #### Interactive Mode
 
@@ -337,6 +382,7 @@ JSONTupleのすべてのフィールドの入力が完了すると、編集し�
     field1 (INT): 12345
     field2 (STRING): test
     POST userAction {"field1":12345,"field2":"test"}
+    POST http://localhost:7200/gungnir/v0.1/547539ed0cf2422ae5af8e1c/userAction/json
     OK
 
 LIST, MAP, STRUCT型のフィールドの編集は、以下のように行います。
