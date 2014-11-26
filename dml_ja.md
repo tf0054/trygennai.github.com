@@ -825,6 +825,31 @@ Tupleを他のRESTサーバに向けて送信します。
 >
     EMIT * USING web_emit('http://localhost:9200/_bulk', 'es', {'index':'test', 'type':'xyz'});
 
+#### Schema Persist Processor
+
+Tupleを同一アカウントの他のスキーマに出力します。
+
+    EMIT fields TO tuple_name;
+
+* tuple_name には、出力先のスキーマの名称を指定します。
+* 出力先のスキーマと型、順序を一致させる必要があります。
+
+> Example: スキーマ定義
+>
+    CREATE TUPLE tuple1 (aaa STRING, bbb INT, ccc INT, ddd STRING, _time);
+    CREATE TUPLE tuple2 (aaa STRING, bbb INT, ccc INT, ddd STRING);
+    CREATE TUPLE tuple3 (bbb INT, ccc INT, ddd STRING);
+> Example 出力側
+>
+    FROM tuple1, tuple2 USING kafka_spout()
+    ...
+    EMIT bbb, ccc, ddd TO tuple3;
+
+> Example: 入力側
+>
+    FROM tuple3 USING kafka_spout()
+    ...
+
 
 #### プロセッサ変数
 
