@@ -10,7 +10,7 @@ title: genn.ai
 	後者クエリサーバは、genn.ai独自の **クエリ** で書かれたイベント処理ロジックをコンパイルし、Stormに登録します。
 	(この処理ロジックでは、通常、最初にKafkaからデータを読み出します)
 
-> genn.aiでは、このjson形式で受け取るデータを **トポロジ** (Tuple)と呼び、コンパイルにより出来上がるものは **トポロジ** (Topology)と呼びます。
+> genn.aiでは、このjson形式で受け取るデータを **タプル** (Tuple)と呼び、コンパイルにより出来上がるものは **トポロジ** (Topology)と呼びます。
 	(タプルについてはStormの用語をそのまま借りています)
 
 > 本ページのDMLとは、後者クエリサーバが担当するクエリ(の文法)のことを指します。
@@ -48,7 +48,7 @@ TupleをKafkaから読み込みます。システムのデフォルトとして�
     FROM stream_name[(schema_alias, ...)], ...
 
 * ストリームとは別に定義したトポロジからの入力のことです。
-* stream_name には、入力したいのストリーム名を指定します。
+* stream_name には、入力したいストリーム名を指定します。
 
 ストリームからすべてのTupleを読み込む場合
 
@@ -62,6 +62,68 @@ TupleをKafkaから読み込みます。システムのデフォルトとして�
 > Example:s1ストリームからua1, ua2タプルのみ読み込み、s2ストリームからはv1タプルのみ読み込む場合
 >
     FROM s1(ua1, ua2), s2(v1)
+
+### TupleJoin
+
+複数のTupleをフィールドの値を元に結合します。
+
+#### 外部入力からTupleを読み込んで結合
+
+外部入力からTupleを読み込む時点で、複数のTupleを結合します。
+
+    FROM (schema_name_1
+      JOIN schema_name_2 ON join_condition
+      TO join_field
+      EXPIRE period
+    ) AS schema_alias USING spout_processor
+
+    join_condition:
+    schema_name_1.key_field = schema_name_2.key_field
+
+    join_field:
+    schema_name_1.join_field [AS field_alias, ...]
+
+* schema_name_1, schema_name_2は結合したいTupleを指定します。
+* join_conditionにはTupleの結合条件を指定します。複数条件の場合にはANDで指定します。
+* join_fieldには結合後のTupleが保持するフィールドを指定します。結合後のフィールド名称が被らない場合には、ワイルドカードを使用する事やaliasを省略することが可能です。
+* periodには、Tupleを保持する期間を指定します。指定した時間経過後にJoin対象のTupleが読み込まれると、Tuple Joinは実行されません。
+
+> Example: ua1, ua2, ua3の3つのTupleを結合して、ua4のTupleを作成
+>
+    FROM (ua1
+      JOIN ua2 ON ua1.field1 = ua2.field3
+      JOIN ua3 ON ua1.field2 = ua3.field5
+      TO ua1.*, ua2.field4 AS field4, ua3.field7 AS field7
+      EXPIRE 1min
+    ) AS ua4 USING kafka_spout()
+
+#### 内部入力(ストリーム)からTupleを読み込んで結合
+
+内部入力から、一部のTupleに対してTupleを結合します。
+
+    FROM (stream_name_1[(schema_name_1, ...)]
+      JOIN stream_name_2[(schema_name_2, ...)] ON join_condition
+      TO join_field
+      EXPIRE period
+    ) AS schema_alias
+
+    join_condition:
+    schema_name_1.key_field = schema_name_2.key_field
+
+    join_field:
+    schema_name_1.join_field [AS field_alias, ...]
+
+* 内部入力に複数のTupleが含まれる場合、schema_nameを指定して絞り込む必要があります。
+* join_fieldには結合後のTupleが保持するフィールドを指定します。結合後のフィールド名称が被らない場合には、ワイルドカードを使用する事やaliasを省略することが可能です。
+* periodには、Tupleを保持する期間を指定します。指定した時間経過後にJoin対象のTupleが読み込まれると、Tuple Joinは実行されません。
+
+> Example: ua1,ua2をストリームs1から読み込み、ua3をストリームs2から読み込んで結合
+>
+    FROM (s1(ua1)
+      JOIN s1(ua2) ON ua1.field1 = ua2.field3
+      JOIN s2(ua3) ON ua1.field2 = ua3.field5
+      TO ua1.*, ua2.field4 AS field4, ua3.field7 AS field7
+    ) AS ua4
 
 ---
 
@@ -824,6 +886,31 @@ Tupleを他のRESTサーバに向けて送信します。
 > Example:
 >
     EMIT * USING web_emit('http://localhost:9200/_bulk', 'es', {'index':'test', 'type':'xyz'});
+
+#### Schema Persist Processor
+
+Tupleを同一アカウントの他のスキーマに出力します。
+
+    EMIT fields TO tuple_name;
+
+* tuple_name には、出力先のスキーマの名称を指定します。
+* 出力先のスキーマと型、順序を一致させる必要があります。
+
+> Example: スキーマ定義
+>
+    CREATE TUPLE tuple1 (aaa STRING, bbb INT, ccc INT, ddd STRING, _time);
+    CREATE TUPLE tuple2 (aaa STRING, bbb INT, ccc INT, ddd STRING);
+    CREATE TUPLE tuple3 (bbb INT, ccc INT, ddd STRING);
+> Example 出力側
+>
+    FROM tuple1, tuple2 USING kafka_spout()
+    ...
+    EMIT bbb, ccc, ddd TO tuple3;
+
+> Example: 入力側
+>
+    FROM tuple3 USING kafka_spout()
+    ...
 
 
 #### プロセッサ変数

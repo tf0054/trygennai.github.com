@@ -486,6 +486,50 @@ Monitorログが出力されます。
 
 source のオペレータから target のオペレータに向かって、Tupleが流れているのが確認できます。tuple に、流れたTupleの内容が表示されています。
 
+### DESC CLUSTER
+
+rootでの実行時に限り、Stormのクラスタ情報を取得します。
+
+    gungnir> DESC CLUSTER;
+
+> Example:
+>
+    {
+      "mode":"distributed",
+      "nimbus":{"uptimeSecs":9894},
+      "supervisors":[
+        {
+          "id":"4e39bbf4-8e74-4842-8d3a-9e768aea41b4",
+          "host":"10.0.1.23",
+          "uptimeSecs":9887,
+          "numWorkers":4,
+          "numUsedWorkers":0
+        },
+        {
+          "id":"5ae76a62-a850-4912-bdb3-22f0895e9161",
+          "host":"10.0.1.243",
+          "uptimeSecs":9888,
+          "numWorkers":4,
+          "numUsedWorkers":1
+        }
+      ],
+      "topologies":[
+        {
+          "name":"gungnir_54757345e4b02392c29483e1",
+          "status":"ACTIVE",
+          "uptimeSecs":66,
+          "numWorkers":1,
+          "numExecutors":3,
+          "numTasks":3
+        }
+      ]
+    }
+
+* JSON形式で情報を取得します。
+* mode は、起動しているStormのモードです(distributed|local)。
+* nimbus, supervisorsは、Stormに関する情報です。
+* topologies は、稼働中のTopology情報です。
+
 ---
 
 ## Gungnir Command Batchmode
