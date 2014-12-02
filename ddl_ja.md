@@ -10,7 +10,7 @@ title: genn.ai
 	後者クエリサーバは、genn.ai独自の **クエリ** で書かれたイベント処理ロジックをコンパイルし、Stormに登録します。
 	(この処理ロジックでは、通常、最初にKafkaからデータを読み出します)
 
-> genn.aiでは、このjson形式で受け取るデータを **トポロジ** (Tuple)と呼び、コンパイルにより出来上がるものは **トポロジ** (Topology)と呼びます。
+> genn.aiでは、このjson形式で受け取るデータを **タプル** (Tuple)と呼び、コンパイルにより出来上がるものは **トポロジ** (Topology)と呼びます。
 	(タプルについてはStormの用語をそのまま借りています)
 
 > 本ページのDDLとは、RESTサーバが受け取る **タプル** に対する操作を指します。
@@ -31,12 +31,14 @@ Tupleのスキーマを定義します。
     CREATE TUPLE schema_name
         (field_name [field_type], ...)
         [PARTITIONED BY parition_field, ...]
+        [COMMENT comment]
 
 * schema_name には、Tuple名を指定します。
 * field_name には、フィールド名を指定します。
 * field_type には、フィールドの型を指定します。省略した場合は、自動判定になります。
 * parition_field には、Tupleをパーティション単位に処理する為に、パーティションキーとなるフィールド名を指定します。
 PARTITIONED BY clause を省略した場合は、Tupleをランダムに振り分けて処理します。
+* comment には、任意の文字列で設定することができます。
 
 > Example:
 >
@@ -310,13 +312,26 @@ Tracking ID と Tracking Noは、いずれもTupleの同一性の判定に使用
 > Result:
 >
     [
-      {"name":"userAction1","owner":"user@genn.ai","createTime":"2013-10-18T02:14:00.241Z"},
-      {"name":"userAction2","owner":"user@genn.ai","createTime":"2013-10-17T02:16:34.898Z"}
+      {
+        "name":"userAction1",
+        "topologies":["547d88dd0cf2c20a93d59e9f"],
+        "owner":"user@genn.ai",
+        "createTime":"2013-10-18T02:14:00.241Z",
+        "comment": "comment for tuple."
+      },
+      {
+        "name":"userAction2",
+        "topologies":[],
+        "owner":"user@genn.ai",
+        "createTime":"2013-10-17T02:16:34.898Z"
+      }
     ]
 
 * name は、Tuple名です。
+* topologies は、該当のTupleを使用しているTopologyIDの配列です。
 * owner は、Tupleを作成したユーザのユーザ名です。
 * createTime は、Tupleを作成した日時です。
+* comment は、Tupleに設定したコメントです。
 
 ---
 
@@ -345,17 +360,21 @@ Tracking ID と Tracking Noは、いずれもTupleの同一性の判定に使用
         "field2":{"type":"STRING"},
         "field3":{"type":"STRING"}
       },
+      "topologies": ["547d88dd0cf2c20a93d59e9f"],
       "partitioned":["field1"],
       "owner":"user@genn.ai",
-      "createTime":"2013-09-13T01:35:55.667Z"
+      "createTime":"2013-09-13T01:35:55.667Z",
+      "comment": "comment for tuple."
     }
 
 
 * name は、Tuple名です。
 * fields は、Tupleのフィールドの一覧です。
+* topologies は、該当のTupleを使用しているTopologyIDの配列です。
 * partitioned は、Tupleのパーティションキーフィールドです。
 * owner は、Tupleを作成したユーザのユーザ名です。
 * createTime は、Tupleを作成した日時です。
+* comment は、Tupleに設定されているコメントです。
 
 ---
 
@@ -380,12 +399,13 @@ Tupleスキーマを削除します。
 TupleのViewを定義します。Tupleスキーマを別名で定義できます。
 
 
-    CREATE VIEW view_schema_name AS FROM tuple_schema_name FILTER condition;
+    CREATE VIEW view_schema_name AS FROM tuple_schema_name FILTER condition [COMMENT comment];
 
 
 * view_schema_name には、View名を指定します。
 * tuple_schema_name には、元となるTuple名を指定します。
 * condition には、TupleをViewにひもづける条件を指定します。
+* comment には、任意の文字列で設定することができます。
 
 > Example:
 >
@@ -409,15 +429,33 @@ userAction1のTupleスキーマをもとに、field3フィールドの値ごと�
 > Result:
 >
     [
-      {"name":"viewAction1","owner":"user@genn.ai","createTime":"2013-10-19T03:19:22.241Z"},
-      {"name":"viewAction2","owner":"user@genn.ai","createTime":"2013-10-19T03:19:56.898Z"},
-      {"name":"viewAction3","owner":"user@genn.ai","createTime":"2013-10-19T03:19:34.898Z"}
+      {
+        "name":"viewAction1",
+        "topologies": ["547d88dd0cf2c20a93d59e9f"],
+        "owner":"user@genn.ai",
+        "createTime":"2013-10-19T03:19:22.241Z"
+      },
+      {
+        "name":"viewAction2",
+        "topologies": ["547d88dd0cf2c20a93d59e9f"],
+        "owner":"user@genn.ai",
+      　"createTime":"2013-10-19T03:19:56.898Z"
+      },
+      {
+        "name":"viewAction3",
+        "topologies": [],
+        "owner":"user@genn.ai",
+        "createTime":"2013-10-19T03:19:34.898Z",
+        "comment": "comment for view."
+      }
     ]
 
 
 * name は、View名です。
+* topologies は、該当のViewを使用しているTopologyIDの配列です。
 * owner は、Viewを作成したユーザのユーザ名です。
 * createTime は、Viewを作成した日時です。
+* comment は、Viewに設定したコメントです。
 
 ---
 
@@ -442,15 +480,19 @@ userAction1のTupleスキーマをもとに、field3フィールドの値ごと�
       "name":"viewAction1",
       "from":"userAction1",
       "filter":"field3 = CATEGORY-1",
+      "topologies": [],
       "owner":"user@genn.ai",
-      "createTime":"2013-10-19T03:19:22.241Z"
+      "createTime":"2013-10-19T03:19:22.241Z",
+      "comment": "comment for view."
     }
 
 * name は、View名です。
 * from は、Viewの元となるTuple名です。
 * filter は、TupleをViewにひもづけている条件です。
+* topologies は、該当のViewを使用しているTopologyIDの配列です。
 * owner は、Viewを作成したユーザのユーザ名です。
 * createTime は、Viewを作成した日時です。
+* comment は、Viewに設定されているコメントです。
 
 ---
 

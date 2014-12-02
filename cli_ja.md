@@ -10,15 +10,16 @@ title: genn.ai
 ## Gungnir Command Line Options
 
     $ gungnir options
-
     usage: gungnir
      -e <quoted-command-string>   Command from command line
      -f <filename>                Command from file
      -h,--help                    Print help information
-     -p <password>                Password to use when connecting to gungnir
-                                  server
-     -u <username>                Username to use when connecting to gungnir
-                                  server
+     -p <password>                Password to use when connecting to the
+                                  gungnir server
+     -u <username>                Username to use when connecting to the
+                                  gungnir server
+
+* 60分以上操作がない場合、セッションは切断されます。
 
 ---
 
@@ -38,7 +39,10 @@ Gungnir CLIを終了します。
 
 Topologyの実行計画を表示します。
 
-    gungnir> EXPLAIN;
+    gungnir> EXPLAIN [topology_name];
+
+* topology_nameは、`SUBMIT TOPOLOGY`で設定した名称を指定します。
+* topology_nameを省略すると、現セッションで最後に投入したTopologyの実行計画を表示します。
 
 > Example:
 >
@@ -70,7 +74,11 @@ PARTITION_1からのびているStreamは２つで、それぞれFILTER_2とFILT
 
 Topologyのより詳細な実行計画を表示します。
 
-    gungnir> EXPLAIN EXTENDED;
+    gungnir> EXPLAIN EXTENDED [topology_name];
+
+* topology_nameは、`SUBMIT TOPOLOGY`で設定した名称を指定します。
+* topology_nameを省略すると、現セッションで最後に投入したTopologyの詳細な実行計画を表示します。
+
 
 > Example:
 >
@@ -369,7 +377,7 @@ Topologyの動作確認の為に、TopologyにJOINTupleを送信します。
 > Example:
 >
     gungnir> POST userAction {field1:10,field2:"test"};
-    POST http://localhost:7200/gungnir/v0.1/547539ed0cf2422ae5af8e1c/userAction/json
+    POST /gungnir/v0.1/547539ed0cf2422ae5af8e1c/userAction/json
     OK
 
 #### Interactive Mode
@@ -382,7 +390,7 @@ JSONTupleのすべてのフィールドの入力が完了すると、編集し�
     field1 (INT): 12345
     field2 (STRING): test
     POST userAction {"field1":12345,"field2":"test"}
-    POST http://localhost:7200/gungnir/v0.1/547539ed0cf2422ae5af8e1c/userAction/json
+    POST /gungnir/v0.1/547539ed0cf2422ae5af8e1c/userAction/json
     OK
 
 LIST, MAP, STRUCT型のフィールドの編集は、以下のように行います。
@@ -412,6 +420,7 @@ LIST, MAP, STRUCT型のフィールドの編集は、以下のように行いま
       m2 (BOOLEAN): false
 >
     POST userAction2 {"f1":"test","f2":[1,2,3],"f3":{"k1":1,"k2":2,"k3":3},"f4":{"m1":"2013-10-19 22:02:24","m2":false}}
+    POST /gungnir/v0.1/547539ed0cf2422ae5af8e1c/userAction2/json
     OK
 
 ---
@@ -486,11 +495,15 @@ Monitorログが出力されます。
 
 source のオペレータから target のオペレータに向かって、Tupleが流れているのが確認できます。tuple に、流れたTupleの内容が表示されています。
 
+---
+
 ### DESC CLUSTER
 
-rootでの実行時に限り、Stormのクラスタ情報を取得します。
+Stormのクラスタ情報を取得します。
 
     gungnir> DESC CLUSTER;
+
+* rootユーザのみ実行可能です。
 
 > Example:
 >
@@ -529,6 +542,98 @@ rootでの実行時に限り、Stormのクラスタ情報を取得します。
 * mode は、起動しているStormのモードです(distributed|local)。
 * nimbus, supervisorsは、Stormに関する情報です。
 * topologies は、稼働中のTopology情報です。
+
+---
+
+### CREATE USER
+
+ユーザアカウントを作成します。
+
+    gungnir> CREATE USER 'user' IDENTIFIED BY 'password';
+
+* userには、作成するユーザアカウントの名称を指定します。
+* userには、英数字、アンダースコア(_)、アットマーク(@)、.等を使用できます。
+* userが英数字、アンダースコア(_)のみで構成される場合、シングルクォートを省略することが可能です。
+* passwordには、作成するユーザアカウントのログインパスワードを指定します。
+* rootユーザのみ実行可能です。
+
+> Example: gennaiユーザをパスワードgennaiで作成
+>
+    gungnir> CREATE USER gennai IDENTIFIED BY 'gennai';
+    OK
+> Example: gennai@example.comユーザをパスワードgennaiで作成
+>
+    gungnir> CREATE USER 'gennai@example.com' IDENTIFIED BY 'gennai';
+    OK
+
+---
+
+### ALTER USER
+
+ユーザアカウントのパスワードを変更します。
+
+    gungnir> ALTER USER user IDENTIFIED BY 'password';
+
+* userには、変更するユーザアカウントの名称を指定します。
+* passwordには、変更後のパスワードを指定します。
+* rootユーザでは、すべてのユーザアカウントのパスワードを変更できます。
+* root以外のユーザでは、ログインしているユーザアカウントのパスワードのみの変更ができます。
+
+> Example: gennaiユーザのパスワードをgennai2に変更する
+>
+    gungnir> ALTER USER gennai IDENTIFIED BY 'gennai2';
+    OK
+
+---
+
+### DROP USER
+
+ユーザアカウントを削除します。
+
+    gungnir> DROP USER user;
+
+* userには、削除するユーザアカウントの名称を指定します。
+* rootユーザのみ実行可能です。
+* rootユーザを削除することはできません。
+* 対象のユーザアカウントが作成したTUPLE/TOPOLOGYが存在する場合は、ユーザカウントを削除できません。
+
+> Example: gennaiユーザを削除する
+>
+    gungnir> DROP USER gennai;
+    OK
+
+
+---
+
+### SHOW USERS
+
+ユーザアカウントの一覧をJSON形式で表示します。
+
+    gungnir> SHOW USERS;
+
+* rootユーザのみ実行可能です。
+
+> Example:
+>
+    gungnir> SHOW USERS;
+    [
+      {
+        "id":"547d16890cf2089ea8c0367d",
+        "name":"root",
+        "createTime":"2014-12-02T01:31:53.797Z"
+      },
+      {
+        "id":"547d169e0cf2089ea8c0367e",
+        "name":"gennai",
+        "createTime":"2014-12-02T01:32:14.294Z"
+        "lastModifyTime":"2014-12-02T05:45:04.068Z"
+      },
+      {
+        "id":"547d519f0cf2089ea8c03687",
+        "name":"gennai@genn.ai",
+        "createTime":"2014-12-02T05:43:59.293Z"
+      }
+    ]
 
 ---
 
