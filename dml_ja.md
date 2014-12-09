@@ -169,7 +169,7 @@ JOINは、外部データをフィールドとしてTupleに結合します。
     join_name.key_field = field [AND join_name.key_field = field AND join_name.key_field <> 0]
 
     join_fields:
-    join_name.join_field AS field_alias, ...
+    join_name.join_field [AS field_alias, ...]
 
 
 * join_name には、結合する名称を指定します。
@@ -180,8 +180,9 @@ join_condition や join_fields で、外部データのフィールドを識別�
 * join_fields には、結合するフィールドを全て指定します。
 結合データのフィールド名 AS Tupleに結合する際のフィールド名 を指定するか、フィールド名だけを指定します。
 フィールドはTupleに追加されます。
+* field_alias は、省略可能です。省略すると元データのフィールド名で結合されます。
 
-> Example:
+> Example: MongoDBデータとの結合
 >
     JOIN j1 ON j1.code1 = field1 AND j1.code2 = field2 AND j1.del = 0
       TO j1.name AS field10, j1.type AS field11
@@ -189,28 +190,86 @@ join_condition や join_fields で、外部データのフィールドを識別�
 
 ### MongoDBデータとの結合
 
+#### Mongo Fetch Processor
+
 今現在、MongoDB上にあるデータとの結合が可能です。
 なお、MondoDBから受け取られたデータはEXPIRE句を合わせて指定することでキャッシュされます。
 (EXPIRE句の指定が無い場合はキャッシュは行われません)
-
-> Example:
->
-    JOIN join_name ON join_condition
-      TO join_fields
-      EXPIRE 1min
-      USING mongo_fetch('db1', 'col1')
 
 指定した時間の間、fetchした内容をキャッシュします。キャッシュしている間に実行されたJOINは、キャッシュから結合フィールドを取得します。
 指定した時間が過ぎると、ふたたびFetchProcessorを実行してキャッシュを更新します。
 
 キャッシュは結合キーごとに保存されます。
 
+    JOIN join_name ON join_condition
+      TO join_fields
+      EXPIRE period
+      USING mongo_fetch(db_name, collection_name)
+
+* db_nameは、入力とするDB名を指定します。
+* collection_nameは、入力とするCollection名を指定します。
+
 > Example:
+>
+    JOIN j1 ON j1.code1 = field1 AND j1.code2 = field2 AND j1.del = 0
+      TO j1.name AS field10, j1.type AS field11
+      EXPIRE 1min
+      USING mongo_fetch('db1', 'col1')
+
+
+### Webサービスとの結合
+
+#### Web Fetch Processor
+
+JSON形式のレスポンスを返すWebサービスとの結合か可能です。
+結合条件をクエリパラメータに変換し、指定したURLにアクセスします。
+取得したJSON形式のレスポンスデータの一部を抜き出し、Tupleと結合します。
+
+    JOIN join_name ON join_condition
+      TO join_fields
+      EXPIRE period
+      USING web_fetch(url, replace, path)
+
+* urlには、データを取得するURLを指定します。${query}変数を使用して、URLにクエリパラメータを追加します。
+* replaceには、クエリパラメータの置換ルールを配列で指定します。[変換前文字列1, 変換後文字列1, 変換前文字列2, 変換後文字列2, ...]の形式で指定します。
+* pathには、取得したJSONデータのルートパスを指定します。
+
+> Example: Solrのデータと結合する
 >
     JOIN books ON books.title = ccc AND books.author = ddd
       TO books.id AS book_id, books.price AS price
       EXPIRE 10min
       USING web_fetch('http://localhost:3000/solr/select?q=${query}', [' = ',':', ' AND ', '+AND+'], 'response.docs[0]')
+>
+> 置換ルール1: ' = 'を':'に置換
+> 置換ルール2: ' AND 'を'+AND+'に置換
+>
+> 元の結合条件:
+>
+    books.title = ccc AND books.author = ddd
+> 置換ルール適用後の結合条件:
+>
+    books.title:ccc+AND+books.author:ddd
+> ※ ccc, dddの各フィールドは、Tupleの各フィールドの値に置き換えられます。
+>
+> アクセスURL:
+>
+    http://localhost:3000/solr/select?q=books.title:ccc+AND+books.author:ddd
+> 
+> レスポンスデータ: pathで指定したパスをルートパスとしてJSONのパースを行います。
+>
+    {
+      response:{
+        docs:[
+          {　←★ここから読み始める
+            id:"978-1423103349",
+            title:"The Sea of Monsters",
+            author:"Rick Riordan",
+            price:6.49
+          }
+        ]
+      }
+    }
 
 ---
 
@@ -836,10 +895,11 @@ EMITは、Tupleを外部へ出力します。
 
 TupleをKafkaに出力します。
 
-    kafka_emit(topic_name)
+    kafka_emit(topic_name[, mode])
 
 
- * topic_name には、出力するTopic名を指定します。topic_name はプロセッサ変数に対応しています。
+* topic_name には、出力するTopic名を指定します。topic_name はプロセッサ変数に対応しています。
+* mode には、jsonもしくはcsvを指定できます。省略した場合はjsonが適用されます。
 
 > Example:
 >
