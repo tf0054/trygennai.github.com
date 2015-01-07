@@ -8,6 +8,7 @@ title: genn.ai
 * [primer](tutorial_ja.html)
 * [DDL](ddl_ja.html)
 * [DML](dml_ja.html)
+* [設定](config_ja.html)
 
 ### genn.ai ツールマニュアル
 * [gungnir](cli_ja.html) (コマンドラインツール)
