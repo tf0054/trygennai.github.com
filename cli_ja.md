@@ -349,11 +349,33 @@ Topologyは停止している必要があります。削除する前に `DESC TO
 
 ### SET
 
-Topologyのプロパティを設定します。
+Topologyのプロパティを設定、確認することができます。
+
+    gungnir> SET property_name[ = property_value];
+
+property_valueを省略した場合、該当のプロパティに設定されている値を表示します。
+
 設定したプロパティは、 `SUBMIT TOPOLOGY` もしくは `START TOPOLOGY` で、起動するTopologyに反映されます。
 プロパティは、 `STOP TOPOLOGY` で初期化されてしまうので、 `START TOPOLOGY` を実行する前に再設定する必要があります。
 
-    gungnir> SET property_name = property_value;
+設定可能なプロパティは下記の通りです。
+
+* default.parallelism
+* kafka.emit.brokers
+* kafka.emit.required.acks
+* kafka.monitor.brokers
+* kafka.monitor.required.acks
+* kafka.spout.topic.replication.factor
+* mongo.fetch.servers
+* mongo.persist.servers
+* monitor.enabled
+* topology.metrics.enabled
+* topology.metrics.interval.secs
+* topology.workers
+
+設定したプロパティはクライアントのセッションが閉じられるまで保持されます。一度のセッションで複数のTopologyをSUBMITする場合には、注意してください。
+
+SUBMITしたTopologyに設定されたプロパティは変更することができません。プロパティを変更する場合には、`STOP TOPOLOGY`、`DROP TOPOLOGY`を実施後、再度SETにてプロパティの設定を行い、Topologyを再設定してください。
 
 > Example:
 >
