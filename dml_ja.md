@@ -36,7 +36,7 @@ FROM を使い、Tupleの入力元をスキーマとともに指定します。
 
 外部入力は、一つのTopologyに対して一つしか定義できません。
 
-#### kafka_spout
+#### Kafka Spout Processor
 
 TupleをKafkaから読み込みます。システムのデフォルトとして動作します。
 
