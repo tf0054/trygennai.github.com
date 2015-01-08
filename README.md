@@ -1,4 +1,4 @@
-gen.nai Website
+genn.ai Website
 ===============
 
 About
