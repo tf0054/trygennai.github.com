@@ -14,7 +14,7 @@ title: genn.ai
 * [gungnir](cli_ja.html) (コマンドラインツール)
 
 ### genn.ai の実行環境(ローカル用)
-* [vagrant (VM)](https://github.com/siniida/gennai.vagrant)
+* [vagrant (VM)](https://github.com/trygennai/gennai.vagrant)
 
 ### genn.ai の実行環境(AWS)
 * [dev.genn.ai](http://dev.genn.ai/) (経験者向け。環境のアップデートのため停止している場合があります。)
