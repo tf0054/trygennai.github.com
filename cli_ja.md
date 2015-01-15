@@ -5,7 +5,7 @@ title: genn.ai
 
 # genn.ai CLI
 
-> ここでは、genn.aiを操作するためのコマンドラインツールであるgungnirについて記載します。
+> ここでは、genn.aiを操作するためのコマンドラインツールであるgungnir、及びデータ投入ツールであるpostスクリプトについて記載します。
 
 ## Gungnir Command Line Options
 
@@ -143,10 +143,11 @@ Topologyのより詳細な実行計画を表示します。
 
 Topologyを登録して起動します。
 
-    gungnir> SUBMIT TOPOLOGY topology_name;
+    gungnir> SUBMIT TOPOLOGY topology_name [COMMENT "comment"];
 
 * topology_name には一意となる任意の文字列を指定します。
 * topology_name は英数字およびアンダースコアを使用できます。
+* comment には、任意の文字列で設定することができます。
 
 > Example:
 >
@@ -154,7 +155,7 @@ Topologyを登録して起動します。
     OK
     gungnir> EXPLAIN;
     …
-    gungnir> SUBMIT TOPOLOGY test_topology_1;
+    gungnir> SUBMIT TOPOLOGY test_topology_1 COMMENT "テスト";
     OK
     Starting ... Done
     {
@@ -163,6 +164,7 @@ Topologyを登録して起動します。
       "status":"RUNNING",
       "owner":"user@genn.ai",
       "createTime":"2014-11-26T02:28:55.612Z",
+      "comment":"テスト",
       "summary":{
         "name":"gungnir_54753ae70cf2422ae5af8e1e",
         "status":"ACTIVE",
@@ -195,6 +197,7 @@ Topologyを登録して起動します。
       "status":"RUNNING",
       "owner":"user@genn.ai",
       "createTime":"2014-11-26T02:28:55.612Z",
+      "comment":"テスト",
       "summary":{
         "name":"gungnir_54753ae70cf2422ae5af8e1e",
         "status":"ACTIVE",
@@ -478,7 +481,7 @@ Serverから新たなTracking IDを受け取ることができます。
 
 ---
 
-### MONITOR
+###<a name="monitor"></a> MONITOR
 
 Topologyの動作確認の為に、TupleがTopologyの中をどのように流れたをMonitor機能で確認します。
 Tupleが流れた際に出力されるMonitorログを表示することによって、確認を行います。
@@ -674,10 +677,10 @@ gungnirコマンドのバッチモードを使用します。
 > Example:
 >
     $ gungnir -u gennai -p gennai -e "DESC USER;"
-    Gungnir server connected... localhost/127.0.0.1:9190
-    Gungnir version 0.0.1 build at 20140811-013538
-    Welcome gennai (53fbd6a60cf29af6bb804011)
-    {"id":"53fbd6a60cf29af6bb804011","name":"gennai","createTime":"2014-08-26T00:36:54.353Z"}
+    Gungnir server connecting ...
+    Gungnir version 0.0.1 build at 20150114-013107
+    Welcome gennai (Account ID: 549a345d0cf2a9c38ec5789a)
+    {"id":"549a345d0cf2a9c38ec5789a","name":"gennai","createTime":"2014-12-24T03:34:53.195Z"}
     $
 
 ---
@@ -694,7 +697,7 @@ gungnirコマンドのバッチモードを使用します。
     FROM userAction AS ua1 USING kafka_spout() INTO s1;
     FROM s1 FILTER field1 >= 10 INTO s2;
     FROM s1 FILTER field1 < 10 INTO s3;
-    SUBMIT TOPOLOGY;
+    SUBMIT TOPOLOGY test;
     $
     $ gungnir -u [user] -p [pass] -f test.q
     ...
@@ -706,3 +709,76 @@ gungnirコマンドのバッチモードを使用します。
 * POST
 * COOKIE
 * MONITOR
+
+## Post Script
+
+postスクリプトは、コマンドラインからTupleStoreServerにTupleの送信を行います。テストやベンチマークツールとしての利用を想定しています。
+
+postスクリプトでは、ユーザログインを行っていないため、送信先のTuple定義が存在するかチェックをしていません。
+
+## Post Script Command Line Options
+
+    $ post options
+    usage: post [-options] [JSON tuple]
+     -a <accountid>               Account ID to use when posting to the tuple
+                                  store server
+     -f <filename>                JSON tuple from files
+     -h                           Print help information
+     -l <response-time-limits>    Response time limits (secs)
+     -n <number-of-times>         number of times
+     -p <number-of-parallelism>   Number of parallelism
+     -q <size-of-send-queue>      Size of send queue
+     -s                           Print statistics information
+     -t <tuplename>               Tuple name to use when posting to the tuple
+                                  store server
+     -v                           Make the operation more talkative
+
+## Post Script Examples
+
+ここではpostスクリプトの使用例を記載します。
+
+### 引数に指定されたTupleを送信
+
+    $ post -a 549a345d0cf2a9c38ec5789a -t test -v '{t1: 1}'
+    POST /gungnir/v0.1/549a345d0cf2a9c38ec5789a/test/json
+    
+    account ID:       549a345d0cf2a9c38ec5789a
+    tuple name:       test
+    parallelism:      1
+    times:            1
+    queue size:       8192
+    time limits(sec): 10
+    
+    HTTP/1.1 204 No Content
+    Content-Length: 0
+    Date: Thu, 15 Jan 2015 04:57:22 GMT
+    Finished 0 requests
+    
+    Time(sec):          309746.296
+    Completed requests: 0
+    Failed requests:    0
+    Timeout requests:   0
+    $
+
+### 引数に指定されたファイルを送信
+
+    $ cat post.data
+    {aaa:"aaa1", bbb:10, ccc:100, ddd:"ddd1"}
+    {aaa:"aaa2", bbb:10, ccc:100, ddd:"ddd2"}
+    {aaa:"aaa3", bbb:10, ccc:100, ddd:"ddd3"}
+    $ ./bin/post -a 549a345d0cf2a9c38ec5789a -t tuple1 -v -f post.data
+
+### 標準入力からTupleを流し込み
+
+    $ cat post.data | ./bin/post -a 5465e7d3e4b008da18561803 -t tuple1 -p 2
+
+
+### ベンチマークツールとしての利用
+
+    $ ./bin/post -a 5465e7d3e4b008da18561803 -t tuple1 -n 50 -p 3 '{aaa:"aaa3", bbb:10, ccc:100, ddd:"ddd3"}'
+
+上記例では、指定したTupleを50回×3並列で送信されます。従って、計150個のTupleが送信されます。
+
+    $ ./bin/post -a 5465e7d3e4b008da18561803 -t tuple1 -n 50 -p 3 -f post.data
+
+上記例ではファイルを指定しているので、ファイルに記述されているTuple数×50回×3並列で送信されます。従って、ファイルに記述されているTuple数が10であったとすると、10×50×3=1500個のTupleが送信されます。
