@@ -391,13 +391,9 @@ Operatorの並列度のデフォルト値を指定します。クエリに`paral
 
 GungnirServerのメタ情報を格納するのに使用するクラスを指定します。
 
-デフォルト設定は **InMemoryMetaStore** を使用します。 **InMemoryMetaStore** はGungnirServerが起動している間のみ利用可能なMetastoreです。GungnirServerを再起動すると各メタ情報は消失します。メタ情報を永続的にするには **MongoDbMetaStore** を使用してください。 **MongoDbMetaStore** を使用する場合、 **metastore.mongodb.servers** と共に指定する必要があります。
+設定可能な値は、デフォルト設定の **MongoDbMetaStore** と **InMemoryMetaStore** です。 **InMemoryMetaStore** はGungnirServerが起動している間のみ利用可能なMetastoreです。GungnirServerを再起動すると各メタ情報は消失します。メタ情報を永続的にするには **MongoDbMetaStore** を使用してください。 **MongoDbMetaStore** を使用する場合、 **metastore.mongodb.servers** と共に指定する必要があります。
 
-> Default: org.gennai.gungnir.metastore.InMemoryMetaStore
-
-> Example: MongoDbMetaStoreを使用
->
-    metastore: org.gennai.gungnir.metastore.MongoDbMetaStore
+> Default: org.gennai.gungnir.metastore.MongoDbMetaStore
 
 #### metastore.mongodb.servers
 
@@ -415,10 +411,16 @@ TupleStoreに使用するKafkaのBrokerをリスト形式で指定します。`[
 
 #### kafka.required.acks
 
-TupleStoreServerがKafkaに書き込みを行う際に、どの時点で応答を返すかを設定します。設定可能な値は 0, 1, -1 です。
+TupleStoreServerがKafkaにTupleを書き込む際に、どの時点で応答を返すかを設定します。設定可能な値は 0, 1, -1 です。
 詳細は[Kafkaのドキュメント](http://kafka.apache.org/documentation.html)を参照してください。
 
 > Default: 1
+
+#### kafka.producer.type
+
+TupleStoreServerがKafkaにTupleを書き込む際の処理を指定します。同期(sync)/非同期(async)を指定できます。
+
+> Default: "sync"
 
 #### kafka.auto.commit.interval
 
@@ -515,20 +517,6 @@ Monitor機能を使用する際に、アクセスするKafkaクラスタの情�
 Monitor機能を使用する際に、アクセスするKafkaクラスタの情報を保持するZooKeeperアンサンブルとの接続に適用される同期処理時間のタイムアウトをミリ秒で指定します。
 
 > Default: 2000
-
-### Componetに関する設定
-
-#### component.snapshot.queue.size
-
-`SNAPSHOT`句を使用した場合に、各Component毎に生成されるSnapShotTimerに投入されるJobを格納するキューのサイズを指定します。
-
-> Default: 1024
-
-#### component.snapshot.parallelism
-
-`SNAPSHOT`句を使用した場合に、各Component毎に生成されるSnapShotTimerに投入されたJobを実行するスレッドの並列度を指定します。
-
-> Default: 32
 
 ### Operatorに関する設定
 
