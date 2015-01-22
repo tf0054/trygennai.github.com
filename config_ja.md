@@ -60,7 +60,7 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 ### GungnirServerに関する設定
 
-#### gungnir.server.host
+#### gungnir.server.host <a name="client.gungnir.server.host"></a>
 
 [クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするGungnirServerのHostを、名前解決が可能なホスト名かIPで指定します。GungnirServerが稼働しているホスト以外からのアクセス時に設定をする必要があります。
 
@@ -68,7 +68,7 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 > Default: "localhost"
 
-#### gungnir.server.port
+#### gungnir.server.port <a name="client.gungnir.server.port"></a>
 
 [クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするGungnirServerのPort番号を指定します。GungnirServerの設定において、 **gungnir.server.port** を変更している場合に設定をする必要があります。
 
@@ -268,9 +268,14 @@ TupleStoreServerがシリアライズする処理クラスを指定します。�
 
 #### persistent.emitter
 
-TupleStoreServerからKafkaへの書き込み処理を行うクラスを指定します。現時点では、使用可能なクラスは他にありません。
+TupleStoreServerからTopologyへ、Tupleを送信する処理を行うクラスを指定します。デフォルト設定では、TupleStoreServerはKafkaにTupleを書き込みます。Kafkaに書き込みを行うことで、Tupleが一定期間保存されることになります。
+
+gungnir-standalone.yamlを用いたStandaloneモードで起動すると、 **persistent.emitter** には **InMemoryEmitter** が適用され、Kafkaを起動することなく動作の確認を行えます。ただし **cluster.mode** 、 **storm.cluster.mode** が共に **local** の場合にのみ使用することができます。
 
 > Default: org.gennai.gungnir.tuple.persistent.KafkaPersistentEmitter
+
+> Example: gungnir-standalone.yamlでの設定
+org.gennai.gungnir.tuple.persistent.InMemoryEmitter
 
 ### Clusterに関する設定
 
