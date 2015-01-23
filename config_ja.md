@@ -1,6 +1,6 @@
 ---
 layout: manual_ja
-title: genn.ai
+title: Setting / genn.ai
 ---
 
 # genn.ai 設定

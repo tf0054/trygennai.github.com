@@ -1,6 +1,6 @@
 ---
 layout: manual_ja
-title: genn.ai
+title: CLI / genn.ai
 ---
 
 # genn.ai CLI
