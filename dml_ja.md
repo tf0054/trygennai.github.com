@@ -63,7 +63,7 @@ TupleをKafkaから読み込みます。システムのデフォルトとして�
 >
     FROM s1(ua1, ua2), s2(v1)
 
-### TupleJoin
+### JOIN
 
 複数のTupleをフィールドの値を元に結合します。
 
@@ -445,7 +445,7 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
 
 ---
 
-## FILTER GROUP
+### FILTER GROUP
 
 FILTER GROUP は、複数のTupleに対してTupleの通過を判定します。
 
@@ -482,7 +482,7 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
  fg_stateは、条件１と条件２のそれぞれを満たした日時が格納されます。
  条件の数と等しいTIMESTAMPのLISTになります。
 
-### 状態の保持
+#### 状態の保持
 
 period を用いて、フィルタの状態をどれだけ保持するか、を指定します。
 
@@ -688,7 +688,7 @@ STRING型のフィールドの値を連結したフィールドを作成しま�
     EACH cast(field1 AS TIMESTAMP('yyyyMMddHHmmss')) AS new_field
 
 ![Alt text](/img/underconstruction.png)
-定数に関しては、関数の種類が増えてきてから改めて記述する。
+定数に関しては、関数の種類が増えてきてから改めて記述する予定です。
 
 #### date_format
 
@@ -915,7 +915,7 @@ BEGIN GROUP ... END GROUP で囲まれたクエリを、グループで実行し
 
 * field には、グループ化するフィールドの名前を指定します。
 
-### EACH をグループで実行する
+### EACH をグループで実行
 
 > Example:
 >
@@ -924,9 +924,9 @@ BEGIN GROUP ... END GROUP で囲まれたクエリを、グループで実行し
     EMIT * USING mongo_persist('db1', 'col2', 'user_name');
     END GROUP
 
-user_name ごとに（ユーザごとに）Tupleがカウントされます。
+user_name ごと（ユーザごと）にTupleがカウントされます。
 
-### FILTER GROUP をグループで実行する
+### FILTER GROUP をグループで実行
 
 > Example:
 >
@@ -993,7 +993,7 @@ TupleをKafkaに出力します。
     kafka_emit(topic_name[, mode])
 
 
-* topic_name には、出力するTopic名を指定します。topic_name はプロセッサ変数に対応しています。
+* topic_name には、出力するTopic名を指定します。topic_name は [プロセッサ変数](/dml_ja.html#section-20) に対応しています。
 * mode には、jsonもしくはcsvを指定できます。省略した場合はjsonが適用されます。
 
 > Example:
@@ -1015,8 +1015,8 @@ TupleをMongoDBに出力します。
     mongo_persist(db_name, collection_name [, key_names])
 
 
-* db_name には、出力するDB名を指定します。db_name はプロセッサ変数に対応しています。
-* collection_name には、出力するCollection名を指定します。collection_name はプロセッサ変数に対応しています。
+* db_name には、出力するDB名を指定します。db_name は [プロセッサ変数](/dml_ja.html#section-20) に対応しています。
+* collection_name には、出力するCollection名を指定します。collection_name は [プロセッサ変数](/dml_ja.html#section-20) に対応しています。
 * key_names には、出力するキーのフィールド名を指定します。複合キーの場合は配列で指定してください。
  key_names を指定した場合、出力はキーに対してupdateされます。
  key_names を指定しなかった場合は、出力はinsertになります。
