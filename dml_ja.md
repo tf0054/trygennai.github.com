@@ -43,6 +43,16 @@ TupleをKafkaから読み込みます。
 
     kafka_spout()
 
+#### Memory Spout Processor
+
+Tupleをメモリから読み込みます。
+
+    memory_spout()
+
+Memory Spout Processorを使用するには、GungnirServerの下記設定項目が共に **local** となっている必要があります。
+
+* cluster.mode
+* storm.cluster.mode
 
 ### 内部（ストリーム）からの入力
 

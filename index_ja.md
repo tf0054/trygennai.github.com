@@ -12,6 +12,7 @@ title: genn.ai
 * [DML](dml_ja.html)
 * [チュートリアル](tutorial_ja.html)
 * [設定](config_ja.html)
+* [設定例](example_ja.html)
 
 ### genn.ai の実行環境(ローカル用)
 * [vagrant (VM)](https://github.com/trygennai/gennai.vagrant)
