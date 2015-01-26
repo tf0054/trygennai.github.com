@@ -9,6 +9,7 @@ title: genn.ai
 * [DDL](ddl_ja.html)
 * [DML](dml_ja.html)
 * [設定](config_ja.html)
+* [設定例](example_ja.html)
 
 ### genn.ai ツールマニュアル
 * [gungnir](cli_ja.html) (コマンドラインツール)

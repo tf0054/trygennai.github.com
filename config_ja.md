@@ -60,7 +60,8 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 ### GungnirServerに関する設定
 
-#### gungnir.server.host <a name="client.gungnir.server.host"></a>
+<a name="client.gungnir.server.host"></a>
+#### gungnir.server.host 
 
 [クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするGungnirServerのHostを、名前解決が可能なホスト名かIPで指定します。GungnirServerが稼働しているホスト以外からのアクセス時に設定をする必要があります。
 
@@ -68,7 +69,8 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 > Default: "localhost"
 
-#### gungnir.server.port <a name="client.gungnir.server.port"></a>
+<a name="client.gungnir.server.port"></a>
+#### gungnir.server.port 
 
 [クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするGungnirServerのPort番号を指定します。GungnirServerの設定において、 **gungnir.server.port** を変更している場合に設定をする必要があります。
 
