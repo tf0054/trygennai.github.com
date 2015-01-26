@@ -139,7 +139,7 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
 
 ---
 
-## <a name="INTO">&nbsp;</a>INTO
+## INTO <a name="INTO"></a>
 
 INTO は、ストリームを分岐・合流させます。
 
@@ -982,7 +982,7 @@ END GROUP と TO STREAM は、グループ化を解除する必要がなけれ�
 
 ---
 
-## <a name="EMIT">&nbsp;</a>EMIT
+## EMIT <a name="EMIT"></a>
 
 EMITは、Tupleをトポロジの外部へ出力します。
 
@@ -1053,7 +1053,7 @@ Tupleを他のRESTサーバに向けて送信します。
 >
     EMIT * USING web_emit('http://localhost:9200/_bulk', 'es', {'index':'test', 'type':'xyz'});
 
-### <a name="EMIT_INTERNAL">&nbsp;</a>内部への出力
+### 内部への出力 <a name="EMIT_INTERNAL"></a>
 
 #### Schema Persist Processor
 
@@ -1081,7 +1081,7 @@ Tupleを同一アカウントの他のスキーマに出力します。
     ...
 
 
-#### <a name="procparam">&nbsp;</a>プロセッサ変数
+#### プロセッサ変数 <a name="procparam"></a>
 
 Emit Processor の出力先の名称には、以下のプロセッサ変数を含めることができます。
 
