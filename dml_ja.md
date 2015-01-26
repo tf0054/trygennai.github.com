@@ -1,6 +1,6 @@
 ---
 layout: manual_ja
-title: genn.ai
+title: DML / genn.ai
 ---
 
 # genn.ai DML
@@ -11,7 +11,7 @@ title: genn.ai
 	(この処理ロジックでは、通常、最初にKafkaからデータを読み出します)
 
 > genn.aiでは、このjson形式で受け取るデータを **タプル** (Tuple)と呼び、コンパイルにより出来上がるものは **トポロジ** (Topology)と呼びます。
-	(タプルについてはStormの用語をそのまま借りています)
+	(タプル及びトポロジはStormの用語をそのまま借りています)
 
 > 本ページのDMLとは、後者クエリサーバが担当するクエリ(の文法)のことを指します。
     前者の **タプル** については [DDL](ddl_ja.html)のページをご参照下さい。
@@ -20,14 +20,14 @@ title: genn.ai
 
 FROM を使い、Tupleの入力元をスキーマとともに指定します。
 
-### 入力先が外部の場合
+### 外部からの入力
 
     FROM schema_name AS schema_alias, ... USING spout_processor
 
 
 * schema_name には、Tuple名もしくはView名を指定します。
 * schema_alias には、クエリ内で使用するTupleもしくはViewの別名を指定します。
-* spout_processor には、読み込みに使用するプロセッサを指定します。
+* spout_processor には、読み込みに使用するプロセッサを指定します。今はkafka_spoutのみです。
 
 > Example:
 >
@@ -38,7 +38,8 @@ FROM を使い、Tupleの入力元をスキーマとともに指定します。
 
 #### Kafka Spout Processor
 
-TupleをKafkaから読み込みます。システムのデフォルトとして動作します。
+TupleをKafkaから読み込みます。
+[DDL](/ddl_ja.html) で説明されている"CREATE TUPLE"にて作られたHTTP(REST)からの入力TupleもKafka経由で読み上げます。
 
     kafka_spout()
 
@@ -53,12 +54,11 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
 * cluster.mode
 * storm.cluster.mode
 
-### 入力先が内部（ストリーム）の場合
+### 内部（ストリーム）からの入力
 
     FROM stream_name[(schema_alias, ...)], ...
 
-* ストリームとは別に定義したトポロジからの入力のことです。
-* stream_name には、入力したいストリーム名を指定します。
+* stream_name には、別に [INTO](/dml_ja.html#INTO) もしくは [EMIT](/dml_ja.html#EMIT_INTERNAL) で作られたストリームを指定します。
 
 ストリームからすべてのTupleを読み込む場合
 
@@ -73,7 +73,9 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
 >
     FROM s1(ua1, ua2), s2(v1)
 
-### TupleJoin
+* ここで使われているua1やua2は"CREATE TUPLE"で作られたタプル名、s1はそれらタプルが流れてくるストリーム名です。
+
+### JOIN
 
 複数のTupleをフィールドの値を元に結合します。
 
@@ -127,7 +129,7 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
 * join_fieldには結合後のTupleが保持するフィールドを指定します。結合後のフィールド名称が被らない場合には、ワイルドカードを使用する事やaliasを省略することが可能です。
 * periodには、Tupleを保持する期間を指定します。指定した時間経過後にJoin対象のTupleが読み込まれると、Tuple Joinは実行されません。
 
-> Example: ua1,ua2をストリームs1から読み込み、ua3をストリームs2から読み込んで結合
+> Example: ua1とua2をストリームs1から読み込み、ua3をストリームs2から読み込んで結合
 >
     FROM (s1(ua1)
       JOIN s1(ua2) ON ua1.field1 = ua2.field3
@@ -137,7 +139,7 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
 
 ---
 
-## INTO
+## <a name="INTO">&nbsp;</a>INTO
 
 INTO は、ストリームを分岐・合流させます。
 
@@ -149,7 +151,7 @@ INTO は、ストリームを分岐・合流させます。
 >
     FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout() INTO s1
 
-INTO を使って出力したストリームは、FROM で読み込みます。
+INTO を使って出力したストリームは、FROM で読み込むことが出来ます。
 
 ### 分岐, 合流
 
@@ -207,7 +209,7 @@ join_condition や join_fields で、外部データのフィールドを識別�
 (EXPIRE句の指定が無い場合はキャッシュは行われません)
 
 指定した時間の間、fetchした内容をキャッシュします。キャッシュしている間に実行されたJOINは、キャッシュから結合フィールドを取得します。
-指定した時間が過ぎると、ふたたびFetchProcessorを実行してキャッシュを更新します。
+（指定した時間が過ぎると、キャッシュが更新されます）
 
 キャッシュは結合キーごとに保存されます。
 
@@ -301,9 +303,7 @@ condition の符号には、以下のものを指定します。
 * &lt;=
 * LIKE
 * REGEXP
-* IN
-* ALL
-* BETWEEN
+* IN, ALL, BETWEEN
 * AND
 * OR
 * NOT
@@ -455,7 +455,7 @@ TupleのフィールドがMAP型の場合は、フィールドの値を以下の
 
 ---
 
-## FILTER GROUP
+### FILTER GROUP
 
 FILTER GROUP は、複数のTupleに対してTupleの通過を判定します。
 
@@ -492,7 +492,7 @@ Tupleに状態フィールドを追加します。STATE TO clause を省略し�
  fg_stateは、条件１と条件２のそれぞれを満たした日時が格納されます。
  条件の数と等しいTIMESTAMPのLISTになります。
 
-### 状態の保持
+#### 状態の保持
 
 period を用いて、フィルタの状態をどれだけ保持するか、を指定します。
 
@@ -698,7 +698,7 @@ STRING型のフィールドの値を連結したフィールドを作成しま�
     EACH cast(field1 AS TIMESTAMP('yyyyMMddHHmmss')) AS new_field
 
 ![Alt text](/img/underconstruction.png)
-定数に関しては、関数の種類が増えてきてから改めて記述する。
+定数に関しては、関数の種類が増えてきてから改めて記述する予定です。
 
 #### date_format
 
@@ -844,7 +844,7 @@ LIMIT LASTであれば、最初にアクションし始めてから、４時間�
 >
     SLIDE LENGTH 10sec BY _time sum(field1) AS new_field
 
-LENGTH スライド時間 BY 起点となるフィールド名 集計関数
+"LENGTH スライド時間 BY 起点となるフィールド名 集計関数"
 といった書式で指定します。
 
 * 起点となるフィールド名には、Timestamp型のフィールドを指定します。
@@ -862,12 +862,13 @@ LENGTHにスライドするTupleの数を指定します。
 スライドはTupleの到着時にのみ実行されます。（スライドによる再計算も到着時のみ）
 
 処理的には、Tupleが到着する度にTupleをウィンドウ領域に貯めつつ、都度集計を行なっていきます。
-その際、ウィンドウ幅から除外されたTuple（※）を集計結果から減算します。
+その際、ウィンドウ幅から除外されたTuple（※）を集計結果から減算します。  
+
 （※）スライドして集計対象から外れたTuple
 
-ウィンドウ領域に保存するTupleは、集計に必要なフィールドのみを選択しています。
 
 ![Alt text](/img/underconstruction.png)
+ウィンドウ領域に保存するTupleは、集計に必要なフィールドのみを選択しています。
 スライドに使用する領域は現在メモリになっていますが、将来的に外部DBへの差し替えを予定。
 
 
@@ -925,7 +926,7 @@ BEGIN GROUP ... END GROUP で囲まれたクエリを、グループで実行し
 
 * field には、グループ化するフィールドの名前を指定します。
 
-### EACH をグループで実行する
+### EACH をグループで実行
 
 > Example:
 >
@@ -934,9 +935,9 @@ BEGIN GROUP ... END GROUP で囲まれたクエリを、グループで実行し
     EMIT * USING mongo_persist('db1', 'col2', 'user_name');
     END GROUP
 
-user_name ごとに（ユーザごとに）Tupleがカウントされます。
+user_name ごと（ユーザごと）にTupleがカウントされます。
 
-### FILTER GROUP をグループで実行する
+### FILTER GROUP をグループで実行
 
 > Example:
 >
@@ -981,9 +982,9 @@ END GROUP と TO STREAM は、グループ化を解除する必要がなけれ�
 
 ---
 
-## EMIT
+## <a name="EMIT">&nbsp;</a>EMIT
 
-EMITは、Tupleを外部へ出力します。
+EMITは、Tupleをトポロジの外部へ出力します。
 
   EMIT output_field, ... USING emit_processor
 
@@ -994,7 +995,7 @@ EMITは、Tupleを外部へ出力します。
 >
     EMIT field1, field2, field3 USING mongo_persist('db1', 'col1')
 
-### 出力先が外部の場合
+### 外部への出力
 
 #### Kafka Emit Processor
 
@@ -1003,7 +1004,7 @@ TupleをKafkaに出力します。
     kafka_emit(topic_name[, mode])
 
 
-* topic_name には、出力するTopic名を指定します。topic_name はプロセッサ変数に対応しています。
+* topic_name には、出力するTopic名を指定します。topic_name は [プロセッサ変数](/dml_ja.html#procparam) に対応しています。
 * mode には、jsonもしくはcsvを指定できます。省略した場合はjsonが適用されます。
 
 > Example:
@@ -1025,8 +1026,8 @@ TupleをMongoDBに出力します。
     mongo_persist(db_name, collection_name [, key_names])
 
 
-* db_name には、出力するDB名を指定します。db_name はプロセッサ変数に対応しています。
-* collection_name には、出力するCollection名を指定します。collection_name はプロセッサ変数に対応しています。
+* db_name には、出力するDB名を指定します。db_name は [プロセッサ変数](/dml_ja.html#procparam) に対応しています。
+* collection_name には、出力するCollection名を指定します。collection_name は [プロセッサ変数](/dml_ja.html#procparam) に対応しています。
 * key_names には、出力するキーのフィールド名を指定します。複合キーの場合は配列で指定してください。
  key_names を指定した場合、出力はキーに対してupdateされます。
  key_names を指定しなかった場合は、出力はinsertになります。
@@ -1051,6 +1052,8 @@ Tupleを他のRESTサーバに向けて送信します。
 > Example:
 >
     EMIT * USING web_emit('http://localhost:9200/_bulk', 'es', {'index':'test', 'type':'xyz'});
+
+### <a name="EMIT_INTERNAL">&nbsp;</a>内部への出力
 
 #### Schema Persist Processor
 
@@ -1078,7 +1081,7 @@ Tupleを同一アカウントの他のスキーマに出力します。
     ...
 
 
-#### プロセッサ変数
+#### <a name="procparam">&nbsp;</a>プロセッサ変数
 
 Emit Processor の出力先の名称には、以下のプロセッサ変数を含めることができます。
 

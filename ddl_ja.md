@@ -1,6 +1,6 @@
 ---
 layout: manual_ja
-title: genn.ai
+title: DDL / genn.ai
 ---
 
 # genn.ai DDL
