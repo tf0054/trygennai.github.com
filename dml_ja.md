@@ -20,26 +20,26 @@ title: DML / genn.ai
 
 FROM を使い、Tupleの入力元をスキーマとともに指定します。
 
-### 外部からの入力
+### RESTからの入力 <a name="FROM_REST"></a>
 
     FROM schema_name AS schema_alias, ... USING spout_processor
 
 
 * schema_name には、Tuple名もしくはView名を指定します。
 * schema_alias には、クエリ内で使用するTupleもしくはViewの別名を指定します。
-* spout_processor には、読み込みに使用するプロセッサを指定します。今はkafka_spoutのみです。
+* spout_processor には、読み込みに使用するプロセッサを指定します。
 
 > Example:
 >
     FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout()
 
 
-外部入力は、一つのTopologyに対して一つしか定義できません。
+RESTからの入力は、一つのTopologyに対して一つしか定義できません。
 
 #### Kafka Spout Processor
 
 TupleをKafkaから読み込みます。
-[DDL](/ddl_ja.html) で説明されている"CREATE TUPLE"にて作られたHTTP(REST)からの入力TupleもKafka経由で読み上げます。
+[DDL](/ddl_ja.html) で説明されている`CREATE TUPLE`にて作られたHTTP(REST)からの入力TupleもKafka経由で読み上げます。
 
     kafka_spout()
 
@@ -54,34 +54,30 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
 * cluster.mode
 * storm.cluster.mode
 
-### 内部（ストリーム）からの入力
+### ストリームからの入力 <a name="FROM_STREAM"></a>
 
     FROM stream_name[(schema_alias, ...)], ...
 
-* stream_name には、別に [INTO](/dml_ja.html#INTO) もしくは [EMIT](/dml_ja.html#EMIT_INTERNAL) で作られたストリームを指定します。
+* stream_name には、 [INTO](/dml_ja.html#INTO) もしくは [EMIT](/dml_ja.html#EMIT_INTERNAL) で作られたストリームを指定します。
+* schema_alias には、Tupleを指定します。Tupleを指定すると、ストリーム中の該当のTupleのみを読み込むようになります。
 
-ストリームからすべてのTupleを読み込む場合
-
-> Example:
+> Example: ストリームからすべてのTupleを読み込む場合
 >
     FROM s1, s2
-
-
-ストリームから特定のTupleのみを読み込む場合
 
 > Example:s1ストリームからua1, ua2タプルのみ読み込み、s2ストリームからはv1タプルのみ読み込む場合
 >
     FROM s1(ua1, ua2), s2(v1)
-
-* ここで使われているua1やua2は"CREATE TUPLE"で作られたタプル名、s1はそれらタプルが流れてくるストリーム名です。
+>
+* ここで使われているua1やua2は`CREATE TUPLE`で作られたタプル名、s1はそれらタプルが流れてくるストリーム名です。
 
 ### JOIN
 
 複数のTupleをフィールドの値を元に結合します。
 
-#### 外部入力からTupleを読み込んで結合
+#### RESTからTupleを読み込んで結合
 
-外部入力からTupleを読み込む時点で、複数のTupleを結合します。
+RESTからTupleを読み込む時点で、複数のTupleを結合します。
 
     FROM (schema_name_1
       JOIN schema_name_2 ON join_condition
@@ -109,9 +105,9 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
       EXPIRE 1min
     ) AS ua4 USING kafka_spout()
 
-#### 内部入力(ストリーム)からTupleを読み込んで結合
+#### ストリームからTupleを読み込んで結合
 
-内部入力から、一部のTupleに対してTupleを結合します。
+ストリームから、一部のTupleに対してTupleを結合します。
 
     FROM (stream_name_1[(schema_name_1, ...)]
       JOIN stream_name_2[(schema_name_2, ...)] ON join_condition
@@ -125,7 +121,7 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
     join_field:
     schema_name_1.join_field [AS field_alias, ...]
 
-* 内部入力に複数のTupleが含まれる場合、schema_nameを指定して絞り込む必要があります。
+* ストリームに複数のTupleが含まれる場合、schema_nameを指定して絞り込む必要があります。
 * join_fieldには結合後のTupleが保持するフィールドを指定します。結合後のフィールド名称が被らない場合には、ワイルドカードを使用する事やaliasを省略することが可能です。
 * periodには、Tupleを保持する期間を指定します。指定した時間経過後にJoin対象のTupleが読み込まれると、Tuple Joinは実行されません。
 
@@ -141,7 +137,7 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
 
 ## INTO <a name="INTO"></a>
 
-INTO は、ストリームを分岐・合流させます。
+INTO は、ストリームを分岐させます。
 
     INTO stream_name
 

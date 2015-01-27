@@ -14,7 +14,8 @@ genn.aiで使用している主な設定ファイルは下記の2つです。
 * gungnir.yaml (client)
 * gungnir.yaml (server)
 
-## ローカルモードと分散モード
+
+## ローカルモードと分散モード <a name="mode"></a>
 
 ここでは、GungnirServer/TupleStoreServerのローカルモード(local)と分散モード(distributed)について記載します。
 
