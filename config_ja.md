@@ -15,13 +15,44 @@ genn.aiで使用している主な設定ファイルは下記の2つです。
 * gungnir.yaml (server)
 
 
-## ローカルモードと分散モード <a name="mode"></a>
+## 稼働モード <a name="mode"></a>
 
-ここでは、GungnirServer/TupleStoreServerのローカルモード(local)と分散モード(distributed)について記載します。
+ここでは、genn.aiが稼働する下記3つのモードについて記載します。
+
+* スタンドアローン(standalone)
+* ローカルモード(local)
+* 分散モード(distributed)
+
+### スタンドアローン
+
+GungnirServerとTupleStoreServerが、同一のプロセスで稼働します。また、メタ情報の格納・TupleStoreにはMemoryが使用されます。よって、Storm、Kafka、ZooKeeper、MongoDBを別途構築することなくgenn.aiを実行することが可能です。
+
+![standalone](/img/mode_standalone.png)
+
+Kafka、MongoDBを別途構築すると、Topologyにて、Kafka、MongoDBへデータを書き出したり、データを取得したりすることも可能です。
+
+起動には下記コマンドを実行します。
+
+    $ cd $GUNGNIR_INSTALL_DIR
+    $ ./bin/gungnir-server.sh start ./conf/gungnir-standalone.yaml
+
+gungnir-standalone.yamlには、genn.aiがスタンドアローンで稼働する為の各種設定が記載されています。
+
+停止には下記コマンドを実行します。
+
+    $ cd $GUNGNIR_INSTALL_DIR
+    $ ./bin/gungnir-server.sh stop
 
 ### ローカルモード
 
 GungnirServerとTupleStoreServerが、同一のプロセスで稼働します。GungnirServer/TupleStoreServerは1つのホストでのみ実行します。
+
+![localmode](/img/mode_local.png)
+
+デフォルト設定では、メタ情報はMongoDBに格納され、TupleStoreにはKafkaが使用されます。下記設定項目で変更することも可能です。
+
+* [metastore](#s.metastore)
+* [persistent.emitter](#s.persistent.emitter)
 
 起動には下記コマンドを実行します。
 
@@ -38,6 +69,18 @@ GungnirServerとTupleStoreServerが、同一のプロセスで稼働します。
 
 GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働します。GungnirServer/TupleStoreServerをそれぞれ別のホスト、複数のホスト、同一筐体で複数のプロセスとして稼働させることが可能です。
 
+![distributed](/img/mode_distributed.png)
+
+デフォルト設定では、メタ情報はMongoDBに格納され、TupleStoreにはKafkaが使用されます。また、GungnirServer/TupleStoreServerの情報をgenn.aiクラスタで共有する為にZooKeeperを必要とします。
+
+分散モードに接続するクライアントツール(gungnir, post)は、ZooKeeperアンサンブルから常に稼働中のGungnirServer/TupleStoreServerを知ります。従って、一部のGungnirServer/TupleStoreServerが障害によりクラスタから離脱しても、稼働中のサーバにのみアクセスすることで可用性を備えています。
+
+分散モードで稼働させるには、下記設定項目を初期設定から変更する必要があります。
+
+* [cluster.mode](#s.cluster.mode)
+* [cluster.zookeeper.servers](#s.cluster.zookeeper.servers)
+
+
 それぞれの起動には下記コマンドを実行します。
 
     $ cd $GUNGNIR_INSTALL_DIR
@@ -50,10 +93,6 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
     $ cd $GUNGNIR_INSTALL_DIR
     $ ./bin/gungnir-server.sh stop
     $ ./bin/tuple-store-server.sh stop
-
-分散モードにおけるGungnirServer/TupleStoreServerのクラスタ情報は、ZooKeeperアンサンブルに保存されています。
-
-分散モードに接続するクライアントツール(gungnir, post)は、ZooKeeperアンサンブルから常に稼働中のGungnirServer/TupleStoreServerを知ります。従って、一部のGungnirServer/TupleStoreServerが障害によりクラスタから離脱しても、稼働中のサーバにのみアクセスすることで可用性を備えています。
 
 ## gungnir.yaml (client)
 
