@@ -19,40 +19,48 @@ genn.aiで使用している主な設定ファイルは下記の2つです。
 
 ここでは、genn.aiが稼働する下記3つのモードについて記載します。
 
-* スタンドアローン(standalone)
-* ローカルモード(local)
-* 分散モード(distributed)
+* ローカルモード
+* 疑似分散モード
+* 完全分散モード
 
-### スタンドアローン
+### ローカルモード <a name="mode.local"></a>
 
 GungnirServerとTupleStoreServerが、同一のプロセスで稼働します。また、メタ情報の格納・TupleStoreにはMemoryが使用されます。よって、Storm、Kafka、ZooKeeper、MongoDBを別途構築することなくgenn.aiを実行することが可能です。
 
 ![standalone](/img/mode_standalone.png)
 
-Kafka、MongoDBを別途構築すると、Topologyにて、Kafka、MongoDBへデータを書き出したり、データを取得したりすることも可能です。
+Kafka、MongoDB等を別途構築すると、Topologyにて、Kafka、MongoDB等へデータを書き出したり、データを取得したりすることも可能です。外部入出力には、Kafka、MongoDB、HTTP(Solr, Elasticsearch, ...)を用いることが可能です。
 
 起動には下記コマンドを実行します。
 
     $ cd $GUNGNIR_INSTALL_DIR
     $ ./bin/gungnir-server.sh start ./conf/gungnir-standalone.yaml
 
-gungnir-standalone.yamlには、genn.aiがスタンドアローンで稼働する為の各種設定が記載されています。
+gungnir-standalone.yamlには、genn.aiがローカルモード(standalone)で稼働する為の各種設定が記載されています。
 
 停止には下記コマンドを実行します。
 
     $ cd $GUNGNIR_INSTALL_DIR
     $ ./bin/gungnir-server.sh stop
 
-### ローカルモード
-
-GungnirServerとTupleStoreServerが、同一のプロセスで稼働します。GungnirServer/TupleStoreServerは1つのホストでのみ実行します。
-
-![localmode](/img/mode_local.png)
-
-デフォルト設定では、メタ情報はMongoDBに格納され、TupleStoreにはKafkaが使用されます。下記設定項目で変更することも可能です。
+また、下記設定項目を変更することで、メタ情報の格納・TupleStoreを変更することが可能です。
 
 * [metastore](#s.metastore)
 * [persistent.emitter](#s.persistent.emitter)
+
+メタ情報の格納をMongoDB、TupleStoreをKafkaに設定すると、それぞれ揮発を防ぐことができます。
+
+![local](/img/mode_local.png)
+
+### 疑似分散モード <a name="mode.pseudo"></a>
+
+GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働します。GungnirServer/TupleStoreServerは1つのホストでのみ実行します。ZooKeeperを必要とします。
+
+![pseudo](/img/mode_pseudo.png)
+
+デフォルト設定では、メタ情報はMongoDBに格納され、TupleStoreにはKafkaが使用されます。よってKafka、MongoDBを構築する必要があります。
+
+また、Topologyにて、Kafka、MongoDB等へデータを書き出したり、データを取得したりすることも可能です。外部入出力には、Kafka、MongoDB、HTTP(Solr, Elasticsearch, ...)を用いることが可能です。
 
 起動には下記コマンドを実行します。
 
@@ -65,7 +73,7 @@ GungnirServerとTupleStoreServerが、同一のプロセスで稼働します。
     $ ./bin/gungnir-server.sh stop
 
 
-### 分散モード
+### 完全分散モード <a name="mode.distributed"></a>
 
 GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働します。GungnirServer/TupleStoreServerをそれぞれ別のホスト、複数のホスト、同一筐体で複数のプロセスとして稼働させることが可能です。
 
@@ -80,6 +88,7 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 * [cluster.mode](#s.cluster.mode)
 * [cluster.zookeeper.servers](#s.cluster.zookeeper.servers)
 
+また、Topologyにて、Kafka、MongoDB等へデータを書き出したり、データを取得したりすることも可能です。外部入出力には、Kafka、MongoDB、HTTP(Solr, Elasticsearch, ...)を用いることが可能です。
 
 それぞれの起動には下記コマンドを実行します。
 
@@ -104,7 +113,7 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 [クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするGungnirServerのHostを、名前解決が可能なホスト名かIPで指定します。GungnirServerが稼働しているホスト以外からのアクセス時に設定をする必要があります。
 
-この設定値が使用されるのは、GungnirServerが **ローカルモード** で稼働している場合です。 **分散モード** で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のGungnirServerの情報(host/port)を取得します。
+この設定値が使用されるのは、GungnirServerが **ローカルモード** で稼働している場合です。 **分散モード**(疑似分散/完全分散)で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のGungnirServerの情報(host/port)を取得します。
 
 > Default: "localhost"
 
@@ -112,7 +121,7 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 [クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするGungnirServerのPort番号を指定します。GungnirServerの設定において、 **gungnir.server.port** を変更している場合に設定をする必要があります。
 
-この設定値が使用されるのは、GungnirServerが **ローカルモード** で稼働している場合です。 **分散モード** で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のGungnirServerの情報(host/port)を取得します。
+この設定値が使用されるのは、GungnirServerが **ローカルモード** で稼働している場合です。 **分散モード**(疑似分散/完全分散)で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のGungnirServerの情報(host/port)を取得します。
 
 > Default: 7100
 
@@ -122,7 +131,7 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 [クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするTupleStoreServerのHostを、名前解決が可能なホスト名かIPで指定します。TupleStoreServerが稼働しているホスト以外からのアクセス時に設定をする必要があります。
 
-この設定値が使用されるのは、TupleStoreServerが **ローカルモード** で稼働している場合です。 **分散モード** で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のTupleStoreServerの情報(host/port)を取得します。
+この設定値が使用されるのは、TupleStoreServerが **ローカルモード** で稼働している場合です。 **分散モード**(疑似分散/完全分散)で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のTupleStoreServerの情報(host/port)を取得します。
 
 > Default: "localhost"
 
@@ -130,7 +139,7 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 [クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするTupleStoreServerのPort番号を指定します。GungnirServer/TupleStoreServerの設定において、 **tuple.store.server.port** を変更している場合に設定をする必要があります。
 
-この設定値が使用されるのは、TupleStoreServerが **ローカルモード** で稼働している場合です。 **分散モード** で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のTupleStoreServerの情報(host/port)を取得します。
+この設定値が使用されるのは、TupleStoreServerが **ローカルモード** で稼働している場合です。 **分散モード**(疑似分散/完全分散)で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のTupleStoreServerの情報(host/port)を取得します。
 
 > Default: 7200
 
@@ -140,7 +149,7 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 設定可能な値は **local** (ローカルモード)/ **distributed** (分散モード)です。
 
-分散モードを指定している場合、 **gungnir.server.host**, **gungnir.server.port**, **tuple.store.server.host**, **tuple.store.server.port** の各設定値は使用されません。[クライアントツール](/cli_ja.html)(gungnir, post)が接続するGungnirServer/TupleStoreServerに関する情報は **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから取得します。
+分散モード(疑似分散/完全分散)を指定している場合、 **gungnir.server.host**, **gungnir.server.port**, **tuple.store.server.host**, **tuple.store.server.port** の各設定値は使用されません。[クライアントツール](/cli_ja.html)(gungnir, post)が接続するGungnirServer/TupleStoreServerに関する情報は **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから取得します。
 
 > Default: "local"
 
@@ -148,7 +157,7 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 GungnirServer/TupleStoreServerの各設定を保存するZooKeeperアンサンブルを構成するZooKeeperサーバをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。
 
-この設定は、分散モード時にのみ使用されます。 **gungnir.server.host**, **gungnir.server.port**, **tuple.store.server.host**, **tuple.store.server.port** の各設定値は、指定したZooKeeperが構成するアンサンブルから取得して使用されます。
+この設定は、分散モード(疑似分散/完全分散)時にのみ使用されます。 **gungnir.server.host**, **gungnir.server.port**, **tuple.store.server.host**, **tuple.store.server.port** の各設定値は、指定したZooKeeperが構成するアンサンブルから取得して使用されます。
 
 > Default: - "localhost:2181"
 
@@ -161,7 +170,7 @@ GungnirServer/TupleStoreServerの各設定を保存するZooKeeperアンサン�
 
 #### cluster.zookeeper.session.timeout <a name="c.cluster.zookeeper.session.timeout"></a>
 
-分散モードにおいて、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間のセッションタイムアウトまでの時間をミリ秒で指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間のセッションタイムアウトまでの時間をミリ秒で指定します。
 
 デフォルト設定ではStormが使用しているセッションタイムアウト時間と同じ値を使用しています。Stormのデフォルト設定値は20000が設定されています。クライアントツールの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
@@ -169,7 +178,7 @@ GungnirServer/TupleStoreServerの各設定を保存するZooKeeperアンサン�
 
 #### cluster.zookeeper.connection.timeout <a name="c.cluster.zookeeper.connection.timeout"></a>
 
-分散モードにおいて、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間の接続時におけるタイムアウト時間をミリ秒で指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間の接続時におけるタイムアウト時間をミリ秒で指定します。
 
 デフォルト設定ではStormが使用しているコネクションタイムアウト時間と同じ値を使用しています。Stormのデフォルト設定値は15000が設定されています。クライアントツールの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
@@ -177,7 +186,7 @@ GungnirServer/TupleStoreServerの各設定を保存するZooKeeperアンサン�
 
 #### cluster.zookeeper.retry.times <a name="c.cluster.zookeeper.retry.times"></a>
 
-分散モードにおいて、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間の接続が切れた場合、再接続を試行する回数を指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間の接続が切れた場合、再接続を試行する回数を指定します。
 
 デフォルト設定ではStormが使用している試行回数と同じ値を使用しています。Stormのデフォルト設定値は5が設定されています。クライアントツールの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
@@ -185,7 +194,7 @@ GungnirServer/TupleStoreServerの各設定を保存するZooKeeperアンサン�
 
 #### cluster.zookeeper.retry.interval <a name="c.cluster.zookeeper.retry.interval"></a>
 
-分散モードにおいて、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間の接続が切れた場合、再接続を試行する間隔をミリ秒で指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間の接続が切れた場合、再接続を試行する間隔をミリ秒で指定します。
 
 デフォルト設定ではStormが使用している間隔時間と同じ値を使用しています。Stormのデフォルト設定値は1000が設定されています。クライアントツールの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
@@ -249,7 +258,7 @@ TupleStoreServerが待ち受ける(LISTENする)ポート番号を指定しま�
 
 TupleStoreServerのPIDを出力するファイルを指定します。出力先はgungnir-serverのインストールディレクトリ直下です。
 
-**分散モード** での稼働時のみ設定値が有効になります。
+**分散モード**(疑似分散/完全分散)での稼働時のみ設定値が有効になります。
 
 > Default: tuple-store-server.pid
 
@@ -309,7 +318,7 @@ TupleStoreServerがシリアライズする処理クラスを指定します。�
 
 TupleStoreServerからTopologyへ、Tupleを送信する処理を行うクラスを指定します。デフォルト設定では、TupleStoreServerはKafkaにTupleを書き込みます。Kafkaに書き込みを行うことで、Tupleが一定期間保存されることになります。
 
-gungnir-standalone.yamlを用いたStandaloneモードで起動すると、 **persistent.emitter** には **InMemoryEmitter** が適用され、Kafkaを起動することなく動作の確認を行えます。ただし **cluster.mode** 、 **storm.cluster.mode** が共に **local** の場合にのみ使用することができます。
+gungnir-standalone.yamlを用いたローカルモードで起動すると、 **persistent.emitter** には **InMemoryEmitter** が適用され、Kafkaを起動することなく動作の確認を行えます。ただし **cluster.mode** 、 **storm.cluster.mode** が共に **local** の場合にのみ使用することができます。
 
 > Default: org.gennai.gungnir.tuple.persistent.KafkaPersistentEmitter
 
@@ -322,19 +331,19 @@ org.gennai.gungnir.tuple.persistent.InMemoryEmitter
 
 GungnirServer/TupleStoreServerの起動モードを指定します。設定可能な値は **local** (ローカルモード)/ **distributed** (分散モード)です。
 
-**ローカルモード** を指定した場合、TupleStoreServerはGungnirServerと同じプロセス内で稼働します。 **分散モード** を指定した場合、TupleStoreServerはGungnirServerと別プロセスで稼働する為、`gungnir-server.sh`とは別に`tuple-store-server.sh`で起動する必要があります。
+**ローカルモード** を指定した場合、TupleStoreServerはGungnirServerと同じプロセス内で稼働します。 **分散モード**(疑似分散/完全分散)を指定した場合、TupleStoreServerはGungnirServerと別プロセスで稼働する為、`gungnir-server.sh`とは別に`tuple-store-server.sh`で起動する必要があります。
 
 > Default: "local"
 
 #### cluster.zookeeper.servers <a name="s.cluster.zookeeper.servers"></a>
 
-GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアンサンブルを構成するZooKeeperサーバをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。分散モード時にのみ使用されます。
+GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアンサンブルを構成するZooKeeperサーバをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。分散モード(疑似分散/完全分散)時にのみ使用されます。
 
 > Default: - "localhost:2181"
 
 #### cluster.zookeeper.session.timeout <a name="s.cluster.zookeeper.session.timeout"></a>
 
-分散モードにおいて、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間のセッションタイムアウトを行う時間をミリ秒で指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間のセッションタイムアウトを行う時間をミリ秒で指定します。
 
 デフォルト設定ではStormが使用しているセッションタイムアウト時間と同じ値を使用しています。Stormのデフォルト設定値は20000が設定されています。サーバプロセスの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
@@ -342,7 +351,7 @@ GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアン�
 
 #### cluster.zookeeper.connection.timeout <a name="s.cluster.zookeeper.connection.timeout"></a>
 
-分散モードにおいて、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間の接続時におけるタイムアウト時間をミリ秒で指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間の接続時におけるタイムアウト時間をミリ秒で指定します。
 
 デフォルト設定ではStormが使用しているコネクションタイムアウト時間と同じ値を使用しています。Stormのデフォルト設定値は15000が設定されています。サーバプロセスの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
@@ -350,7 +359,7 @@ GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアン�
 
 #### cluster.zookeeper.retry.times <a name="s.cluster.zookeeper.retry.times"></a>
 
-分散モードにおいて、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間の接続が切れた場合、再接続を試行する回数を指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間の接続が切れた場合、再接続を試行する回数を指定します。
 
 デフォルト設定ではStormが使用している試行回数と同じ値を使用しています。Stormのデフォルト設定値は5が設定されています。サーバプロセスの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
@@ -358,7 +367,7 @@ GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアン�
 
 #### cluster.zookeeper.retry.interval <a name="s.cluster.zookeeper.retry.interval"></a>
 
-分散モードにおいて、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間の接続が切れた場合、再接続を試行する間隔をミリ秒で指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間の接続が切れた場合、再接続を試行する間隔をミリ秒で指定します。
 
 デフォルト設定ではStormが使用している間隔時間と同じ値を使用しています。Stormのデフォルト設定値は1000が設定されています。サーバプロセスの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
