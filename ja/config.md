@@ -1,6 +1,7 @@
 ---
 layout: manual_ja
 title: Setting / genn.ai
+redirect_from: "/config_ja.html"
 ---
 
 # genn.ai 設定
@@ -15,7 +16,7 @@ genn.aiで使用している主な設定ファイルは下記の2つです。
 * gungnir.yaml (server)
 
 
-## 稼働モード <a name="mode"></a>
+## 稼働モード <a name="mode" class="anchor"></a>
 
 ここでは、genn.aiが稼働する下記3つのモードについて記載します。
 
@@ -23,7 +24,7 @@ genn.aiで使用している主な設定ファイルは下記の2つです。
 * 疑似分散モード
 * 完全分散モード
 
-### ローカルモード <a name="mode.local"></a>
+### ローカルモード <a name="mode.local" class="anchor"></a>
 
 GungnirServerとTupleStoreServerが、同一のプロセスで稼働します。また、メタ情報の格納・TupleStoreにはMemoryが使用されます。よって、Storm、Kafka、ZooKeeper、MongoDBを別途構築することなくgenn.aiを実行することが可能です。
 
@@ -46,13 +47,14 @@ gungnir-standalone.yamlには、genn.aiがローカルモード(standalone)で�
 また、下記設定項目を変更することで、メタ情報の格納・TupleStoreを変更することが可能です。
 
 * [metastore](#s.metastore)
+* [metastore.mongodb.servers](#s.metastore.mongodb.servers)
 * [persistent.emitter](#s.persistent.emitter)
 
 メタ情報の格納をMongoDB、TupleStoreをKafkaに設定すると、それぞれ揮発を防ぐことができます。
 
 ![local](/img/mode_local.png)
 
-### 疑似分散モード <a name="mode.pseudo"></a>
+### 疑似分散モード <a name="mode.pseudo" class="anchor"></a>
 
 GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働します。GungnirServer/TupleStoreServerは1つのホストでのみ実行します。ZooKeeperを必要とします。
 
@@ -73,7 +75,7 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
     $ ./bin/gungnir-server.sh stop
 
 
-### 完全分散モード <a name="mode.distributed"></a>
+### 完全分散モード <a name="mode.distributed" class="anchor"></a>
 
 GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働します。GungnirServer/TupleStoreServerをそれぞれ別のホスト、複数のホスト、同一筐体で複数のプロセスとして稼働させることが可能です。
 
@@ -105,21 +107,21 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 ## gungnir.yaml (client)
 
-[クライアントツール](/cli_ja.html)(gungnir, post)に関する設定項目です。
+[クライアントツール](cli.html)(gungnir, post)に関する設定項目です。
 
 ### GungnirServerに関する設定
 
-#### gungnir.server.host <a name="c.gungnir.server.host"></a>
+#### gungnir.server.host <a name="c.gungnir.server.host" class="anchor"></a>
 
-[クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするGungnirServerのHostを、名前解決が可能なホスト名かIPで指定します。GungnirServerが稼働しているホスト以外からのアクセス時に設定をする必要があります。
+[クライアントツール](cli.html)(gungnir, post)がアクセスするGungnirServerのHostを、名前解決が可能なホスト名かIPで指定します。GungnirServerが稼働しているホスト以外からのアクセス時に設定をする必要があります。
 
 この設定値が使用されるのは、GungnirServerが **ローカルモード** で稼働している場合です。 **分散モード**(疑似分散/完全分散)で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のGungnirServerの情報(host/port)を取得します。
 
 > Default: "localhost"
 
-#### gungnir.server.port <a name="c.gungnir.server.port"></a>
+#### gungnir.server.port <a name="c.gungnir.server.port" class="anchor"></a>
 
-[クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするGungnirServerのPort番号を指定します。GungnirServerの設定において、 **gungnir.server.port** を変更している場合に設定をする必要があります。
+[クライアントツール](cli.html)(gungnir, post)がアクセスするGungnirServerのPort番号を指定します。GungnirServerの設定において、 **gungnir.server.port** を変更している場合に設定をする必要があります。
 
 この設定値が使用されるのは、GungnirServerが **ローカルモード** で稼働している場合です。 **分散モード**(疑似分散/完全分散)で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のGungnirServerの情報(host/port)を取得します。
 
@@ -127,17 +129,17 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 ### TupleStoreServerに関する設定
 
-#### tuple.store.server.host <a name="c.tuple.store.server.host"></a>
+#### tuple.store.server.host <a name="c.tuple.store.server.host" class="anchor"></a>
 
-[クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするTupleStoreServerのHostを、名前解決が可能なホスト名かIPで指定します。TupleStoreServerが稼働しているホスト以外からのアクセス時に設定をする必要があります。
+[クライアントツール](cli.html)(gungnir, post)がアクセスするTupleStoreServerのHostを、名前解決が可能なホスト名かIPで指定します。TupleStoreServerが稼働しているホスト以外からのアクセス時に設定をする必要があります。
 
 この設定値が使用されるのは、TupleStoreServerが **ローカルモード** で稼働している場合です。 **分散モード**(疑似分散/完全分散)で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のTupleStoreServerの情報(host/port)を取得します。
 
 > Default: "localhost"
 
-#### tuple.store.server.port <a name="c.tuple.store.server.port"></a>
+#### tuple.store.server.port <a name="c.tuple.store.server.port" class="anchor"></a>
 
-[クライアントツール](/cli_ja.html)(gungnir, post)がアクセスするTupleStoreServerのPort番号を指定します。GungnirServer/TupleStoreServerの設定において、 **tuple.store.server.port** を変更している場合に設定をする必要があります。
+[クライアントツール](cli.html)(gungnir, post)がアクセスするTupleStoreServerのPort番号を指定します。GungnirServer/TupleStoreServerの設定において、 **tuple.store.server.port** を変更している場合に設定をする必要があります。
 
 この設定値が使用されるのは、TupleStoreServerが **ローカルモード** で稼働している場合です。 **分散モード**(疑似分散/完全分散)で稼働している場合には、ここで設定した値は使用されず、 **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから接続先のTupleStoreServerの情報(host/port)を取得します。
 
@@ -145,15 +147,15 @@ GungnirServerとTupleStoreServerが、それぞれ別プロセスとして稼働
 
 ### 分散モードに関する設定
 
-#### cluster.mode <a name="c.cluster.mode"></a>
+#### cluster.mode <a name="c.cluster.mode" class="anchor"></a>
 
 設定可能な値は **local** (ローカルモード)/ **distributed** (分散モード)です。
 
-分散モード(疑似分散/完全分散)を指定している場合、 **gungnir.server.host**, **gungnir.server.port**, **tuple.store.server.host**, **tuple.store.server.port** の各設定値は使用されません。[クライアントツール](/cli_ja.html)(gungnir, post)が接続するGungnirServer/TupleStoreServerに関する情報は **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから取得します。
+分散モード(疑似分散/完全分散)を指定している場合、 **gungnir.server.host**, **gungnir.server.port**, **tuple.store.server.host**, **tuple.store.server.port** の各設定値は使用されません。[クライアントツール](cli.html)(gungnir, post)が接続するGungnirServer/TupleStoreServerに関する情報は **cluster.zookeeper.servers** で指定したZooKeeperアンサンブルから取得します。
 
 > Default: "local"
 
-#### cluster.zookeeper.servers <a name="c.cluster.zookeeper.servers"></a>
+#### cluster.zookeeper.servers <a name="c.cluster.zookeeper.servers" class="anchor"></a>
 
 GungnirServer/TupleStoreServerの各設定を保存するZooKeeperアンサンブルを構成するZooKeeperサーバをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。
 
@@ -168,33 +170,33 @@ GungnirServer/TupleStoreServerの各設定を保存するZooKeeperアンサン�
       - "10.0.1.12:2181"
       - "10.0.1.13:2181"
 
-#### cluster.zookeeper.session.timeout <a name="c.cluster.zookeeper.session.timeout"></a>
+#### cluster.zookeeper.session.timeout <a name="c.cluster.zookeeper.session.timeout" class="anchor"></a>
 
-分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間のセッションタイムアウトまでの時間をミリ秒で指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](cli.html)(gungnir, post)間のセッションタイムアウトまでの時間をミリ秒で指定します。
 
 デフォルト設定ではStormが使用しているセッションタイムアウト時間と同じ値を使用しています。Stormのデフォルト設定値は20000が設定されています。クライアントツールの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
 > Default: ${storm.zookeeper.session.timeout}
 
-#### cluster.zookeeper.connection.timeout <a name="c.cluster.zookeeper.connection.timeout"></a>
+#### cluster.zookeeper.connection.timeout <a name="c.cluster.zookeeper.connection.timeout" class="anchor"></a>
 
-分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間の接続時におけるタイムアウト時間をミリ秒で指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](cli.html)(gungnir, post)間の接続時におけるタイムアウト時間をミリ秒で指定します。
 
 デフォルト設定ではStormが使用しているコネクションタイムアウト時間と同じ値を使用しています。Stormのデフォルト設定値は15000が設定されています。クライアントツールの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
 > Default: ${storm.zookeeper.connection.timeout}
 
-#### cluster.zookeeper.retry.times <a name="c.cluster.zookeeper.retry.times"></a>
+#### cluster.zookeeper.retry.times <a name="c.cluster.zookeeper.retry.times" class="anchor"></a>
 
-分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間の接続が切れた場合、再接続を試行する回数を指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](cli.html)(gungnir, post)間の接続が切れた場合、再接続を試行する回数を指定します。
 
 デフォルト設定ではStormが使用している試行回数と同じ値を使用しています。Stormのデフォルト設定値は5が設定されています。クライアントツールの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
 > Default: ${storm.zookeeper.retry.times}
 
-#### cluster.zookeeper.retry.interval <a name="c.cluster.zookeeper.retry.interval"></a>
+#### cluster.zookeeper.retry.interval <a name="c.cluster.zookeeper.retry.interval" class="anchor"></a>
 
-分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](/cli_ja.html)(gungnir, post)間の接続が切れた場合、再接続を試行する間隔をミリ秒で指定します。
+分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルと[クライアントツール](cli.html)(gungnir, post)間の接続が切れた場合、再接続を試行する間隔をミリ秒で指定します。
 
 デフォルト設定ではStormが使用している間隔時間と同じ値を使用しています。Stormのデフォルト設定値は1000が設定されています。クライアントツールの設定値のみ変更したい場合は、この設定項目を変更してください。Stormの設定値と共に変更したい場合は、Stormをインストールしたディレクトリ配下にあるconf/storm.yamlにて変更をしてください。
 
@@ -202,17 +204,17 @@ GungnirServer/TupleStoreServerの各設定を保存するZooKeeperアンサン�
 
 ### Clientに関する設定
 
-#### gungnir.client.response.timeout <a name="c.gungnir.client.response.timeout"></a>
+#### gungnir.client.response.timeout <a name="c.gungnir.client.response.timeout" class="anchor"></a>
 
-[クライアントツール](/cli_ja.html)(gungnir, post)がGungnirServer/TupleStoreServerからのレスポンスを待つ最大許容時間をミリ秒で指定します。指定時間内にGungnirServer/TupleStoreServerからのレスポンスが無い場合、クライアントツールは処理を中断します。
+[クライアントツール](cli.html)(gungnir, post)がGungnirServer/TupleStoreServerからのレスポンスを待つ最大許容時間をミリ秒で指定します。指定時間内にGungnirServer/TupleStoreServerからのレスポンスが無い場合、クライアントツールは処理を中断します。
 
 > Default: 10000
 
 ### Monitorに関する設定
 
-#### kafka.monitor.zookeeper.servers <a name="c.kafka.monitor.zookeeper.servers"></a>
+#### kafka.monitor.zookeeper.servers <a name="c.kafka.monitor.zookeeper.servers" class="anchor"></a>
 
-Monitor機能を使用する際に、[クライアントツール](/cli_ja.html)(gungnir)がアクセスするKafkaクラスタ情報を保持しているZooKeeperアンサンブルを構成するZooKeeperサーバをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。
+Monitor機能を使用する際に、[クライアントツール](cli.html)(gungnir)がアクセスするKafkaクラスタ情報を保持しているZooKeeperアンサンブルを構成するZooKeeperサーバをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。
 
 > Default: - "localhost:2181"
 
@@ -222,25 +224,25 @@ Monitor機能を使用する際に、[クライアントツール](/cli_ja.html)
 
 ### GungnirServerに関する設定
 
-#### gungnir.server.port <a name="s.gungnir.server.port"></a>
+#### gungnir.server.port <a name="s.gungnir.server.port" class="anchor"></a>
 
 GungnirServerが待ち受ける(LISTENする)ポート番号を指定します。
 
 > Default: 7100
 
-#### gungnir.server.pid.file <a name="s.gungnir.server.pid.file"></a>
+#### gungnir.server.pid.file <a name="s.gungnir.server.pid.file" class="anchor"></a>
 
 GungnirServerプロセスのPIDを出力するファイルを指定します。出力先はgungnir-serverのインストールディレクトリ直下です。
 
 > Default: gungnir-server.pid 
 
-#### session.timeout.secs <a name="s.session.timeout.secs"></a>
+#### session.timeout.secs <a name="s.session.timeout.secs" class="anchor"></a>
 
-GungnirServerのセッションタイムアウト時間を秒で指定します。[クライアントツール](/cli_ja.html)(gungnir)との接続で指定した時間以上、クライアントツールからの操作が無い場合にセッションはタイムアウトします。
+GungnirServerのセッションタイムアウト時間を秒で指定します。[クライアントツール](cli.html)(gungnir)との接続で指定した時間以上、クライアントツールからの操作が無い場合にセッションはタイムアウトします。
 
 > Default: 3600
 
-#### command.processor.cache.size <a name="s.command.processor.cache.size"></a>
+#### command.processor.cache.size <a name="s.command.processor.cache.size" class="anchor"></a>
 
 GungnirServerにおいて、CommandProcessorのインスタンスをキャッシュするサイズを指定します。
 
@@ -248,13 +250,13 @@ GungnirServerにおいて、CommandProcessorのインスタンスをキャッシ
 
 ### TupleStoreServerに関する設定
 
-#### tuple.store.server.port <a name="s.tuple.store.server.port"></a>
+#### tuple.store.server.port <a name="s.tuple.store.server.port" class="anchor"></a>
 
 TupleStoreServerが待ち受ける(LISTENする)ポート番号を指定します。
 
 > Default: 7200
 
-#### tuple.store.server.pid.file <a name="s.tuple.store.server.pid.file"></a>
+#### tuple.store.server.pid.file <a name="s.tuple.store.server.pid.file" class="anchor"></a>
 
 TupleStoreServerのPIDを出力するファイルを指定します。出力先はgungnir-serverのインストールディレクトリ直下です。
 
@@ -262,43 +264,43 @@ TupleStoreServerのPIDを出力するファイルを指定します。出力先�
 
 > Default: tuple-store-server.pid
 
-#### tracking.cookie.maxage <a name="s.tracking.cookie.maxage"></a>
+#### tracking.cookie.maxage <a name="s.tracking.cookie.maxage" class="anchor"></a>
 
 TupleStoreServerからクライアントに送られるCOOKIEの残存時間を秒で指定します。
 
 > Default: 864000000
 
-#### persistent.deser.queue.size <a name="s.persistent.deser.queue.size"></a>
+#### persistent.deser.queue.size <a name="s.persistent.deser.queue.size" class="anchor"></a>
 
 TupleStoreServerがクライアントからデータを受領後、Kafkaへ書き込みを行う際にシリアライズを行うまでの待機キューのサイズを指定します。シリアライズが遅延している場合、 **persistent.deser.parallelism** と共に調整を行ってください。
 
 > Default: 1024
 
-#### persistent.deser.parallelism <a name="s.persistent.deser.parallelism"></a>
+#### persistent.deser.parallelism <a name="s.persistent.deser.parallelism" class="anchor"></a>
 
 TupleStoreServerがクライアントから受領したデータをシリアライズする並列度を指定します。シリアライズが遅延している場合、 **persistent.deser.queue.size** と共に調整を行ってください。
 
 > Default: 32
 
-#### persistent.deserializer <a name="s.persistent.deserializer"></a>
+#### persistent.deserializer <a name="s.persistent.deserializer" class="anchor"></a>
 
 TupleStoreServerがシリアライズする処理クラスを指定します。現時点では、使用可能なクラスは他にありません。
 
 > Default: org.gennai.gungnir.tuple.persistent.JsonPersistentDeserializer
 
-#### persistent.emitter.queue.size <a name="s.persistent.emitter.queue.size"></a>
+#### persistent.emitter.queue.size <a name="s.persistent.emitter.queue.size" class="anchor"></a>
 
 シリアライズされたTupleをKafkaに書き込む際の待機キューのサイズを指定します。Kafkaへの書き込みが遅延している場合、 **persistent.emitter.parallelism** 、Kafkaのクラスタ設定と共に調整してください。
 
 > Default: 1024
 
-#### persistent.emitter.parallelism <a name="s.persistent.emitter.parallelism"></a>
+#### persistent.emitter.parallelism <a name="s.persistent.emitter.parallelism" class="anchor"></a>
 
 シリアライズされたTupleをKafkaに書き込む際の並列度を指定します。Kafkaへの書き込みが遅延している場合、 **persistent.emitter.queue.size** 、Kafkaのクラスタ設定と共に調整してください。
 
 > Default: 32
 
-#### persistent.emit.tuples.max <a name="s.persistent.emit.tuples.max"></a>
+#### persistent.emit.tuples.max <a name="s.persistent.emit.tuples.max" class="anchor"></a>
 
 シリアライズされたTupleをKafkaに書き込む際、一度に書き込むTuple数の最大値を指定します。この設定値は、 **persistent.emitter.queue.size** でサイズを指定したキューにTupleが複数滞留している場合に使用されます。通常は、キューにTupleが1つでも存在すれば、Kafkaへの書き込み処理が実行されます。
 
@@ -306,7 +308,7 @@ TupleStoreServerがシリアライズする処理クラスを指定します。�
 
 > Default: 8
 
-#### persistent.emit.tuples.max.size <a name="s.persistent.emit.tuples.max.size"></a>
+#### persistent.emit.tuples.max.size <a name="s.persistent.emit.tuples.max.size" class="anchor"></a>
 
 シリアライズされたTupleをKafkaに書き込む際、一度に書き込むTupleの合計サイズの最大値を設定します。この設定値は、 **persistent.emitter.queue.size** でサイズを指定したキューにTupleが複数滞留している場合に使用されます。通常は、キューにTupleが1つでも存在すれば、Kafkaへの書き込み処理が実行されます。
 
@@ -314,7 +316,7 @@ TupleStoreServerがシリアライズする処理クラスを指定します。�
 
 > Default: 1024
 
-#### persistent.emitter <a name="s.persistent.emitter"></a>
+#### persistent.emitter <a name="s.persistent.emitter" class="anchor"></a>
 
 TupleStoreServerからTopologyへ、Tupleを送信する処理を行うクラスを指定します。デフォルト設定では、TupleStoreServerはKafkaにTupleを書き込みます。Kafkaに書き込みを行うことで、Tupleが一定期間保存されることになります。
 
@@ -327,7 +329,7 @@ org.gennai.gungnir.tuple.persistent.InMemoryEmitter
 
 ### Clusterに関する設定
 
-#### cluster.mode <a name="s.cluster.mode"></a>
+#### cluster.mode <a name="s.cluster.mode" class="anchor"></a>
 
 GungnirServer/TupleStoreServerの起動モードを指定します。設定可能な値は **local** (ローカルモード)/ **distributed** (分散モード)です。
 
@@ -335,13 +337,13 @@ GungnirServer/TupleStoreServerの起動モードを指定します。設定可�
 
 > Default: "local"
 
-#### cluster.zookeeper.servers <a name="s.cluster.zookeeper.servers"></a>
+#### cluster.zookeeper.servers <a name="s.cluster.zookeeper.servers" class="anchor"></a>
 
 GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアンサンブルを構成するZooKeeperサーバをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。分散モード(疑似分散/完全分散)時にのみ使用されます。
 
 > Default: - "localhost:2181"
 
-#### cluster.zookeeper.session.timeout <a name="s.cluster.zookeeper.session.timeout"></a>
+#### cluster.zookeeper.session.timeout <a name="s.cluster.zookeeper.session.timeout" class="anchor"></a>
 
 分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間のセッションタイムアウトを行う時間をミリ秒で指定します。
 
@@ -349,7 +351,7 @@ GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアン�
 
 > Default: ${storm.zookeeper.session.timeout}
 
-#### cluster.zookeeper.connection.timeout <a name="s.cluster.zookeeper.connection.timeout"></a>
+#### cluster.zookeeper.connection.timeout <a name="s.cluster.zookeeper.connection.timeout" class="anchor"></a>
 
 分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間の接続時におけるタイムアウト時間をミリ秒で指定します。
 
@@ -357,7 +359,7 @@ GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアン�
 
 > Default: ${storm.zookeeper.connection.timeout}
 
-#### cluster.zookeeper.retry.times <a name="s.cluster.zookeeper.retry.times"></a>
+#### cluster.zookeeper.retry.times <a name="s.cluster.zookeeper.retry.times" class="anchor"></a>
 
 分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間の接続が切れた場合、再接続を試行する回数を指定します。
 
@@ -365,7 +367,7 @@ GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアン�
 
 > Default: ${storm.zookeeper.retry.times}
 
-#### cluster.zookeeper.retry.interval <a name="s.cluster.zookeeper.retry.interval"></a>
+#### cluster.zookeeper.retry.interval <a name="s.cluster.zookeeper.retry.interval" class="anchor"></a>
 
 分散モード(疑似分散/完全分散)において、ZooKeeperアンサンブルとサーバプロセス(GungnirServer, TupleStoreServer)間の接続が切れた場合、再接続を試行する間隔をミリ秒で指定します。
 
@@ -375,7 +377,7 @@ GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアン�
 
 ### 管理サーバに関する設定
 
-#### gungnir.admin.server.port <a name="s.gungnir.admin.server.port"></a>
+#### gungnir.admin.server.port <a name="s.gungnir.admin.server.port" class="anchor"></a>
 
 管理サーバが待ち受ける(LISTENする)ポート番号を指定します。この設定を有効にした場合にのみ管理サーバが起動されます。
 
@@ -392,7 +394,7 @@ GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアン�
 * リクエストのレイテンシ
 
 
-#### gungnir.admin.server.backlog <a name="s.gungnir.admin.server.backlog"></a>
+#### gungnir.admin.server.backlog <a name="s.gungnir.admin.server.backlog" class="anchor"></a>
 
 クライアントからの接続が、HTTPサーバ(管理サーバ用)に受け入れられるのを待機するキューに入れるTCP接続の最大数を指定します。
 
@@ -400,13 +402,13 @@ GungnirServer/TupleStoreServerの各設定を保持しているZooKeeperアン�
 
 ### Stormに関する設定
 
-#### storm.cluster.mode <a name="s.storm.cluster.mode"></a>
+#### storm.cluster.mode <a name="s.storm.cluster.mode" class="anchor"></a>
 
 Stromの稼働モードを指定します。指定可能な値は **local** (Stormのworkerを、GungnirServerのプロセス内にスレッドで起動する)もしくは、 **distributed** (稼働しているStormクラスタを利用する)です。
 
 > Default: "local"
 
-#### storm.nimbus.host <a name="s.storm.nimbus.host"></a>
+#### storm.nimbus.host <a name="s.storm.nimbus.host" class="anchor"></a>
 
 稼働しているStormクラスタのNimbusホストを、名前解決ができるホスト名もしくはIPで指定します。 **storm.cluster.mode** が **distributed** である場合にのみ使用されます。
 
@@ -414,25 +416,25 @@ Stromの稼働モードを指定します。指定可能な値は **local** (Sto
 
 ### Topologyに関する設定
 
-#### topology.workers <a name="s.topology.workers"></a>
+#### topology.workers <a name="s.topology.workers" class="anchor"></a>
 
 投入するTopologyが稼働するStormのworker数のデフォルト値を指定します。`SET`文を使用することで、各Topology毎に変更することが可能です。
 
 > Default: 1
 
-#### topology.status.check.times <a name="s.topology.status.check.times"></a>
+#### topology.status.check.times <a name="s.topology.status.check.times" class="anchor"></a>
 
 投入されたTopologyの起動もしくは停止時に、Topologyの状態を確認する回数の最大値を指定します。GungnirServerは、この設定値と **topology.status.check.interval** の設定値を乗じた時間内に、Topologyの状態変更を検知できない場合、処理をロールバックします。
 
 > Default: 20
 
-#### topology.status.check.interval <a name="s.topology.status.check.interval"></a>
+#### topology.status.check.interval <a name="s.topology.status.check.interval" class="anchor"></a>
 
 投入されたTopologyの起動もしくは停止時に、Topologyの状態を確認する間隔をミリ秒で指定します。GungnirServerは、この設定値と **topology.status.check.times** の設定値を乗じた時間内に、Topologyの状態変更を検知できない場合、処理をロールバックします。
 
 > Default: 2000
 
-#### default.parallelism <a name="s.default.parallelism"></a>
+#### default.parallelism <a name="s.default.parallelism" class="anchor"></a>
 
 Operatorの並列度のデフォルト値を指定します。クエリに`parallelism`句を記述している場合、クエリに記述された値が使用されます。クエリで`parallelism`句が記述されていないOperatorには、設定値が適用されます。この設定項目は`SET`文でTopology毎に設定する事が可能です。
 
@@ -440,7 +442,7 @@ Operatorの並列度のデフォルト値を指定します。クエリに`paral
 
 ### Metastoreに関する設定
 
-#### metastore <a name="s.metastore"></a>
+#### metastore <a name="s.metastore" class="anchor"></a>
 
 GungnirServerのメタ情報を格納するのに使用するクラスを指定します。
 
@@ -448,7 +450,7 @@ GungnirServerのメタ情報を格納するのに使用するクラスを指定�
 
 > Default: org.gennai.gungnir.metastore.MongoDbMetaStore
 
-#### metastore.mongodb.servers <a name="s.metastore.mongodb.servers"></a>
+#### metastore.mongodb.servers <a name="s.metastore.mongodb.servers" class="anchor"></a>
 
 メタ情報の格納に **MongoDbMetaStore** を使用する場合に、接続先のMongoDBのホストをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。
 
@@ -456,44 +458,44 @@ GungnirServerのメタ情報を格納するのに使用するクラスを指定�
 
 ### TupleStoreに関する設定
 
-#### kafka.brokers <a name="s.kafka.brokers"></a>
+#### kafka.brokers <a name="s.kafka.brokers" class="anchor"></a>
 
 TupleStoreに使用するKafkaのBrokerをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。
 
 > Default: - "localhost:9092"
 
-#### kafka.required.acks <a name="s.kafka.required.acks"></a>
+#### kafka.required.acks <a name="s.kafka.required.acks" class="anchor"></a>
 
 TupleStoreServerがKafkaにTupleを書き込む際に、どの時点で応答を返すかを設定します。設定可能な値は 0, 1, -1 です。
 詳細は[Kafkaのドキュメント](http://kafka.apache.org/documentation.html)を参照してください。
 
 > Default: 1
 
-#### kafka.producer.type <a name="s.kafka.producer.type"></a>
+#### kafka.producer.type <a name="s.kafka.producer.type" class="anchor"></a>
 
 TupleStoreServerがKafkaにTupleを書き込む際の処理を指定します。同期(sync)/非同期(async)を指定できます。
 
 > Default: "sync"
 
-#### kafka.auto.commit.interval <a name="s.kafka.auto.commit.interval"></a>
+#### kafka.auto.commit.interval <a name="s.kafka.auto.commit.interval" class="anchor"></a>
 
 TupleStoreServerがKafkaに書き込みを行う際に、AutoCommitを実行する間隔をミリ秒で指定します。
 
 > Default: 10000
 
-#### kafka.zookeeper.servers <a name="s.kafka.zookeeper.servers"></a>
+#### kafka.zookeeper.servers <a name="s.kafka.zookeeper.servers" class="anchor"></a>
 
 TupleStoreServerが書き込むKafkaのクラスタ情報を保持するZooKeeperアンサンブルを構成するZooKeeperサーバをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。
 
 > Default: - "localhost:2181"
 
-#### kafka.zookeeper.session.timeout <a name="s.kafka.zookeeper.session.timeout"></a>
+#### kafka.zookeeper.session.timeout <a name="s.kafka.zookeeper.session.timeout" class="anchor"></a>
 
 TupleStoreServerが、Kafkaのクラスタ情報を保持するZooKeeperアンサンブルとのセッションを、タイムアウトする時間をミリ秒で指定します。
 
 > Default: 6000
 
-#### kafka.zookeeper.connection.timeout <a name="s.kafka.zookeeper.connection.timeout"></a>
+#### kafka.zookeeper.connection.timeout <a name="s.kafka.zookeeper.connection.timeout" class="anchor"></a>
 
 TupleStoreServerが、Kafkaのクラスタ情報を保持するZooKeeperアンサンブルに接続を試みる際のタイムアウト時間をミリ秒で指定します。
 
@@ -501,7 +503,7 @@ TupleStoreServerが、Kafkaのクラスタ情報を保持するZooKeeperアン�
 
 > Default: ${storm.zookeeper.connection.timeout}
 
-#### kafka.zookeeper.retry.times <a name="s.kafka.zookeeper.retry.times"></a>
+#### kafka.zookeeper.retry.times <a name="s.kafka.zookeeper.retry.times" class="anchor"></a>
 
 Kafkaクラスタの情報を保持するZooKeeperアンサンブル間とのセッションが切断された場合に、再接続を試行する回数を指定します。
 
@@ -509,7 +511,7 @@ Kafkaクラスタの情報を保持するZooKeeperアンサンブル間とのセ
 
 > Default: ${storm.zookeeper.retry.times}
 
-#### kafka.zookeeper.retry.interval <a name="s.kafka.zookeeper.retry.interval"></a>
+#### kafka.zookeeper.retry.interval <a name="s.kafka.zookeeper.retry.interval" class="anchor"></a>
 
 Kafkaクラスタの情報を保持するZooKeeperアンサンブル間とのセッションが切断された場合に、再接続を試行する間隔をミリ秒で指定します。
 
@@ -519,37 +521,37 @@ Kafkaクラスタの情報を保持するZooKeeperアンサンブル間とのセ
 
 ### Monitorに関する設定
 
-#### monitor.enabled <a name="s.monitor.enabled"></a>
+#### monitor.enabled <a name="s.monitor.enabled" class="anchor"></a>
 
 Monitor機能を使用可能とするかを指定します。
 
 > Default: false
 
-#### kafka.monitor.brokers <a name="s.kafka.monitor.brokers"></a>
+#### kafka.monitor.brokers <a name="s.kafka.monitor.brokers" class="anchor"></a>
 
 Monitor機能に使用するKafkaクラスタのBrokerをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。
 
 > Default: - "localhost:9092"
 
-#### kafka.monitor.required.acks <a name="s.kafka.monitor.required.acks"></a>
+#### kafka.monitor.required.acks <a name="s.kafka.monitor.required.acks" class="anchor"></a>
 
 Monitor機能を使用する際に、KafkaクラスタからAckをどのタイミングで受け取るかを設定します。詳細に関しては[Kafkaのドキュメント](http://kafka.apache.org/documentation.html)を参照してください。
 
 > Default: 1
 
-#### kafka.monitor.auto.commit.interval <a name="s.kafka.monitor.auto.commit.interval"></a>
+#### kafka.monitor.auto.commit.interval <a name="s.kafka.monitor.auto.commit.interval" class="anchor"></a>
 
 Monitor機能において、KafkaのAutoCommitを実行する間隔をミリ秒で指定します。
 
 > Default: 10000
 
-#### kafka.monitor.zookeeper.servers <a name="s.kafka.monitor.zookeeper.servers"></a>
+#### kafka.monitor.zookeeper.servers <a name="s.kafka.monitor.zookeeper.servers" class="anchor"></a>
 
 Monitor機能を使用する際にアクセスするKafkaクラスタの情報を保持するZooKeeperアンサンブルをリスト形式で指定します。
 
 > Default: - "localhost:2181"
 
-#### kafka.monitor.zookeeper.session.timeout <a name="s.kafka.monitor.zookeeper.session.timeout"></a>
+#### kafka.monitor.zookeeper.session.timeout <a name="s.kafka.monitor.zookeeper.session.timeout" class="anchor"></a>
 
 Monitor機能を使用する際に、Kafkaクラスタの情報を保持するZooKeeperアンサンブルとの接続に適用されるセッションタイムアウトをミリ秒で指定します。
 
@@ -557,7 +559,7 @@ Monitor機能を使用する際に、Kafkaクラスタの情報を保持するZo
 
 > Default: ${storm.zookeeper.session.timeout}
 
-#### kafka.monitor.zookeeper.connection.timeout <a name="s.kafka.monitor.zookeeper.connection.timeout"></a>
+#### kafka.monitor.zookeeper.connection.timeout <a name="s.kafka.monitor.zookeeper.connection.timeout" class="anchor"></a>
 
 Monitor機能を使用する際に、アクセスするKafkaクラスタの情報を保持するZooKeeperアンサンブルとの接続におけるタイムアウト時間をミリ秒で指定します。
 
@@ -565,7 +567,7 @@ Monitor機能を使用する際に、アクセスするKafkaクラスタの情�
 
 > Default: ${storm.zookeeper.connection.timeout}
 
-#### kafka.monitor.zookeeper.sync.timeout <a name="s.kafka.monitor.zookeeper.sync.timeout"></a>
+#### kafka.monitor.zookeeper.sync.timeout <a name="s.kafka.monitor.zookeeper.sync.timeout" class="anchor"></a>
 
 Monitor機能を使用する際に、アクセスするKafkaクラスタの情報を保持するZooKeeperアンサンブルとの接続に適用される同期処理時間のタイムアウトをミリ秒で指定します。
 
@@ -573,19 +575,19 @@ Monitor機能を使用する際に、アクセスするKafkaクラスタの情�
 
 ### Operatorに関する設定
 
-#### spout.operator.queue.size <a name="s.spout.operator.queue.size"></a>
+#### spout.operator.queue.size <a name="s.spout.operator.queue.size" class="anchor"></a>
 
 `SPOUT`オペレータが内部に保持するキューのサイズを指定します。
 
 > Default: 1024
 
-#### emit.operator.queue.size <a name="s.emit.operator.queue.size"></a>
+#### emit.operator.queue.size <a name="s.emit.operator.queue.size" class="anchor"></a>
 
 `EMIT`オペレータが内部に保持するキューのサイズを指定します。
 
 > Default: 1024
 
-#### emit.operator.emit.tuples.max <a name="s.emit.operator.emit.tuples.max"></a>
+#### emit.operator.emit.tuples.max <a name="s.emit.operator.emit.tuples.max" class="anchor"></a>
 
 `EMIT`オペレータが保持するキューに同時に複数のタプルが到着している場合、一度に書き出すタプルの最大数を指定します。
 
@@ -593,79 +595,79 @@ Monitor機能を使用する際に、アクセスするKafkaクラスタの情�
 
 ### Processorに関する設定
 
-#### kafka.spout.fetch.size <a name="s.kafka.spout.fetch.size"></a>
+#### kafka.spout.fetch.size <a name="s.kafka.spout.fetch.size" class="anchor"></a>
 
 **Kafka Spout Processor** が、Kafkaから一度に取得するデータのサイズを指定します。
 
 > Default: 1048576
 
-#### kafka.spout.fetch.interval <a name="s.kafka.spout.fetch.interval"></a>
+#### kafka.spout.fetch.interval <a name="s.kafka.spout.fetch.interval" class="anchor"></a>
 
 **Kafka Spout Processor** が、Kafkaからデータを取得する間隔をミリ秒で指定します。
 
 > Default: 1000
 
-#### kafka.spout.offset.behind.max <a name="s.kafka.spout.offset.behind.max"></a>
+#### kafka.spout.offset.behind.max <a name="s.kafka.spout.offset.behind.max" class="anchor"></a>
 
 **Kafka Spout Processor** において、オフセットが書き込まれない最大の許容時間を指定します。
 
 > Default: 9223372036854775807
 
-#### kafka.spout.state.update.interval <a name="s.kafka.spout.state.update.interval"></a>
+#### kafka.spout.state.update.interval <a name="s.kafka.spout.state.update.interval" class="anchor"></a>
 
 **Kafka Spout Processor** が、状態を更新する間隔をミリ秒で指定します。
 
 > Default: 2000
 
-#### kafka.spout.topic.replication.factor <a name="s.kafka.spout.topic.replication.factor"></a>
+#### kafka.spout.topic.replication.factor <a name="s.kafka.spout.topic.replication.factor" class="anchor"></a>
 
 Topologyの投入時に、 **Kafka Spout Processor** がKafkaに作成するトピックのレプリケーション数を指定します。
 
 > Default: 1
 
-#### kafka.spout.read.brokers.retry.times <a name="s.kafka.spout.read.brokers.retry.times"></a>
+#### kafka.spout.read.brokers.retry.times <a name="s.kafka.spout.read.brokers.retry.times" class="anchor"></a>
 
 **Kafka Spout Processor** がKafkaからデータを取得する際に、担当するパーティションのリーダー情報を取得するのに試行する回数を指定します。
 
 > Default: 5
 
-#### kafka.spout.read.brokers.retry.interval <a name="s.kafka.spout.read.brokers.retry.interval"></a>
+#### kafka.spout.read.brokers.retry.interval <a name="s.kafka.spout.read.brokers.retry.interval" class="anchor"></a>
 
 **Kafka Spout Processor** がKafkaからデータを取得する際に、担当するパーティションのリーダー情報を取得するのに試行する間隔をミリ秒で指定します。
 
 > Default: 1000
 
-#### kafka.spout.partition.operation.retry.times <a name="s.kafka.spout.partition.operation.retry.times"></a>
+#### kafka.spout.partition.operation.retry.times <a name="s.kafka.spout.partition.operation.retry.times" class="anchor"></a>
 
 **Kafka Spout Processor** がKafkaからデータを取得する時、Kafkaクラスタの状態によってパーティション情報が変更されている場合があります。その際に、 **Kafka Spout Processor** にて再度Kafkaのパーティション情報を取得する試行回数を指定します。
 
 > Default: 5
 
-#### kafka.spout.partition.operation.retry.interval <a name="s.kafka.spout.partition.operation.retry.interval"></a>
+#### kafka.spout.partition.operation.retry.interval <a name="s.kafka.spout.partition.operation.retry.interval" class="anchor"></a>
 
 **Kafka Spout Processor** がKafkaからデータを取得する時、Kafkaクラスタの状態によってパーティション情報が変更されている場合があります。その際に、 **Kafka Spout Processor** にて再度Kafkaのパーティション情報を取得する試行の間隔時間をミリ秒で指定します。
 
 > Default: 1000
 
-#### mongo.fetch.servers <a name="s.mongo.fetch.servers"></a>
+#### mongo.fetch.servers <a name="s.mongo.fetch.servers" class="anchor"></a>
 
 `JOIN`句において **Mongo Fetch Processor** を用いたい際に、結合するデータの読み込み元となるMongoDBサーバをリスト形式で指定します。`[host|IP]:[port]`の書式で指定します。
 
 > Default: - "localhost:27017"
 
-#### kafka.emit.brokers <a name="s.kafka.emit.brokers"></a>
+#### kafka.emit.brokers <a name="s.kafka.emit.brokers" class="anchor"></a>
 
 `EMIT`句において **Kafka Emit Processor** を用いた際に、出力先となるKafkaクラスタのBrokerをリスト形式で指定します。
 
 > Default: - "localhost:9092"
 
-#### kafka.emit.required.acks <a name="s.kafka.emit.required.acks"></a>
+#### kafka.emit.required.acks <a name="s.kafka.emit.required.acks" class="anchor"></a>
 
 `EMIT`句において **Kafka Emit Processor** を用いた際に、出力先となるKafkaクラスタからAckをどのタイミングで受け取るかを指定します。詳細に関しては[Kafkaのドキュメント](http://kafka.apache.org/documentation.html)を参照してください。
 
 > Default: 1
 
-#### mongo.persist.servers <a name="s.mongo.persist.servers"></a>
+#### mongo.persist.servers <a name="s.mongo.persist.servers" class="anchor"></a>
 
 EMIT句において **Mongo Persist Processor** を用いた際に、出力先となるMongoDBサーバをリスト形式で指定します。
 
@@ -673,7 +675,7 @@ EMIT句において **Mongo Persist Processor** を用いた際に、出力先�
 
 ### Metricsに関する設定
 
-#### metrics.reporters <a name="s.metrics.reporters"></a>
+#### metrics.reporters <a name="s.metrics.reporters" class="anchor"></a>
 
 GungnirServer/TupleStoreServerにおけるメトリクス情報を取得するクラス、取得間隔秒、出力先を指定します。
 
@@ -685,25 +687,25 @@ GungnirServer/TupleStoreServerにおけるメトリクス情報を取得する�
 
 > Default: 60
 
-#### topology.metrics.enabled <a name="s.topology.metrics.enabled"></a>
+#### topology.metrics.enabled <a name="s.topology.metrics.enabled" class="anchor"></a>
 
 StormのTopologyに関するメトリクス情報を取得するかを指定します。Topologyのメトリクス情報は、Stormをインストールしたディレクトリ配下のlogsディレクトリに出力されます。
 
 > Default: false
 
-#### topology.metrics.consumer <a name="s.topology.metrics.consumer"></a>
+#### topology.metrics.consumer <a name="s.topology.metrics.consumer" class="anchor"></a>
 
 StormのTopologyに関するメトリクス情報を取得するクラスを指定します。
 
 > Default: backtype.storm.metric.LoggingMetricsConsumer
 
-#### topology.metrics.consumer.parallelism <a name="s.topology.metrics.consumer.parallelism"></a>
+#### topology.metrics.consumer.parallelism <a name="s.topology.metrics.consumer.parallelism" class="anchor"></a>
 
 StormのTopologyに関するメトリクス情報を取得する実行処理の並列度を指定します。
 
 > Default: 1
 
-#### topology.metrics.interval.secs <a name="s.topology.metrics.interval.secs"></a>
+#### topology.metrics.interval.secs <a name="s.topology.metrics.interval.secs" class="anchor"></a>
 
 StormのTopologyに関するメトリクス情報を取得する間隔を秒で指定します。
 

@@ -1,6 +1,7 @@
 ---
 layout: manual_ja
 title: genn.ai
+redirect_from: "/tutorial_ja.html"
 ---
 
 # genn.ai チュートリアル

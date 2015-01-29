@@ -1,6 +1,7 @@
 ---
 layout: manual_ja
 title: DML / genn.ai
+redirect_from: "/dml_ja.html"
 ---
 
 # genn.ai DML
@@ -14,13 +15,13 @@ title: DML / genn.ai
 	(タプル及びトポロジはStormの用語をそのまま借りています)
 
 > 本ページのDMLとは、後者クエリサーバが担当するクエリ(の文法)のことを指します。
-    前者の **タプル** については [DDL](ddl_ja.html)のページをご参照下さい。
+    前者の **タプル** については [DDL](ddl.html)のページをご参照下さい。
 
 ## FROM
 
 FROM を使い、Tupleの入力元をスキーマとともに指定します。
 
-### RESTからの入力 <a name="FROM_REST"></a>
+### RESTからの入力 <a name="FROM_REST" class="anchor"></a>
 
     FROM schema_name AS schema_alias, ... USING spout_processor
 
@@ -39,7 +40,7 @@ RESTからの入力は、一つのTopologyに対して一つしか定義でき�
 #### Kafka Spout Processor
 
 TupleをKafkaから読み込みます。
-[DDL](/ddl_ja.html) で説明されている`CREATE TUPLE`にて作られたHTTP(REST)からの入力TupleもKafka経由で読み上げます。
+[DDL](ddl.html) で説明されている`CREATE TUPLE`にて作られたHTTP(REST)からの入力TupleもKafka経由で読み上げます。
 
     kafka_spout()
 
@@ -54,11 +55,11 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
 * cluster.mode
 * storm.cluster.mode
 
-### ストリームからの入力 <a name="FROM_STREAM"></a>
+### ストリームからの入力 <a name="FROM_STREAM" class="anchor"></a>
 
     FROM stream_name[(schema_alias, ...)], ...
 
-* stream_name には、 [INTO](/dml_ja.html#INTO) もしくは [EMIT](/dml_ja.html#EMIT_INTERNAL) で作られたストリームを指定します。
+* stream_name には、 [INTO](dml.html#INTO) もしくは [EMIT](dml.html#EMIT_INTERNAL) で作られたストリームを指定します。
 * schema_alias には、Tupleを指定します。Tupleを指定すると、ストリーム中の該当のTupleのみを読み込むようになります。
 
 > Example: ストリームからすべてのTupleを読み込む場合
@@ -135,7 +136,7 @@ RESTからTupleを読み込む時点で、複数のTupleを結合します。
 
 ---
 
-## INTO <a name="INTO"></a>
+## INTO <a name="INTO" class="anchor"></a>
 
 INTO は、ストリームを分岐させます。
 
@@ -978,7 +979,7 @@ END GROUP と TO STREAM は、グループ化を解除する必要がなけれ�
 
 ---
 
-## EMIT <a name="EMIT"></a>
+## EMIT <a name="EMIT" class="anchor"></a>
 
 EMITは、Tupleをトポロジの外部へ出力します。
 
@@ -1000,7 +1001,7 @@ TupleをKafkaに出力します。
     kafka_emit(topic_name[, mode])
 
 
-* topic_name には、出力するTopic名を指定します。topic_name は [プロセッサ変数](/dml_ja.html#procparam) に対応しています。
+* topic_name には、出力するTopic名を指定します。topic_name は [プロセッサ変数](dml.html#procparam) に対応しています。
 * mode には、jsonもしくはcsvを指定できます。省略した場合はjsonが適用されます。
 
 > Example:
@@ -1022,8 +1023,8 @@ TupleをMongoDBに出力します。
     mongo_persist(db_name, collection_name [, key_names])
 
 
-* db_name には、出力するDB名を指定します。db_name は [プロセッサ変数](/dml_ja.html#procparam) に対応しています。
-* collection_name には、出力するCollection名を指定します。collection_name は [プロセッサ変数](/dml_ja.html#procparam) に対応しています。
+* db_name には、出力するDB名を指定します。db_name は [プロセッサ変数](dml.html#procparam) に対応しています。
+* collection_name には、出力するCollection名を指定します。collection_name は [プロセッサ変数](dml.html#procparam) に対応しています。
 * key_names には、出力するキーのフィールド名を指定します。複合キーの場合は配列で指定してください。
  key_names を指定した場合、出力はキーに対してupdateされます。
  key_names を指定しなかった場合は、出力はinsertになります。
@@ -1049,7 +1050,7 @@ Tupleを他のRESTサーバに向けて送信します。
 >
     EMIT * USING web_emit('http://localhost:9200/_bulk', 'es', {'index':'test', 'type':'xyz'});
 
-### 内部への出力 <a name="EMIT_INTERNAL"></a>
+### 内部への出力 <a name="EMIT_INTERNAL" class="anchor"></a>
 
 #### Schema Persist Processor
 
@@ -1077,7 +1078,7 @@ Tupleを同一アカウントの他のスキーマに出力します。
     ...
 
 
-#### プロセッサ変数 <a name="procparam"></a>
+#### プロセッサ変数 <a name="procparam" class="anchor"></a>
 
 Emit Processor の出力先の名称には、以下のプロセッサ変数を含めることができます。
 

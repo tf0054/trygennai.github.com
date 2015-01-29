@@ -1,6 +1,7 @@
 ---
 layout: manual_ja
 title: CLI / genn.ai
+redirect_from: "/cli_ja.html"
 ---
 
 # genn.ai CLI
@@ -481,7 +482,7 @@ Serverから新たなTracking IDを受け取ることができます。
 
 ---
 
-###<a name="monitor"></a> MONITOR
+### MONITOR <a name="monitor" class="anchor"></a>
 
 Topologyの動作確認の為に、TupleがTopologyの中をどのように流れたをMonitor機能で確認します。
 Tupleが流れた際に出力されるMonitorログを表示することによって、確認を行います。
