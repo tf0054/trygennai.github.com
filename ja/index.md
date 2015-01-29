@@ -1,18 +1,19 @@
 ---
 layout: top
 title: genn.ai
+redirect_from: "/index_ja.html"
 ---
 
 ### genn.ai ツール
-* [CLI (gungnir)](cli_ja.html)
+* [CLI (gungnir/post)](cli.html)
 
 ### genn.ai ドキュメント
 
-* [DDL](ddl_ja.html)
-* [DML](dml_ja.html)
-* [チュートリアル](tutorial_ja.html)
-* [設定](config_ja.html)
-* [設定例](example_ja.html)
+* [DDL](ddl.html)
+* [DML](dml.html)
+* [チュートリアル](tutorial.html)
+* [設定](config.html)
+* [設定例](example.html)
 
 ### genn.ai の実行環境(ローカル用)
 * [vagrant (VM)](https://github.com/trygennai/gennai.vagrant)

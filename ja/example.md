@@ -1,6 +1,7 @@
 ---
 layout: manual_ja
 title: Setting Example / genn.ai
+redirect_from: "/example_ja.html"
 ---
 
 # genn.ai 設定例
@@ -17,7 +18,7 @@ title: Setting Example / genn.ai
 * [TupleStoreServerを単一ホストで冗長化](#distributedts2)
 * [TupleStoreServerのPING確認](#pingts)
 
-## Standaloneでgennaiを起動 <a name="standalone"></a>
+## Standaloneでgennaiを起動 <a name="standalone" class="anchor"></a>
 
 GungnirServerのみで動作確認をすることが可能なモードです。
 
@@ -25,8 +26,8 @@ GungnirServerのみで動作確認をすることが可能なモードです。
 
 使用している設定項目は下記です。
 
-* [persistent.emitter](/config_ja.html#s.persistent.emitter)
-* [metastore](/config_ja.html#s.metastore)
+* [persistent.emitter](config.html#s.persistent.emitter)
+* [metastore](config.html#s.metastore)
 
 これらの設定項目以外はデフォルト設定値が適用されます。
 
@@ -41,14 +42,14 @@ Standaloneモードでは下記の制限事項があります。
 2. 投入するTopologyで使用可能な **Spout Processor** は **Memory Spout Processor** のみです。
 
 
-## MetaStoreをMongoDBに設定 <a name='mongodbmetastore'></a>
+## MetaStoreをMongoDBに設定 <a name="mongodbmetastore" class="anchor"></a>
 
 デフォルト設定ですが、Standaloneモードにおいても設定することが可能です。
 
 事前にMongoDBを設定・起動しておく必要があります。
 
-* [metastore](/config_ja.html#s.metastore)
-* [metastore.mongodb.servers](/config_ja.html#s.metastore.mongodb.servers)
+* [metastore](config.html#s.metastore)
+* [metastore.mongodb.servers](config.html#s.metastore.mongodb.servers)
 
 MongoDBを別ホストで起動している場合は **metastore.mongodbservers** も必ず指定してください。 **metastore.mongodb.servers** には、レプリケーション設定をした複数のMongoDBサーバを指定することが可能です。レプリケーション設定がされているMongoDBの場合にのみ、複数のMongoDBサーバを指定してください。レプリケーション設定がされていないMongoDBサーバを複数指定した場合、複数台にメタ情報を分散してしまう可能性があるため、メタ情報の一貫性が保証できなくなります。
 
@@ -69,13 +70,13 @@ MongoDBを別ホストで起動している場合は **metastore.mongodbservers*
       - "mongodb3:27017"
 
 
-## TupleStoreServerをKafkaに設定 <a name='kafkaemitter'></a>
+## TupleStoreServerをKafkaに設定 <a name="kafkaemitter" class="anchor"></a>
 
 TupleStoreServerが受領したTupleをApache Kafkaに保存します(デフォルト設定)。保存されたTupleは、Topologyで吸い出すことができます。
 
-* [persistent.emitter](/config_ja.html#s.persistent.emitter)
-* [kafka.brokers](/config_ja.html#s.kafka.brokers)
-* [kafka.zookeeper.servers](/config_ja.html#s.kafka.zookeeper.servers)
+* [persistent.emitter](config.html#s.persistent.emitter)
+* [kafka.brokers](config.html#s.kafka.brokers)
+* [kafka.zookeeper.servers](config.html#s.kafka.zookeeper.servers)
 
 Apache Kafkaを別ホストで起動している場合は、 **kafka.brokers** も必ず指定してください。Apache Kafkaクラスタを構成するBrokerサーバを全て指定してください。また、Apache Kafkaが使用するZooKeeperアンサンブルも指定してください。
 
@@ -104,12 +105,12 @@ Apache Kafkaを別ホストで起動している場合は、 **kafka.brokers** �
       - "kafka3:2181"
 
 
-## DistributedのStormを利用 <a name="distributedstorm"></a>
+## DistributedのStormを利用 <a name="distributedstorm" class="anchor"></a>
 
 分散モードで稼働しているStormクラスタを利用します。デフォルト設定では、Stormはローカルモードで稼働します。
 
-* [storm.cluster.mode](/config_ja.html#s.storm.cluster.mode)
-* [storm.nimbus.host](/config_ja.html#s.storm.nimbus.host)
+* [storm.cluster.mode](config.html#s.storm.cluster.mode)
+* [storm.nimbus.host](config.html#s.storm.nimbus.host)
 
 Stormクラスタを別ホストで稼働させている場合、 **storm.cluster.mode** を **distributed** に設定すると共に、 **storm.nimbus.host** を正しく設定する必要があります。
 
@@ -120,14 +121,14 @@ Stormクラスタを別ホストで稼働させている場合、 **storm.cluste
     storm.nimbus.host: "localhost"
 
 
-## GungnirServerを複数ホストで冗長化 <a name="distributedgs1"></a>
+## GungnirServerを複数ホストで冗長化 <a name="distributedgs1" class="anchor"></a>
 
 GungnirServerを複数のホストで稼働させることで、冗長化することができます。
 
 稼働しているGungnirServerの情報を保存するZooKeeperが必須となります。クライアントツールは、ZooKeeperから稼働中のGungnirServerの情報を随時取得します。クライアントツールは、GungnirServerの構成に変更があった場合、ZooKeeperより接続情報を取得し、常に接続可能なGungnirServerにアクセスするようになります。
 
-* [cluster.mode](/config_ja.html#s.cluster.mode)
-* [cluster.zookeeper.servers](/config_ja.html#s.cluster.zookeeper.servers)
+* [cluster.mode](config.html#s.cluster.mode)
+* [cluster.zookeeper.servers](config.html#s.cluster.zookeeper.servers)
 
 上記設定項目は全てのホストで同一の設定をしてください。ZooKeeperアンサンブルを構成せず、1台のZooKeeperサーバにて稼働させる場合には、"localhost:2181"とそれぞれ設定してしまうと、異なるZooKeeperサーバを参照することになってしまいますのでご注意ください。
 
@@ -151,8 +152,8 @@ GungnirServerを複数のホストで稼働させることで、冗長化する�
 
 また、GungnirServerを冗長化している場合、接続するクライアントの設定も分散モードを利用してください。
 
-* [cluster.mode](/config_ja.html#c.cluster.mode)
-* [cluster.zookeeper.servers](/config_ja.html#c.cluster.zookeeper.servers)
+* [cluster.mode](config.html#c.cluster.mode)
+* [cluster.zookeeper.servers](config.html#c.cluster.zookeeper.servers)
 
 **cluster.zookeeper.servers** に設定するZooKeeperは、GungnirServerに設定したものと同じ設定をしてください。
 
@@ -167,22 +168,22 @@ GungnirServerを複数のホストで稼働させることで、冗長化する�
 
 この際、 クライアントの下記設定項目は使用されません。
 
-* [gungnir.server.host](/config_ja.html#c.gungnir.server.host)
-* [gungnir.server.port](/config_ja.html#c.gungnir.server.port)
-* [tuple.store.server.host](/config_ja.html#c.tuple.store.server.host)
-* [tuple.store.server.port](/config_ja.html#c.tuple.store.server.port)
+* [gungnir.server.host](config.html#c.gungnir.server.host)
+* [gungnir.server.port](config.html#c.gungnir.server.port)
+* [tuple.store.server.host](config.html#c.tuple.store.server.host)
+* [tuple.store.server.port](config.html#c.tuple.store.server.port)
 
 
-## GungnirServerを単一ホストで冗長化 <a name="distributedgs2"></a>
+## GungnirServerを単一ホストで冗長化 <a name="distributedgs2" class="anchor"></a>
 
 単一のホストで複数のGungnirServerプロセスを起動することで、冗長化することができます。起動するプロセス数と同数の設定ファイルが必要となります。
 
 稼働しているGungnirServerの情報を保存するZooKeeperが必須となります。クライアントツールは、ZooKeeperから稼働中のGungnirServerの情報を随時取得します。クライアントツールは、GungnirServerの構成に変更があった場合、ZooKeeperより接続情報を取得し、常に接続可能なGungnirServerにアクセスするようになります。
 
-* [gungnir.server.port](/config_ja.html#s.gungnir.server.port)
-* [gungnir.server.pid.file](/config_ja.html#s.gungnir.server.pid.file)
-* [cluster.mode](/config_ja.html#s.cluster.mode)
-* [cluster.zookeeper.servers](/config_ja.html#s.cluster.zookeeper.servers)
+* [gungnir.server.port](config.html#s.gungnir.server.port)
+* [gungnir.server.pid.file](config.html#s.gungnir.server.pid.file)
+* [cluster.mode](config.html#s.cluster.mode)
+* [cluster.zookeeper.servers](config.html#s.cluster.zookeeper.servers)
 
 上記設定項目のうち、 **cluster.mode**, **cluster.zookeeper.servers** は全ての設定ファイルで同一の設定をしてください。
 
@@ -220,8 +221,8 @@ GungnirServerを複数のホストで稼働させることで、冗長化する�
 
 また、GungnirServerを冗長化している場合、接続するクライアントの設定も分散モードを利用してください。
 
-* [cluster.mode](/config_ja.html#c.cluster.mode)
-* [cluster.zookeeper.servers](/config_ja.html#c.cluster.zookeeper.servers)
+* [cluster.mode](config.html#c.cluster.mode)
+* [cluster.zookeeper.servers](config.html#c.cluster.zookeeper.servers)
 
 **cluster.zookeeper.servers** に設定するZooKeeperは、GungnirServerに設定したものと同じ設定をしてください。
 
@@ -236,20 +237,20 @@ GungnirServerを複数のホストで稼働させることで、冗長化する�
 
 この際、 クライアントの下記設定項目は使用されません。
 
-* [gungnir.server.host](/config_ja.html#c.gungnir.server.host)
-* [gungnir.server.port](/config_ja.html#c.gungnir.server.port)
-* [tuple.store.server.host](/config_ja.html#c.tuple.store.server.host)
-* [tuple.store.server.port](/config_ja.html#c.tuple.store.server.port)
+* [gungnir.server.host](config.html#c.gungnir.server.host)
+* [gungnir.server.port](config.html#c.gungnir.server.port)
+* [tuple.store.server.host](config.html#c.tuple.store.server.host)
+* [tuple.store.server.port](config.html#c.tuple.store.server.port)
 
 
-## TupleStoreServerを複数ホストで冗長化 <a name="distributedts1"></a>
+## TupleStoreServerを複数ホストで冗長化 <a name="distributedts1" class="anchor"></a>
 
 TupleStoreServerを複数のホストで稼働させることで、冗長化することができます。
 
 稼働しているTupleStoreServerの情報を保存するZooKeeperが必須となります。クライアントツールは、ZooKeeperから稼働中のTupleStoreServerの情報を随時取得します。クライアントツールは、TupleStoreServerの構成に変更があった場合、ZooKeeperより接続情報を取得し、常に接続可能なTupleStoreServerにアクセスするようになります。
 
-* [cluster.mode](/config_ja.html#s.cluster.mode)
-* [cluster.zookeeper.servers](/config_ja.html#s.cluster.zookeeper.servers)
+* [cluster.mode](config.html#s.cluster.mode)
+* [cluster.zookeeper.servers](config.html#s.cluster.zookeeper.servers)
 
 上記設定項目は全てのホストで同一の設定をしてください。ZooKeeperアンサンブルを構成せず、1台のZooKeeperサーバにて稼働させる場合には、"localhost:2181"とそれぞれ設定をしてしまうと、異なるZooKeeperサーバを参照することになってしまいますのでご注意ください。
 
@@ -273,8 +274,8 @@ TupleStoreServerを複数のホストで稼働させることで、冗長化す�
 
 また、TupleStoreServerを冗長化している場合、接続するクライアントの設定も分散モードを利用してください。
 
-* [cluster.mode](/config_ja.html#c.cluster.mode)
-* [cluster.zookeeper.servers](/config_ja.html#c.cluster.zookeeper.servers)
+* [cluster.mode](config.html#c.cluster.mode)
+* [cluster.zookeeper.servers](config.html#c.cluster.zookeeper.servers)
 
 **cluster.zookeeper.servers** に設定するZooKeeperは、GungnirServer/TupleStoreServerに設定したものと同じ設定をしてください。
 
@@ -289,22 +290,22 @@ TupleStoreServerを複数のホストで稼働させることで、冗長化す�
 
 この際、 クライアントの下記設定項目は使用されません。
 
-* [gungnir.server.host](/config_ja.html#c.gungnir.server.host)
-* [gungnir.server.port](/config_ja.html#c.gungnir.server.port)
-* [tuple.store.server.host](/config_ja.html#c.tuple.store.server.host)
-* [tuple.store.server.port](/config_ja.html#c.tuple.store.server.port)
+* [gungnir.server.host](config.html#c.gungnir.server.host)
+* [gungnir.server.port](config.html#c.gungnir.server.port)
+* [tuple.store.server.host](config.html#c.tuple.store.server.host)
+* [tuple.store.server.port](config.html#c.tuple.store.server.port)
 
 
-## TupleStoreServerを単一ホストで冗長化 <a name="distributedts2"></a>
+## TupleStoreServerを単一ホストで冗長化 <a name="distributedts2" class="anchor"></a>
 
 単一のホストで複数のTupleStoreServerプロセスを起動することで、冗長化することができます。起動するプロセス数と同数の設定ファイルが必要となります。
 
 稼働しているTupleStoreServerの情報を保存するZooKeeperが必須となります。クライアントツールは、ZooKeeperから稼働中のTupleStoreServerの情報を随時取得します。クライアントツールは、TupleStoreServerの構成に変更があった場合、ZooKeeperより接続情報を取得し、常に接続可能なTupleStoreServerにアクセスするようになります。
 
-* [tuple.store.server.port](/config_ja.html#s.tuple.store.server.port)
-* [tuple.store.server.pid.file](/config_ja.html#s.tuple.store.server.pid.file)
-* [cluster.mode](/config_ja.html#s.cluster.mode)
-* [cluster.zookeeper.servers](/config_ja.html#s.cluster.zookeeper.servers)
+* [tuple.store.server.port](config.html#s.tuple.store.server.port)
+* [tuple.store.server.pid.file](config.html#s.tuple.store.server.pid.file)
+* [cluster.mode](config.html#s.cluster.mode)
+* [cluster.zookeeper.servers](config.html#s.cluster.zookeeper.servers)
 
 上記設定項目のうち、 **cluster.mode**, **cluster.zookeeper.servers** は全ての設定ファイルで同一の設定をしてください。
 
@@ -340,8 +341,8 @@ TupleStoreServerを複数のホストで稼働させることで、冗長化す�
 
 また、TupleStoreServerを冗長化している場合、接続するクライアントの設定も分散モードを利用してください。
 
-* [cluster.mode](/config_ja.html#c.cluster.mode)
-* [cluster.zookeeper.servers](/config_ja.html#c.cluster.zookeeper.servers)
+* [cluster.mode](config.html#c.cluster.mode)
+* [cluster.zookeeper.servers](config.html#c.cluster.zookeeper.servers)
 
 **cluster.zookeeper.servers** に設定するZooKeeperは、GungnirServerに設定したものと同じ設定をしてください。
 
@@ -356,13 +357,13 @@ TupleStoreServerを複数のホストで稼働させることで、冗長化す�
 
 この際、 クライアントの下記設定項目は使用されません。
 
-* [gungnir.server.host](/config_ja.html#c.gungnir.server.host)
-* [gungnir.server.port](/config_ja.html#c.gungnir.server.port)
-* [tuple.store.server.host](/config_ja.html#c.tuple.store.server.host)
-* [tuple.store.server.port](/config_ja.html#c.tuple.store.server.port)
+* [gungnir.server.host](config.html#c.gungnir.server.host)
+* [gungnir.server.port](config.html#c.gungnir.server.port)
+* [tuple.store.server.host](config.html#c.tuple.store.server.host)
+* [tuple.store.server.port](config.html#c.tuple.store.server.port)
 
 
-## TupleStoreServerのPING確認 <a name="pingts"></a>
+## TupleStoreServerのPING確認 <a name="pingts" class="anchor"></a>
 
 TupleStoreServerの疎通確認を行うことができます。
 

@@ -1,6 +1,7 @@
 ---
 layout: manual_ja
 title: DDL / genn.ai
+redirect_from: "/ddl_ja.html"
 ---
 
 # genn.ai DDL
@@ -14,7 +15,7 @@ title: DDL / genn.ai
 	(タプルについてはStormの用語をそのまま借りています)
 
 > 本ページのDDLとは、RESTサーバが受け取る **タプル** に対する操作を指します。
-    後者クエリサーバが担当するクエリやトポロジの操作については [DML](dml_ja.html)のページをご参照下さい。
+    後者クエリサーバが担当するクエリやトポロジの操作については [DML](dml.html)のページをご参照下さい。
 
 ## CREATE TUPLE
 
