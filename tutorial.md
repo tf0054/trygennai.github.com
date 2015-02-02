@@ -33,17 +33,17 @@ To get a key from genn.ai, users need to get their Github account.  If you do no
 - To access genn.ai, you need to get the access key. To get the access key, access [http://dev.genn.ai/](http://dev.genn.ai/),
 then click "Sign Up" then the acess key for you is shown.
 
-![gennai-signup](img_tutorial/01_signup.png "Signup")
+![gennai-signup](/img/tutorial/01_signup.png "Signup")
 
 - Login with your GitHub account.
 
-![gennai-signup](img_tutorial/02_GithubLogin.png "Signup")
+![gennai-signup](/img/tutorial/02_GithubLogin.png "Signup")
 
 - Approve the permission which is on genn.ai accessing GitHub.
 
 - When you approve it, the browser shows genn.ai page and shows the published access key. We go through this genn.ai tutorial with the access key.
 
-![gennai-signup](img_tutorial/03_getkey.png "Signup")
+![gennai-signup](/img/tutorial/03_getkey.png "Signup")
     
 
 ３. Down load client library file
@@ -323,7 +323,7 @@ Users should have a memo on the value such as stopping / starting a topology.
 
 Now The topology submitted with `SUBMIT TOPLOGY` is ready to run. The followin is the image of whole system including the topology.
 
-![all](img_tutorial/10_diagram.png "all")
+![all](/img/tutorial/10_diagram.png "all")
 
 When we put the data, the data is flowed into the topology and processed, and then the results are stored into Kafka.
 In the later section, we will see how to show the stored data in Kafka.

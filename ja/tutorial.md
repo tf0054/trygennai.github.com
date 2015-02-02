@@ -34,17 +34,17 @@ genn.aiでキーを発行するにはGitHubアカウントが必要となりま�
 
 - genn.aiにアクセスするためには専用のアクセスキーを取得する必要があります。まず [http://dev.genn.ai/](http://dev.genn.ai/) にアクセスし、"Sign Up"をクリックして下さい。        
 
-![gennai-signup](img_tutorial/01_signup.png "Signup")
+![gennai-signup](/img/tutorial/01_signup.png "Signup")
 
 - 先ほど登録したGitHubアカウントでログインします。
 
-![gennai-signup](img_tutorial/02_GithubLogin.png "Signup")
+![gennai-signup](/img/tutorial/02_GithubLogin.png "Signup")
 
 - genn.aiからGitHub情報へのアクセス許可を求めるページが表示されますので、「許可」してください。
 
 - 許可すると自動的にgenn.aiページに戻り、発行されたアクセスキーが表示されます。以後、このキーを用いてコマンドラインからgenn.aiを操作してゆきます。
 
-![gennai-signup](img_tutorial/03_getkey.png "Signup")
+![gennai-signup](/img/tutorial/03_getkey.png "Signup")
     
 
 ３. クライアントライブラリファイルをダウンロード
@@ -318,7 +318,7 @@ genn.aiの世界に入ったので、なにかコマンドを与えてみまし�
 
 先ほどの `SUBMIT TOPLOGY` でトポロジは起動している状態となっています。トポロジを含めた全体概略イメージを示すと以下のようになります。
 
-![all](img_tutorial/10_diagram.png "all")
+![all](/img/tutorial/10_diagram.png "all")
 
 このあとに説明する方法でデータを投入すると、トポロジへデータが流れ、処理され、結果がKafkaに格納される(`kafka_emit()`による)こととなります。
 
