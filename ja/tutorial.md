@@ -63,8 +63,11 @@ genn.aiでキーを発行するにはGitHubアカウントが必要となりま�
 
         # cat /usr/local/gungnir-client/conf/gungnir.yaml
         > ...
-        > gungnir.thrift.server: "dev.genn.ai:9190"
-        > gungnir.rest.server: "dev.genn.ai:9191"
+        > gungnir.server.host: "dev.genn.ai"
+        > gungnir.server.port: 7100
+        > ...
+        > tuple.store.server.host: "dev.genn.ai"
+        > tuple.store.server.port: 7200
         > ...
 
 以上で環境の設定は完了です。
@@ -238,7 +241,7 @@ genn.aiの世界に入ったので、なにかコマンドを与えてみまし�
 それでは、以下でこの登録を行います。
 これにより作成したロジック(トポロジ)で、ストリームデータを処理する機構が準備されます。
 
-    gungnir> SUBMIT TOPOLOGY;
+    gungnir> SUBMIT TOPOLOGY t1;
     OK
     gungnir>
 
@@ -254,26 +257,7 @@ genn.aiの世界に入ったので、なにかコマンドを与えてみまし�
     gungnir> DESC TOPOLOGY;
     { \
         "id":"5284a5b7e4b08627b67aecd3", \
-        "explain":"SPOUT_0(\
-            kafka_spout(), \
-            [ \
-                userAction( \
-                    userId STRING, \
-                    hotelId STRING \
-                ), \
-                commitAction( \
-                    userId STRING, \
-                    hotelId STRING, \
-                    checkin TIMESTAMP(yyyy-MM-dd HH:mm:ss), nights INT \
-                ) \
-            ] \
-            )￥n \
-            -S-> PARTITION_1\nPARTITION_1(identity grouping)￥n \
-            -S-> EMIT_2￥n \
-            EMIT_2( \
-               kafka_emit(${TOPOLOGY_ID}_user), \
-               [userId, hotelId, name, image] \
-        )", \
+        "name":"t1", \
         "status":"RUNNING", \
         "owner":"gennaitaro", \
         "createTime":"2013-11-01T00:00:00.000Z", \
@@ -289,18 +273,18 @@ genn.aiの世界に入ったので、なにかコマンドを与えてみまし�
     
     gungnir>
 
-そして、トポロジの停止や再開、結果取得などの操作にはここで表示されるid(**トポロジid**)必要となりますのでどこかに控えておきましょう。
-また、この文字列が変数${TOPOLOGY_ID}の部分に入ることになります。
+そして、トポロジの停止や再開、結果取得などの操作にはここで表示されるname(**トポロジ名**)必要となりますのでどこかに控えておきましょう。
+また、ここで表示されるid(**トポロジID**)文字列が変数${TOPOLOGY_ID}の部分に入ることになります。
 
-さらにこの**トポロジid**はトポロジの停止や削除など、トポロジを直接指定して操作するときに使います。
+さらにこの**トポロジ名**はトポロジの停止や削除など、トポロジを直接指定して操作するときに使います。
 
 > 参考：
 > 
 > - Topologyの停止、削除方法
 >
->         gungnir> STOP TOPOLOGY 5284a5b7e4b08627b67aecd3;
+>         gungnir> STOP TOPOLOGY t1;
 >         OK
->         gungnir> DROP TOPOLOGY 5284a5b7e4b08627b67aecd3;
+>         gungnir> DROP TOPOLOGY t1;
 >         OK
 >         gungnir>
 >         
@@ -328,9 +312,9 @@ genn.aiの世界に入ったので、なにかコマンドを与えてみまし�
 
 データの投入は通常、RESTのインターフェイスを用いて行いますが、デバッグの目的でgungnirコンソールからの投入も可能となっています。ここでは双方の方法を試してみましょう。
 
-まずデバッグ用の`TRACK`コマンドを用いて、**gungnirコンソールから**の投入を実施してみましょう。
+まずデバッグ用の`POST`コマンドを用いて、**gungnirコンソールから**の投入を実施してみましょう。
 
-    gungnir> TRACK userAction {"userId":"AA01234567", "hotelId":"226979"};
+    gungnir> POST userAction {"userId":"AA01234567", "hotelId":"226979"};
     
     OK
     gungnir> 
@@ -338,7 +322,7 @@ genn.aiの世界に入ったので、なにかコマンドを与えてみまし�
 正常に投入できるようであれば、次に実際の利用で使われる**RESTインターフェイスから**投入してみましょう。
 
 このためには、投入するためのURLを確認する必要があります。URLは、  
-`http://dev.genn.ai:9191/gungnir/v1.0/track/ユーザid/スキーマ名`  
+`http://dev.genn.ai:7200/gungnir/v1.0/ユーザid/スキーマ名/json`
 
 の形で、各利用者ごと、スキーマごとに作られています。
 そして、ここで使われている**ユーザid**は、gungnirコンソール上から `DESC USER`コマンドで確認します。
@@ -354,7 +338,7 @@ genn.aiの世界に入ったので、なにかコマンドを与えてみまし�
 
 この結果内でidとして表示される**ユーザid**と、データ投入先の**スキーマ名**であるuserActionを当てはめ、以下のようなURLを作ります。  
 
-http://dev.genn.ai:9191/gungnir/v1.0/track/**5271d4c9e4b08627b67aeccd**/**userAction**
+http://dev.genn.ai:7200/gungnir/v1.0/**5271d4c9e4b08627b67aeccd**/**userAction**/json
 
 
 それでは、ここにデータを投入してみましょう。
@@ -362,18 +346,18 @@ http://dev.genn.ai:9191/gungnir/v1.0/track/**5271d4c9e4b08627b67aeccd**/**userAc
 
     $ curl -v -H "Content-type: application/json" -X POST \
         -d '{"userId":"AA11234567", "hotelId":"226979"}' \
-        http://dev.genn.ai:9191/gungnir/v1.0/track/5271d4c9e4b08627b67aeccd/userAction
+        http://dev.genn.ai:7200/gungnir/v1.0/5271d4c9e4b08627b67aeccd/userAction/json
     >
-    >* About to connect() to dev.genn.ai port 9191
+    >* About to connect() to dev.genn.ai port 7200
     >*   Trying 54.238.99.212... connected
-    >* Connected to dev.genn.ai (54.238.99.212) port 9191
+    >* Connected to dev.genn.ai (54.238.99.212) port 7200
     ...(省略)...
     $ 
     
 
 このとき、上手く投入ができていれば、HTTPとして以下のようなレスポンスを得られます。
 
-    HTTP/1.1 200 OK
+    HTTP/1.1 204 No Content
     Content-Length: 0
     Date: Fir, 01 Nov 2013 12:00:00 GMT
 
@@ -399,7 +383,7 @@ http://dev.genn.ai:9191/gungnir/v1.0/track/**5271d4c9e4b08627b67aeccd**/**userAc
     >    INFO (Logging.scala:61) consumed: {"userId":"AA11234567","hotelId":"226979"}
     > ...
 
-「データを投入してみる」の項で、 `TRACK`と`curl`コマンドの計２回、データを投入したので処理結果が２つ返ってきます。  
+「データを投入してみる」の項で、 `POST`と`curl`コマンドの計２回、データを投入したので処理結果が２つ返ってきます。  
 なお、kafka-consumer.shスクリプトは、Kafkaへデータをポーリングし続けるので、２行の結果を表示した後も終了しません※。genn.aiに新たなデータが投入され、処理されれば、その数秒後に結果が表示されます。
 
 > ※ 終了は\[CTRL\]+\[C\]です。
@@ -409,7 +393,7 @@ http://dev.genn.ai:9191/gungnir/v1.0/track/**5271d4c9e4b08627b67aeccd**/**userAc
 
     $ curl -v -H "Content-type: application/json" -X POST \
         -d '{"userId":"AA21234567", "hotelId":"226979"}' \
-        http://dev.genn.ai:9191/gungnir/v1.0/track/5271d4c9e4b08627b67aeccd/userAction
+        http://dev.genn.ai:7200/gungnir/v1.0/5271d4c9e4b08627b67aeccd/userAction/json
 
 
 すると、先のkafka-consumer.shコンソールに、以下の行が追加で表示されるはずです。
@@ -422,7 +406,7 @@ http://dev.genn.ai:9191/gungnir/v1.0/track/**5271d4c9e4b08627b67aeccd**/**userAc
 
     $ curl -v -H "Content-type: application/json" -X POST \
         -d '{"userId":"AA31234567", "hotelId":"226979"}' \
-        http://dev.genn.ai:9191/gungnir/v1.0/track/5271d4c9e4b08627b67aeccd/userAction
+        http://dev.genn.ai:7200/gungnir/v1.0/5271d4c9e4b08627b67aeccd/userAction/json
 
 これにより、トポロジの中で記述したFILTER処理がきちんと動作していることが確認できた、ということになります。
 
