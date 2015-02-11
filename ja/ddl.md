@@ -6,16 +6,7 @@ redirect_from: "/ddl_ja.html"
 
 # genn.ai DDL
 
-> genn.aiは、大きくRESTサーバとクエリサーバから構成され、
-	前者RESTサーバは、httpにて外部からjsonのデータを受け取りStormに渡します(正確には、そのためにKafkaに格納します)。
-	後者クエリサーバは、genn.ai独自の **クエリ** で書かれたイベント処理ロジックをコンパイルし、Stormに登録します。
-	(この処理ロジックでは、通常、最初にKafkaからデータを読み出します)
-
-> genn.aiでは、このjson形式で受け取るデータを **タプル** (Tuple)と呼び、コンパイルにより出来上がるものは **トポロジ** (Topology)と呼びます。
-	(タプルについてはStormの用語をそのまま借りています)
-
-> 本ページのDDLとは、RESTサーバが受け取る **タプル** に対する操作を指します。
-    後者クエリサーバが担当するクエリやトポロジの操作については [DML](dml.html)のページをご参照下さい。
+{% include lead.md %}
 
 ## CREATE TUPLE
 
@@ -24,10 +15,10 @@ Tupleのスキーマを定義します。
 スキーマは
 
 - Tupleの受け取り可否の判定
-- JSONTupleからGungnirTupleへの変換(GungnirTupleとはgenn.ai内部でのタプル表現のことです)
+- JSONTupleからGungnirTuple(genn.ai内部でのタプル表現)への変換
 - FROM statements での入力対象の指定
 
-に使用します。
+に使用されます。
 
     CREATE TUPLE schema_name
         (field_name [field_type], ...)
@@ -98,7 +89,7 @@ JSONTupleでは、フィールドの値を数字で記述します。
 GungnirTupleでは、JavaのIntegerとして扱われます。
 
 JSONTupleでは、フィールドの値を数字で記述します。
-JSONTupleのフィールド値に数字を記述し、かつ該当のフィールドの型をスキーマで省略していた場合は、
+このとき該当のフィールドの型をスキーマで省略していた場合は、
 記述した数字の桁数に応じて、フィールド値はINT（Integer）もしくはBIGINT（Long）型に変換されます。
 
 #### BIGINT
@@ -106,7 +97,7 @@ JSONTupleのフィールド値に数字を記述し、かつ該当のフィー�
 GungnirTupleでは、JavaのLongとして扱われます。
 
 JSONTupleでは、フィールドの値を数字で記述します。
-JSONTupleのフィールド値に数字を記述し、かつ該当のフィールドの型をスキーマで省略していた場合は、
+このとき該当のフィールドの型をスキーマで省略していた場合は、
 記述した数字の桁数に応じて、フィールド値はINT（Integer）もしくはBIGINT（Long）型に変換されます。
 
 #### FLOAT
@@ -120,7 +111,7 @@ JSONTupleでは、フィールドの値を数字（小数）で記述します�
 GungnirTupleでは、JavaのDoubleとして扱われます。
 
 JSONTupleでは、フィールドの値を数字（小数）で記述します。
-JSONTupleのフィールド値に小数を記述し、かつ該当のフィールドの型をスキーマで省略していた場合は、
+このとき該当のフィールドの型をスキーマで省略していた場合は、
 フィールド値はDOUBLE型（Doubleに変換されます。
 
 #### TIMESTAMP
@@ -207,10 +198,10 @@ JSONTupleでは、フィールドの値をObjects構造で記述します。
 #### STRUCT
 
 GungnirTupleでは、ai.genn.gungnir.tuple.Struct（構造体クラス）として扱われます。
+なお、現在は以下の制約があります。
 
-
-    STRUCT<field_name [field_type], ...>
-
+- 値の書き出し(新しい構造体フィールドをAS句で作る等)はできません。
+- ストリームJOINの条件に使うことはできません(事前にSTRING型等へ書き出しておく必要あり)
 
 > Example:
 >
@@ -223,7 +214,7 @@ JSONTupleでは、フィールドの値をObjects構造で記述します。
 >
     field:{member0:"gennai", member1:"2013-10-18 18:28:34", member2:[10000, 20000, 30000]}
 
-### JSONTuple example
+### JSONTupleの記述例
 
 上記の userAction1 をJSONTupleで記述した例です。
 

@@ -6,16 +6,7 @@ redirect_from: "/dml_ja.html"
 
 # genn.ai DML
 
-> genn.aiは、大きくRESTサーバとクエリサーバから構成され、
-	前者RESTサーバは、httpにて外部からjsonのデータを受け取りStormに渡します(正確には、そのためにKafkaに格納します)。
-	後者クエリサーバは、genn.ai独自の **クエリ** で書かれたイベント処理ロジックをコンパイルし、Stormに登録します。
-	(この処理ロジックでは、通常、最初にKafkaからデータを読み出します)
-
-> genn.aiでは、このjson形式で受け取るデータを **タプル** (Tuple)と呼び、コンパイルにより出来上がるものは **トポロジ** (Topology)と呼びます。
-	(タプル及びトポロジはStormの用語をそのまま借りています)
-
-> 本ページのDMLとは、後者クエリサーバが担当するクエリ(の文法)のことを指します。
-    前者の **タプル** については [DDL](ddl.html)のページをご参照下さい。
+{% include lead.md %}
 
 ## FROM
 
@@ -122,9 +113,9 @@ RESTからTupleを読み込む時点で、複数のTupleを結合します。
     join_field:
     schema_name_1.join_field [AS field_alias, ...]
 
-* ストリームに複数のTupleが含まれる場合、schema_nameを指定して絞り込む必要があります。
+* schema_nameを指定する必要があります。
 * join_fieldには結合後のTupleが保持するフィールドを指定します。結合後のフィールド名称が被らない場合には、ワイルドカードを使用する事やaliasを省略することが可能です。
-* periodには、Tupleを保持する期間を指定します。指定した時間経過後にJoin対象のTupleが読み込まれると、Tuple Joinは実行されません。
+* periodには、Tupleを保持する期間を指定します。指定した時間経過後にJoin対象のTupleが読み込まれても、Tuple Joinは実行されません。
 
 > Example: ua1とua2をストリームs1から読み込み、ua3をストリームs2から読み込んで結合
 >
@@ -138,7 +129,7 @@ RESTからTupleを読み込む時点で、複数のTupleを結合します。
 
 ## INTO <a name="INTO" class="anchor"></a>
 
-INTO は、ストリームを分岐させます。
+INTO では、ストリームを出力する(分岐する)ことができます。
 
     INTO stream_name
 
@@ -181,8 +172,7 @@ JOINは、外部データをフィールドとしてTupleに結合します。
     join_name.join_field [AS field_alias, ...]
 
 
-* join_name には、結合する名称を指定します。
-join_condition や join_fields で、外部データのフィールドを識別する為に使用します。
+* join_name には、結合する外部データソースの名称を指定します(join_condition や join_fields でのフィールド指定に利用します)
 * join_condition には、結合条件を指定します。
 結合データのキーフィールド = Tupleのフィールド を、結合データが一意になるように指定してください。
 複合条件の場合は、AND で指定します。結合データのキーフィールドに対して、定数で条件を指定することもできます。
@@ -191,15 +181,9 @@ join_condition や join_fields で、外部データのフィールドを識別�
 フィールドはTupleに追加されます。
 * field_alias は、省略可能です。省略すると元データのフィールド名で結合されます。
 
-> Example: MongoDBデータとの結合
->
-    JOIN j1 ON j1.code1 = field1 AND j1.code2 = field2 AND j1.del = 0
-      TO j1.name AS field10, j1.type AS field11
-      USING mongo_fetch('db1', 'col1')
-
 ### MongoDBデータとの結合
 
-#### Mongo Fetch Processor
+    JOIN .. ON .. TO .. EXPIRE .. USING mongo_fetch(..)
 
 今現在、MongoDB上にあるデータとの結合が可能です。
 なお、MondoDBから受け取られたデータはEXPIRE句を合わせて指定することでキャッシュされます。
@@ -228,7 +212,7 @@ join_condition や join_fields で、外部データのフィールドを識別�
 
 ### Webサービスとの結合
 
-#### Web Fetch Processor
+    JOIN .. ON .. TO .. EXPIRE .. USING web_fetch(..)
 
 JSON形式のレスポンスを返すWebサービスとの結合か可能です。
 結合条件をクエリパラメータに変換し、指定したURLにアクセスします。
@@ -264,7 +248,7 @@ JSON形式のレスポンスを返すWebサービスとの結合か可能です�
 > アクセスURL:
 >
     http://localhost:3000/solr/select?q=books.title:ccc+AND+books.author:ddd
-> 
+>
 > レスポンスデータ: pathで指定したパスをルートパスとしてJSONのパースを行います。
 >
     {
@@ -859,7 +843,7 @@ LENGTHにスライドするTupleの数を指定します。
 スライドはTupleの到着時にのみ実行されます。（スライドによる再計算も到着時のみ）
 
 処理的には、Tupleが到着する度にTupleをウィンドウ領域に貯めつつ、都度集計を行なっていきます。
-その際、ウィンドウ幅から除外されたTuple（※）を集計結果から減算します。  
+その際、ウィンドウ幅から除外されたTuple（※）を集計結果から減算します。
 
 （※）スライドして集計対象から外れたTuple
 
