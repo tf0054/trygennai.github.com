@@ -20,6 +20,13 @@ Clone this repository.
 $ git clone git@github.com:TryGennai/trygennai.github.com.git
 ```
 
+Add a needed gem.
+
+```
+$ sudo gem install jekyll
+$ sudo gem install jekyll-redirect-from
+```
+ 
 Edit the source files.
 
 ```
