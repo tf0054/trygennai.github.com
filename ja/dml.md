@@ -12,7 +12,7 @@ redirect_from: "/dml_ja.html"
 
 FROM を使い、Tupleの入力元をスキーマとともに指定します。
 
-### RESTからの入力 <a name="FROM_REST" class="anchor"></a>
+### TupleStoreServerからの入力 <a name="FROM_REST" class="anchor"></a>
 
     FROM schema_name AS schema_alias, ... USING spout_processor
 
@@ -26,12 +26,12 @@ FROM を使い、Tupleの入力元をスキーマとともに指定します。
     FROM userAction1 AS ua1, userAction2 AS ua2, view1 AS v1 USING kafka_spout()
 
 
-RESTからの入力は、一つのTopologyに対して一つしか定義できません。
+TupleStoreServerからの入力は、一つのTopologyに対して一つしか定義できません。
 
 #### Kafka Spout Processor
 
 TupleをKafkaから読み込みます。
-[DDL](ddl.html) で説明されている`CREATE TUPLE`にて作られたHTTP(REST)からの入力TupleもKafka経由で読み上げます。
+[DDL](ddl.html) で説明されている`CREATE TUPLE`にて作成したスキーマからの入力Tuple(RESTで投入)もKafka経由で読み上げます。
 
     kafka_spout()
 
@@ -48,10 +48,11 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
 
 ### ストリームからの入力 <a name="FROM_STREAM" class="anchor"></a>
 
-    FROM stream_name[(schema_alias, ...)], ...
+    FROM stream_name[(tuple_name, ...) AS tuple_alias], ...
 
 * stream_name には、 [INTO](dml.html#INTO) もしくは [EMIT](dml.html#EMIT_INTERNAL) で作られたストリームを指定します。
-* schema_alias には、Tupleを指定します。Tupleを指定すると、ストリーム中の該当のTupleのみを読み込むようになります。
+* tuple_name には、Tupleを指定します。Tupleを指定すると、ストリーム中の該当のTupleのみを読み込むようになります。
+* tuple_alias には、任意のTuple名を指定します。Tuple名を指定すると、以降のストリーム中でのTuple名を変更することができます。
 
 > Example: ストリームからすべてのTupleを読み込む場合
 >
@@ -67,9 +68,9 @@ Memory Spout Processorを使用するには、GungnirServerの下記設定項目
 
 複数のTupleをフィールドの値を元に結合します。
 
-#### RESTからTupleを読み込んで結合
+#### TupleStoreServerからTupleを読み込んで結合 <a name="RestJoin" class="anchor"></a>
 
-RESTからTupleを読み込む時点で、複数のTupleを結合します。
+TupleStoreServerからTupleを読み込む時点で、複数のTupleを結合します。
 
     FROM (schema_name_1
       JOIN schema_name_2 ON join_condition
@@ -97,23 +98,23 @@ RESTからTupleを読み込む時点で、複数のTupleを結合します。
       EXPIRE 1min
     ) AS ua4 USING kafka_spout()
 
-#### ストリームからTupleを読み込んで結合
+#### ストリームからTupleを読み込んで結合 <a name="StreamJoin" class="anchor"></a>
 
 ストリームから、一部のTupleに対してTupleを結合します。
 
-    FROM (stream_name_1[(schema_name_1, ...)]
-      JOIN stream_name_2[(schema_name_2, ...)] ON join_condition
+    FROM (stream_name_1(tuple_name_1)
+      JOIN stream_name_2(tuple_name_2) ON join_condition
       TO join_field
       EXPIRE period
     ) AS schema_alias
 
     join_condition:
-    schema_name_1.key_field = schema_name_2.key_field
+    tuple_name_1.key_field = tuple_name_2.key_field
 
     join_field:
-    schema_name_1.join_field [AS field_alias, ...]
+    tuple_name_1.join_field [AS field_alias, ...]
 
-* schema_nameを指定する必要があります。
+* tuple_nameを指定する必要があります。
 * join_fieldには結合後のTupleが保持するフィールドを指定します。結合後のフィールド名称が被らない場合には、ワイルドカードを使用する事やaliasを省略することが可能です。
 * periodには、Tupleを保持する期間を指定します。指定した時間経過後にJoin対象のTupleが読み込まれても、Tuple Joinは実行されません。
 
@@ -124,6 +125,22 @@ RESTからTupleを読み込む時点で、複数のTupleを結合します。
       JOIN s2(ua3) ON ua1.field2 = ua3.field5
       TO ua1.*, ua2.field4 AS field4, ua3.field7 AS field7
     ) AS ua4
+
+---
+
+### Column:「スキーマとタプル」
+
+gennaiには、スキーマ(Schema)とタプル(Tuple)という似た定義の言葉が存在します。
+
+#### スキーマ(Schema)
+
+TupleStoreServerが受領するJSON形式のデータをタプルに変換する為のルールのようなものです。[`CREATE TUPLE`](ddl.html#CREATE_TUPLE)で定義されます。
+
+#### タプル(Tuple)
+
+トポロジ(Topology)を流れるデータは、`JOIN`や`EACH`といった各オペレータにて、フィールドそのものや、その保持する値を追加・削除・編集され、タプルの形状を様々に変化させていきます。当初定義されているスキーマとはまったくの別物になることもありますし、スキーマと同じフィールド定義でストリームの終端まで達することもあります。
+
+以上より当ドキュメント内では、DDLで作成する定義および`FROM`でKafkaよりデータを取得する際にはスキーマ(Schema)を使用し、それ以降においてはタプル(Tuple)を使用しています。
 
 ---
 
@@ -810,7 +827,7 @@ LIMIT LASTであれば、最初にアクションし始めてから、４時間�
 間隔は時間もしくはTuple数を指定することが可能です。
 スライドはTupleの到着時にのみ実行されます。
 
-    SLIDE period [BY time_field| count] expr
+    SLIDE LENGTH period [BY time_field| count] expr
 
 * periodには、スライド時間もしくはタプル数を指定します。
 * exprには、集計関数や編集関数、四則演算、フィールドのアクセサを指定します。
@@ -829,7 +846,7 @@ LIMIT LASTであれば、最初にアクションし始めてから、４時間�
 といった書式で指定します。
 
 * 起点となるフィールド名には、Timestamp型のフィールドを指定します。
-  _timeフィールドも指定できます。（スキーマに_timeフィールドを指定していた場合）
+  _timeフィールドも指定できます。（タプルに_timeフィールドを指定していた場合）
 * 集計関数は複数指定できます。現状では、sum(), avg(), count()の３つの集計関数が使用できます。
 
 ### Tuple数でスライド
@@ -1040,9 +1057,9 @@ Tupleを他のRESTサーバに向けて送信します。
 
 Tupleを同一アカウントの他のスキーマに出力します。
 
-    EMIT fields TO tuple_name;
+    EMIT fields TO schema_name;
 
-* tuple_name には、出力先のスキーマの名称を指定します。
+* schema_name には、出力先のスキーマの名称を指定します。
 * 出力先のスキーマと型、順序を一致させる必要があります。
 
 > Example: スキーマ定義

@@ -8,7 +8,7 @@ redirect_from: "/ddl_ja.html"
 
 {% include lead.md %}
 
-## CREATE TUPLE
+## CREATE TUPLE <a name="CREATE_TUPLE" class="anchor"></a>
 
 Tupleのスキーマを定義します。
 
@@ -197,11 +197,12 @@ JSONTupleでは、フィールドの値をObjects構造で記述します。
 
 #### STRUCT
 
-GungnirTupleでは、ai.genn.gungnir.tuple.Struct（構造体クラス）として扱われます。
+GungnirTupleでは、org.gennai.gungnir.tuple.Struct（構造体クラス）として扱われます。
 なお、現在は以下の制約があります。
 
-- 値の書き出し(新しい構造体フィールドをAS句で作る等)はできません。
-- ストリームJOINの条件に使うことはできません(事前にSTRING型等へ書き出しておく必要あり)
+- 値の書き出し(新しい構造体フィールドをAS句で作る、`JOIN`のTOで作る等)はできません。
+- [TupleStoreServeから読み込んで結合](dml.html#RestJoin)および[ストリームから読み込んで結合](dml.html#StreamJoin)の条件に使うことはできません。
+- [ストリームから読み込んで結合](dml.html#StreamJoin)には、事前にSTRING型等へ書き出しておくことで条件に使用することは可能です。
 
 > Example:
 >
