@@ -6,8 +6,8 @@ title: genn.ai and Trident
 ## Meetup.comのAPIを用いた比較例
 
 
-meetup.comとは、勉強会やミートアップの告知と参加者管理を行うウェブサービスで、全世界182カ国2000万人以上が利用している。
-ここで公開されている、参加、不参加の登録に関するストリームデータをサンプルとして、
+[meetup.com](http://www.meetup.com/)とは、勉強会やミートアップの告知と参加者管理を行うウェブサービスで、全世界182カ国2000万人以上が利用している。
+ここで公開されている、参加、不参加の登録に関するストリームAPI([rsvps](http://www.meetup.com/meetup_api/docs/stream/2/rsvps/))のデータをサンプルとして、
 genn.aiとTridentで同様の処理を実装したときの比較を行う。
 
 処理の内容は、
@@ -36,7 +36,34 @@ Tridentでは、必ずタプルの発行を行うSPOUTを実装する必要が�
 
 Tridentにおいてこれに当たる処理、各データのパースや型変換の処理は、Trident用の関数を記述することで可能となる。
 
-    ＊＊＊
+    (ns zoo-storm.trident.Json2Edn
+      (:import [storm.trident.operation TridentCollector]
+               [storm.trident.tuple TridentTupleView]
+               [backtype.storm.tuple Values]
+               [java.lang System])
+      (:require [clojure.data.json :as json]
+                [clojure.tools.logging :as log])
+      (:gen-class
+       :implements [storm.trident.operation.Function]
+       :name zoo_storm.trident.Json2Edn))
+
+    (defn -prepare
+      [this conf context]
+      (log/infof (str "Json2Edn(prepare): " (.getPartitionIndex context) "/"
+                       (.numPartitions context))))
+
+    (defn -cleanup
+      [x]
+      (log/infof (str "Json2Edn(cleanup)")))
+
+    (defn -execute
+      [this ^TridentTupleView tuple ^TridentCollector collector]
+      (let [sentence (.getString tuple 0)
+            json_raw (json/read-str sentence :key-fn keyword)
+            json (merge json_raw {:_time (System/currentTimeMillis)})]
+        (log/infof (str "Json2Edn(execute): " (:member_id (:member json))))
+        (.emit collector [(prn-str json)])))
+
 
 ### 2.引き当て準備
 
@@ -66,9 +93,27 @@ TridentでのストリームJOINは、条件を使った待ち合わせ等でき
 これにNOのタプルが来たら都度クエリをかけてキャンセルがあったかどうかを判定する。
 Tridentにはストリームの処理結果を格納する機能があるため、
 ここにストアごとに作成されたストアエンジン(state)を設定することで比較的容易にデータの書き出しが可能である。
-今回、ストアエンジンにはOSSとして公開されているMongo-Tridentを用いた。
+今回、ストアエンジンにはOSSとして公開されている [storm-mongo](https://github.com/wilbinsc/storm-mongo) を用いた（以下一部抜粋）。
 
-    ＊＊＊
+    (-> s1
+        (.groupBy (Fields. ["response" "member_id" "event_id"]))
+        (.persistentAggregate (MongoState/newFactory
+                               (new MongoStateConfig
+                                    "mongodb://172.28.128.3"
+                                    "test" "state2"
+                                    StateType/NON_TRANSACTIONAL
+                                    (into-array String ;mongo-key
+                                                ["response","member_id","event_id"])
+                                    (into-array String ;mongo-value
+                                                ["count","m_id","m_name",
+                                                 "e_id", "e_name",
+                                                 "res" "mtime"])))
+                              (Fields. ["member_id" "member_name"
+                                        "event_id" "event_name"
+                                        "response" "mtime"]) ;func-in
+                              (zoo_storm.trident.CountWith.)
+                              (Fields. ["count"])) ;func-out
+        )
 
 ### 3.引き当て
 
@@ -92,10 +137,34 @@ Tridentにはストリームの処理結果を格納する機能があるため�
 
 Tridentでは、この条件をMongoDBの検索クエリとして実現するが、
 検索自体はTridentとしての機能がないため、ストアエンジンを直接操作して検索してくるTrident関数を、先のものと同様に実装する必要がある。
+なお、時刻条件の確認はMongoDB側でもTrident側でも可能だが、処理の分散性を考えTrident側での実装とした（以下一部抜粋）。
 
-なお、時刻条件の確認はMongoDB側でもTrident側でも可能だが、処理の分散性を考えTrident側での実装とした。
+    ; keeping if a tuple has res = "no" (He/She has changed his mind)
+    ; it means db would have a record with res = "yes"
+    (defn -isKeep
+      [this ^TridentTuple tuple]
+      (let [dbconn @dbconn
+            coll (:col (.holdingstate this))
+            msec (:msec (.holdingstate this))
+            res "yes" ;(.getString tuple 0)
+            uid (.getLong tuple 1)
+            eid (str (.getValue tuple 2))] ;string/long..
+        ; checking we have "yes" record on our store
+        (let [x (:val (mc/find-one-as-map dbconn coll ;_id
+                                             {:_id.response res
+                                              :_id.member_id uid
+                                              :_id.event_id eid}))]
+          ; checking the time difference of two
+          (if (not (nil? x))
+            (let [difMSec (- (System/currentTimeMillis) (:mtime x))]
+              (if (and (not (nil? x)) (> difMSec msec))
+                (do (log/infof (str "Query(" res "," uid "," eid "): " difMSec))
+                    true)
+                false))
+            (do (log/infof (str "Query(" res "," uid "," eid "): none"))
+              false)
+           ))))
 
-    ＊＊＊
 
 ### 4.全体(Control/Confgtol flow)
 
